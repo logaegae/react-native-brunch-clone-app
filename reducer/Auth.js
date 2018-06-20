@@ -13,35 +13,42 @@ const initialState = {
 
 export default function auth(state = initialState, action) {
     switch(action.type) {
+        case types.AUTH_GETTING:
+            return {
+                ...state,
+                login: {
+                    status: 'GETTING'
+                }
+            };
+        case types.AUTH_GETSUCCESS:
+            return {
+                status: {
+                    isLoggedIn: false,
+                    currentUser: action.users,
+                },
+                login: {
+                    status: 'SUCCESS'
+                }
+            };
+        case types.AUTH_GETFAIL:
+            return {
+                ...state,
+                login: {
+                    status: 'FAIL'
+                }
+            };
         case types.AUTH_LOGIN:
             return {
-                ...initialState,
+                ...state,
                 login: {
                     status: 'LOGIN'
                 }
             };
         case types.AUTH_LOGOUT:
             return {
-                ...initialState,
+                ...state,
                 login: {
                     status: 'LOGOUT'
-                }
-            };
-        case types.AUTH_LOGIN_SUCCESS:
-            return {
-                login: {
-                    status: 'SUCCESS' 
-                },
-                status: {
-                    isLoggedIn: true ,
-                    currentUser: action.username
-                }
-            };
-        case types.AUTH_LOGIN_FAILURE:
-            return {
-                ...initialState,
-                login: {
-                    status: { $set: 'FAILURE' }
                 }
             };
         default:

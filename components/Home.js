@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, Button } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { loginRequest, logoutRequest } from '../actions';
+import { loginRequest, logoutRequest, getUsersRequest } from '../actions';
 
 class Home extends React.Component {
   render() {
@@ -19,6 +19,12 @@ class Home extends React.Component {
                 title="Logout"
                 color="skyblue"
             />
+            <Button
+                onPress={this.props.getUsersRequest}
+                title="getUsers"
+                color="green"
+            />
+            <Text>{this.props.users}</Text>
         </Container>
     );
   }
@@ -32,12 +38,16 @@ const Container = styled.View`
 
 const mapStateToProps = (state) => {
     return {
-        status: state.auth.login.status
+        status: state.auth.login.status,
+        users: state.auth.status.currentUser
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        getUsersRequest: () => {
+            return dispatch(getUsersRequest()); 
+        },
         loginRequest: () => { 
             return dispatch(loginRequest()); 
         },
