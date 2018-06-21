@@ -4,7 +4,7 @@ import { createStackNavigator, createDrawerNavigator, createSwitchNavigator } fr
 import { Ionicons } from '@expo/vector-icons'
 import { DrawerActions } from 'react-navigation';
 
-import Home from '../components/Home'
+import Home from '../components/Home/Home'
 
 const DrawerNavi1 = createDrawerNavigator({
     Home : { 
