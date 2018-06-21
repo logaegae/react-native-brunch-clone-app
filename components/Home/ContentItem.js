@@ -38,8 +38,10 @@ class ContentItem extends React.Component {
 }
 
 const Content = styled.View`
-    width : 90%;
-    height : 90%;
+    width : ${width - 20}px;
+    height : ${height - 260}px;
+    flex : 1;
+    margin-right : 30px;
     padding : 10px 20px;
     border-radius : 10px;
     background-color : #fdcb6e;
