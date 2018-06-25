@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, View, TouchableHighlight, TextInput, Dimensions, ScrollView } from 'react-native';
+import { Text, View, TouchableHighlight, TextInput, Dimensions, ScrollView, Linking } from 'react-native';
 import styled from 'styled-components';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import ContentItem from './ContentItem';
+import { withNavigation } from 'react-navigation';
 
 const { height, width } = Dimensions.get("window");
 
@@ -13,10 +14,15 @@ class Content extends React.Component {
         <ContentContainer>
             <ContentBox horizontal={true}>
                 <ContentItem/>
-                <ContentItem/>
+                <ContentItem last={true}/>
             </ContentBox>
             <ButtonBox>
-                <SimpleLineIcons name="plus" size={40} color={Theme.mainColor}/>
+                <SimpleLineIcons
+                    name="plus" 
+                    size={40}
+                    color={Theme.mainColor}
+                    onPress={()=>{this.props.navigation.navigate('New')}}
+                />
             </ButtonBox>
         </ContentContainer>
     );
@@ -41,4 +47,4 @@ const ButtonBox = styled.View`
     padding-top: 10px;
 `;
 
-export default Content;
+export default withNavigation(Content);

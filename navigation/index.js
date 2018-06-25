@@ -4,24 +4,17 @@ import { createStackNavigator, createDrawerNavigator, createSwitchNavigator } fr
 import { Ionicons } from '@expo/vector-icons'
 import { DrawerActions } from 'react-navigation';
 
-import Home from '../components/Home/Home'
+import Home from '../components/Home/Home';
+import View from '../components/View/View';
 
-const DrawerNavi1 = createDrawerNavigator({
-    Home : { 
-        screen : Home
-    },
-},{
-    drawerPosition : 'right',
-    getCustomActionCreators: (route, stateKey) => {
-        return {
-          toggleLeftDrawer: () => DrawerActions.toggleDrawer({ key: stateKey }),
-        };
-    },
-});
-
-export default SwitchNavi = createSwitchNavigator(
+export const AppNavigator = createSwitchNavigator(
     {
-      Home: Home,
+        Home : {
+            screen : Home
+        },
+        View : {
+            screen : View
+        },
     },
     {
       initialRouteName: 'Home',

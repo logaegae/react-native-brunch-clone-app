@@ -1,28 +1,23 @@
 import React from 'react';
-import { Text, View, Button, TouchableHighlight, StatusBar, TextInput, Dimensions } from 'react-native';
+import { Text, View, Dimensions, StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
-import { Ionicons } from '@expo/vector-icons';
-import Search from './Search';
-import Content from './Content';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import Theme from '../../style/theme';
+import ViewHeader from './Header';
 
 const { height, width } = Dimensions.get("window");
 
-class Home extends React.Component {
+class ContentView extends React.Component {
   render() {
     return (
         <Container>
             <StatusBar backgroundColor="blue" barStyle="light-content" />
-            <HomeHeader>
-                <MenuButton>
-                    <Ionicons name="md-menu" size={50}/>
-                </MenuButton>
-            </HomeHeader>
-            <HomeBody>
-                <Search/>
-                <Content/>
-            </HomeBody>
+            <ViewHeader/>
+            <Body>
+                <Text>text....</Text>
+            </Body>
         </Container>
     );
   }
@@ -31,22 +26,9 @@ class Home extends React.Component {
 const Container = styled.View`
     flex : 1;
 `;
-
-const MenuButton = styled.TouchableHighlight`
-    width : 50px;
-    height : 50px;
-    justify-content : center;
-    align-items : center;
-`;
-const HomeHeader = styled.View`
-    flex : 1;
-    align-items : flex-start;
-    justify-content : flex-end;
-    padding : 0 20px;
-`;
-const HomeBody = styled.View`
-    flex : 9;
-    align-items : center;
+const Body = styled.View`
+    width : 100%;
+    padding : 30px;
 `;
 
 const mapStateToProps = (state) => {
@@ -70,4 +52,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(ContentView);

@@ -3,13 +3,14 @@ import { Text, View, TouchableHighlight, TextInput, Dimensions, Image } from 're
 import styled from 'styled-components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
+import { withNavigation } from 'react-navigation';
 
 const { height, width } = Dimensions.get("window");
 
 class ContentItem extends React.Component {
   render() {
     return (
-        <Content>
+        <Content last={this.props.last}>
             <WeatherBox>
                 <MaterialCommunityIcons name="weather-cloudy" size={50} style={{marginLeft : 5, marginRight : 5}} color="white"/>
                 <MaterialCommunityIcons name="weather-sunny" size={50} style={{marginLeft : 5, marginRight : 5}} color="white"/>
@@ -18,7 +19,7 @@ class ContentItem extends React.Component {
                 <DateText>2018.01.01 - 2018.01.01</DateText>
             </DateBox>
             <TitleBox>
-                <TitleText>
+                <TitleText onPress={()=>{this.props.navigation.navigate('View')}}>
                     We are going to tour in Europe 45days
                 </TitleText>
                 <HeartBox>
@@ -41,7 +42,7 @@ const Content = styled.View`
     width : ${width - 20}px;
     height : ${height - 260}px;
     flex : 1;
-    margin-right : 30px;
+    margin-right : ${props => props.last ? 0 : 30}px;
     padding : 10px 20px;
     border-radius : 10px;
     background-color : #fdcb6e;
@@ -101,4 +102,4 @@ const WriterText = styled.Text`
     font-size : 28px;
     font-weight : 600;
 `;
-export default ContentItem;
+export default withNavigation(ContentItem);
