@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
 import { Ionicons } from '@expo/vector-icons';
+
+import Header from './Header';
 import Search from './Search';
 import Content from './Content';
 
@@ -14,11 +16,7 @@ class Home extends React.Component {
     return (
         <Container>
             <StatusBar backgroundColor="blue" barStyle="light-content" />
-            <HomeHeader>
-                <MenuButton>
-                    <Ionicons name="md-menu" size={50}/>
-                </MenuButton>
-            </HomeHeader>
+            <Header/>
             <HomeBody>
                 <Search/>
                 <Content/>
