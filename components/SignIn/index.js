@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
+import { userLogin } from '../../actions';
 import Theme from '../../style/theme';
-import { withNavigation } from 'react-navigation';
 
 import { Ionicons, Feather } from '@expo/vector-icons';
 
@@ -20,6 +19,7 @@ class SignIn extends Component {
   }
   
  render() {
+   const userInfo = this.state;
     return (
       <Wrap>
         <CloseBox>
@@ -29,6 +29,7 @@ class SignIn extends Component {
         </CloseBox>
          <LogoBox>
           <Logo>Trable</Logo>
+          <Logo>{this.props.status}</Logo>
           <BorderBox></BorderBox>
         </LogoBox>
         <InputBox>
@@ -55,7 +56,7 @@ class SignIn extends Component {
               autoCorrect={false}
             />
           </InputWrap>
-          <Button onPressOut={this.props.requestLogin} >
+          <Button onPressOut={()=>{ this.props.userLogin(userInfo) }} >
             <BtnText>Sign In</BtnText>
           </Button>
           <P>Create Your Travel</P>
@@ -151,15 +152,17 @@ const P = styled.Text`
 `
 
 const mapStateToProps = (state) => {
-    return {
-
-    }
+  return {
+    status: state.redux.auth.login.status
+  };
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-  }
+      userLogin: (userInfo) => { 
+          return dispatch(userLogin(userInfo)); 
+      }
+  };
 }
 
-const SignInWithNavigation = withNavigation(SignIn);
-export default connect(mapStateToProps, mapDispatchToProps)(SignInWithNavigation);
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

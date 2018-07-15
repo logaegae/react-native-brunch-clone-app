@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
+import { connect } from 'react-redux';
+import { userSignUp } from '../../actions';
 
 const { height, width } = Dimensions.get("window");
+
+const emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const pwPattern = /((?=.*\d)(?=.*[a-zA-Z]).{6,20})/;
 
 class SignUp extends Component {
   constructor(props){
@@ -17,6 +22,37 @@ class SignUp extends Component {
   }
   
  render() {
+    const userInfo = this.state;
+    const checkValid = () => {
+
+        initForm = (message) => {
+          alert(message);
+          this.setState({
+            ...userInfo,
+            pw : "",
+            cpw : ""
+          });
+        }
+        if(!userInfo.id.match(emailPattern)) {
+          initForm("잘못된 이메일 형식입니다");
+          return false;
+        }
+        if(!userInfo.pw.match(pwPattern)) {
+          initForm("비밀번호는 숫자와 문자를 혼합하여 6-20자만 가능합니다");
+          return false;
+        }
+        if(userInfo.pw !== userInfo.cpw) {
+          initForm("비밀번호를 다시 확인해주세요");
+          return false;
+        }
+        if(userInfo.nickname.length < 2 || userInfo.nickname.length > 10) {
+          initForm("닉네임은 2자 이상 10자 이하로 입력해주세요");
+          return false;
+        }
+
+        this.props.userSignUp(userInfo);
+
+    }
     return (
       <Wrap>
         <BtnBox>
@@ -72,7 +108,7 @@ class SignUp extends Component {
             />
           </InputWrap>
           <P>* 닉네임은 마이페이지에서 변경할 수 있어요.</P>
-          <Button onPressOut={this.props.requestLogin} >
+          <Button onPressOut={()=>{checkValid()}} >
             <BtnText>Sign Up</BtnText>
           </Button>
         </InputBox>
@@ -153,13 +189,27 @@ const Logo = styled.Text`
 const BtnText = styled.Text`
   font-size: ${props => props.fs14 ? ("14px") : ("16px")}
   color:#fff;
-`
+`;
 
 const P = styled.Text`
   width: ${width * 0.7};
   margin: 10px 0 40px;
   font-size:14px;
   color:#fff;
-`
+`;
 
-export default SignUp;
+const mapStateToProps = (state) => {
+  return {
+    status: state.redux.auth.login.status
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+      userSignUp: (userInfo) => { 
+          return dispatch(userSignUp(userInfo)); 
+      }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

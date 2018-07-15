@@ -20,6 +20,13 @@ export default function auth(state = initialState, action) {
                     status: 'GETTING'
                 }
             };
+        case types.AUTH_REJECT:
+            return {
+                ...state,
+                login: {
+                    status: 'REJECT'
+                }
+            };
         case types.AUTH_GETSUCCESS:
             return {
                 status: {

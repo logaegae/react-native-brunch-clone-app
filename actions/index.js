@@ -2,8 +2,9 @@ import {
     AUTH_GETTING,
     AUTH_GETSUCCESS,
     AUTH_GETFAIL,
-    AUTH_LOGIN, 
-    AUTH_LOGOUT
+    AUTH_LOGIN,
+    AUTH_LOGOUT,
+    AUTH_SIGNUP
 } from './ActionTypes'
 import axios from 'axios';
 
@@ -23,32 +24,74 @@ export function getting () {
         type : AUTH_GETTING
     }
 }
-export function getSuccess (users) {
-    return {
-        type : AUTH_GETSUCCESS,
-        users
-    }
-}
 export function getFailure () {
     return {
         type : AUTH_GETFAIL
     }
 }
+export function loginSuccess (users) {
+    return {
+        type : AUTH_LOGIN_SUCCESS,
+        users
+    }
+}
+export function loginRejected () {
+    return {
+        type : AUTH_LOGIN_REJECT
+    }
+}
+export function loginFailed () {
+    return {
+        type : AUTH_LOGIN_FAIL
+    }
+}
 
 //action functions
-export function getUsersRequest () {
+//로그인
+export function userLogin (userInfo) {
     return (dispatch) => {
         dispatch(getting());
 
         // API REQUEST
-        return axios.get('http://localhost:9000/api/auth')
+        return axios.post('http://localhost:9000/api/auth/signIn', userInfo)
         .then((res) => {
+            const status = result.data.status;
             // SUCCEED
-            const result = JSON.stringify(res.data,0,2);
-            dispatch(getSuccess(result));
+            if(status === "LOGIN_REJECT") {
+                dispatch(loginRejected(result.data.status));
+                return false;
+            }
+            if(status === "LOGIN_FAILED") {
+                dispatch(loginFailed(result.data.status));
+                return false;
+            }
+            if(suatus === "LOGIN_SUCCESS") {
+                dispatch(loginSuccess(result.data.status));
+                return false;
+            }
         }).catch((error) => {
             // FAILED
             dispatch(getFailure());
         });
+    }
+}
+
+//회원가입
+export function userSignUp (userInfo) {
+    return (dispatch) => {
+        dispatch(getting());
+
+        // API REQUEST
+        return axios.post('http://localhost:9000/api/auth/signUp', userInfo)
+        .then((res) => {
+            // SUCCEED
+            const result = JSON.stringify(res.data,0,2);
+            alert(result);
+            // dispatch(getSuccess(result));
+        }).catch((error) => {
+            // FAILED
+            dispatch(getFailure());
+        });
+
     }
 }

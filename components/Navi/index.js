@@ -8,7 +8,7 @@ import Theme from '../../style/theme';
 
 const { height, width } = Dimensions.get("window");
 
-const SignedContent = (props) => {
+const UnsignedContent = (props) => {
   return (
     <Center>
       <StartButtonTO onPress={()=>{props.navigation.navigate("SignIn")}}>
@@ -18,7 +18,7 @@ const SignedContent = (props) => {
   );
 }
 
-const UnsignedContent = (props) => {
+const SignedContent = (props) => {
   return (
     <View>
       <ProfileBox onPressOut={() => {props.navigation.navigate('Mypage')}}>
