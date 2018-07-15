@@ -63,7 +63,7 @@ const DateBox = styled.View`
 const DateText = styled.Text`
     color : white;
     font-size : 18px;
-    font-weight : 600;
+    font-family : NanumGothic;
 `;
 const HeartBox = styled.View`
     width : 100%;
@@ -74,6 +74,7 @@ const HeartText = styled.Text`
     color : white;
     font-size : 25px;
     margin-top : -3px;
+    font-family : NanumGothic;
 `;
 const TitleBox = styled.View`
     width : 100%;
@@ -82,7 +83,7 @@ const TitleBox = styled.View`
 const TitleText = styled.Text`
     color : white;
     font-size : 30px;
-    font-weight : bold;
+    font-family : NanumGothic-bold;
 `;
 const WriterBox = styled.View`
     width : 100%;
@@ -101,5 +102,7 @@ const WriterText = styled.Text`
     color : white;
     font-size : 28px;
     font-weight : 600;
+    font-family : NanumGothic;
+
 `;
 export default withNavigation(ContentItem);

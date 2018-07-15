@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { AppNavigator } from './navigation';
+import { Font } from 'expo';
 
 // Redux
 import { Provider, connect } from 'react-redux';
@@ -35,10 +36,25 @@ const AppWithNavigationState = connect(mapStateToProps)(App);
 const store = createStore(appReducer, applyMiddleware(thunk, navigationMiddleware));
 
 export default class Root extends React.Component {
+
+  state = {
+    fontLoaded : false
+  }
+  async componentDidMount() {
+    await Font.loadAsync({
+      'NanumGothic-bold': require('./assets/fonts/NanumGothic-Bold.ttf'),
+      'NanumGothic-Bold': require('./assets/fonts/NanumGothic-ExtraBold.ttf'),
+      'NanumGothic': require('./assets/fonts/NanumGothic-Regular.ttf'),
+    });
+
+    this.setState({ fontLoaded: true });
+
+  }
+
   render() {
     return (
       <Provider store={store}>
-          <AppWithNavigationState/>
+        {this.state.fontLoaded ? <AppWithNavigationState/> : <View><Text>Hello</Text></View>}
       </Provider>
     );
   }

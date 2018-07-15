@@ -46,16 +46,19 @@ const HeartText = styled.Text`
     color : white;
     font-size : 20px;
     margin-top : -3px;
+    font-family : NanumGothic;
 `;
 const TitleText = styled.Text`
     font-size : 24px;
     color : #333;
     font-weight : bold;
+    font-family : NanumGothic-bold;
 `;
 const SaveText = styled.Text`
     font-size : 20px;
     text-decoration : underline;
     color : blue;
+    font-family : NanumGothic;
 `;
 
 

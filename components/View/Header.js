@@ -64,6 +64,7 @@ const HeartText = styled.Text`
     color : white;
     font-size : 20px;
     margin-top : -3px;
+    font-family : NanumGothic;
 `;
 const WeatherBox = styled.View`
     padding : 0 10px;
@@ -81,6 +82,7 @@ const DateText = styled.Text`
     color : white;
     font-size : 18px;
     font-weight : 600;
+    font-family : NanumGothic;
 `;
 const TitleBox = styled.View`
     width : 100%;
@@ -89,7 +91,7 @@ const TitleBox = styled.View`
 const TitleText = styled.Text`
     color : white;
     font-size : 30px;
-    font-weight : bold;
+    font-family : NanumGothic-bold;
 `;
 const LineBox = styled.View`
     padding-top : 15px;
@@ -116,7 +118,7 @@ const ProfileImgBox = styled.Image`
 const WriterText = styled.Text`
     color : white;
     font-size : 25px;
-    font-weight : 600;
+    font-family : NanumGothic;
 `;
 
 export default withNavigation(ViewHeader);

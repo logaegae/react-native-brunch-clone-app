@@ -34,6 +34,7 @@ const Body = styled.ScrollView`
 `;
 const BodyText = styled.Text`
     font-size : 23px;
+    font-family : NanumGothic;
 `;
 
 const mapStateToProps = (state) => {
