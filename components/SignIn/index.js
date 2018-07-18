@@ -32,6 +32,7 @@ class SignIn extends Component {
           <Logo>{this.props.status}</Logo>
           <BorderBox></BorderBox>
         </LogoBox>
+        <Text>{JSON.stringify(this.props.auth,0,2)}</Text>
         <InputBox>
           <InputWrap>
             <Feather name="user" color="#999" size={20} />
@@ -153,7 +154,7 @@ const P = styled.Text`
 
 const mapStateToProps = (state) => {
   return {
-    status: state.redux.auth.login.status
+    auth: state.redux.auth
   };
 }
 
