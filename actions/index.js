@@ -1,17 +1,17 @@
 import { 
     AUTH_GETTING,
     AUTH_GETFAIL,
-    AUTH_LOGIN,
-    AUTH_LOGOUT,
     AUTH_SIGNUP_SUCCESSED,
     AUTH_SIGNUP_FAILED,
-    AUTH_SIGNUP_INIT,
+    AUTH_INIT,
     AUTH_LOGIN_SUCCESS,
     AUTH_LOGIN_REJECT,
-    AUTH_LOGIN_FAIL
+    AUTH_LOGIN_FAIL,
+    AUTH_LOGOUT
 
 } from './ActionTypes'
 import axios from 'axios';
+import { AsyncStorage } from "react-native";
 
 //action creator
 export function loginRequest () {
@@ -34,10 +34,11 @@ export function getFailure () {
         type : AUTH_GETFAIL
     }
 }
-export function loginSuccess (name) {
+export function loginSuccess (id, name) {
     return {
         type : AUTH_LOGIN_SUCCESS,
-        name : name
+        id,
+        name
     }
 }
 export function loginRejected () {
@@ -50,6 +51,11 @@ export function loginFailed () {
         type : AUTH_LOGIN_FAIL
     }
 }
+export function logOut () {
+    return {
+        type : AUTH_LOGOUT
+    }
+}
 export function signUpSeccess () {
     return {
         type : AUTH_SIGNUP_SUCCESSED
@@ -60,9 +66,9 @@ export function signUpFailed () {
         type : AUTH_SIGNUP_FAILED
     }
 }
-export function signUpInit () {
+export function authInit () {
     return {
-        type : AUTH_SIGNUP_INIT
+        type : AUTH_INIT
     }
 }
 
@@ -78,14 +84,29 @@ export function userLogin (userInfo) {
             
             const status = res.data.status;
             const name = res.data.name;
+            const id = res.data.id;
             
             switch(status){
-                case "LOGIN_REJECT" : dispatch(loginRejected());
+                case "LOGIN_REJECT" : 
+                    alert("Server Error");
+                    dispatch(loginRejected());
                     break;
-                case "LOGIN_FAILED" : dispatch(loginFailed());
+                case "LOGIN_FAILED" : 
+                    alert("아이디와 비밀번호를 확인해주세요.");
+                    dispatch(loginFailed());
                     break;
-                case "LOGIN_SUCCESS" : dispatch(loginSuccess(name));
-                    break;
+                case "LOGIN_SUCCESS" : 
+                    try {
+                        AsyncStorage.setItem('@BrunchApp:Auth', JSON.stringify({
+                            id,
+                            name
+                        }));
+                    } catch (error) {
+                        alert("Storage Error : " + error);
+                    } finally {
+                        dispatch(loginSuccess(id, name));
+                        break;
+                    }
             }
         }).catch((error) => {
             // FAILED
@@ -106,6 +127,13 @@ export function userSignUp (userInfo) {
             if(res.data.status === "SIGNUP_SUCCESSED"){
                 dispatch(signUpSeccess());
             }else{
+
+                if(res.data.status === "SIGNUP_ID_DUPLICATED") {
+                    alert("아이디가 이미 존재합니다.\n다른 아이디를 입력해주세요.");
+                }
+                if(res.data.status === "SIGNUP_NAME_DUPLICATED") {
+                    alert("이미 존재하는 닉네임입니다.\n다른 닉네임을 입력해주세요.");
+                }
                 dispatch(signUpFailed());
             }
 
@@ -114,5 +142,31 @@ export function userSignUp (userInfo) {
             dispatch(getFailure());
         });
 
+    }
+}
+//logout
+export function logout () {
+    return async (dispatch) => {
+        try {
+            await AsyncStorage.removeItem('@BrunchApp:Auth');
+            dispatch(logOut());
+        } catch (error) {
+            alert("Error retrieving data : " + error);
+        }
+    }
+}
+
+//storage 조회
+export function getStorage () {
+    return async (dispatch) => {
+        try {
+            const _storedData = await AsyncStorage.getItem('@BrunchApp:Auth');
+            if(_storedData) {
+                    _storedData = JSON.parse(_storedData);
+                    dispatch(loginSuccess(_storedData.id, _storedData.name));
+            }
+        } catch (error) {
+            alert("Error retrieving data : " + error);
+        }
     }
 }

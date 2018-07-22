@@ -1,11 +1,7 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Theme from '../../style/theme';
 import { withNavigation } from 'react-navigation';
-
-const { height, width } = Dimensions.get("window");
 
 class ContentItem extends React.Component {
 

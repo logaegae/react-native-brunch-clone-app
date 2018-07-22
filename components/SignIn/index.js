@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import { Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { userLogin } from '../../actions';
-import Theme from '../../style/theme';
-
+import { userLogin, authInit } from '../../actions';
 import { Ionicons, Feather } from '@expo/vector-icons';
 
 const { height, width } = Dimensions.get("window");
@@ -14,12 +12,26 @@ class SignIn extends Component {
     super(props);
     this.state = {
       id: "",
-      pw: "",
+      pw: ""
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.auth !== this.props.auth) {
+      
+      const { http } = this.props.auth;
+      if( this.props.auth.login.logged && http.status === 'SUCCESSED' && http.result === 'SUCCESSED') {
+        this.props.authInit();
+        this.props.navigation.navigate("Home");
+
+      }else if( http.status === 'FAILED' || http.result === 'FAILED' ){
+        this.props.authInit();
+      }
     }
   }
   
- render() {
-   const userInfo = this.state;
+  render() {
+    const userInfo = this.state;
     return (
       <Wrap>
         <CloseBox>
@@ -29,10 +41,8 @@ class SignIn extends Component {
         </CloseBox>
          <LogoBox>
           <Logo>Trable</Logo>
-          <Logo>{this.props.status}</Logo>
           <BorderBox></BorderBox>
         </LogoBox>
-        <Text>{JSON.stringify(this.props.auth,0,2)}</Text>
         <InputBox>
           <InputWrap>
             <Feather name="user" color="#999" size={20} />
@@ -161,7 +171,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
       userLogin: (userInfo) => { 
-          return dispatch(userLogin(userInfo)); 
+        return dispatch(userLogin(userInfo)); 
+      },
+      authInit: () => {
+        return dispatch(authInit());
       }
   };
 }

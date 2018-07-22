@@ -11,11 +11,8 @@ const initialState = {
     },
     login : {
         logged : false,
-        name : ''
-    },
-    status: {
-        isLoggedIn: false,
-        currentUser: ''
+        name : '',
+        id : ''
     }
 };
 
@@ -57,11 +54,12 @@ export default function auth(state = initialState, action) {
                     result : 'FAILED'
                 }
             };
-        case types.AUTH_SIGNUP_INIT :
+        case types.AUTH_INIT :
             return {
                 ...state,
                 http : {
                     ...state.http,
+                    status : 'INIT',
                     result : 'INIT'
                 }
             };
@@ -93,7 +91,17 @@ export default function auth(state = initialState, action) {
                 },
                 login : {
                     logged : true,
-                    name : action.name
+                    name : action.name,
+                    id : action.id
+                }
+            };
+        case types.AUTH_LOGOUT : 
+            return {
+                ...state,
+                login : {
+                    logged : false,
+                    name : '',
+                    id : ''
                 }
             };
         default:

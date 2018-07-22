@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity, Dimensions 
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
-import { userSignUp, signUpInit } from '../../actions';
+import { userSignUp, authInit } from '../../actions';
 
 const { height, width } = Dimensions.get("window");
 
@@ -26,14 +26,12 @@ class SignUp extends Component {
 
       if(this.props.result === "SUCCESSED") {
 
-        this.props.signUpInit();
+        this.props.authInit();
         alert("회원가입이 완료되었습니다.");
         this.props.navigation.navigate("SignIn");
 
       }else if(this.props.result === "FAILED"){
-
-        this.props.signUpInit();
-        alert("회원가입에 에러가 발생하였습니다.");
+        this.props.authInit();
       }
     }
   }
@@ -78,7 +76,7 @@ class SignUp extends Component {
           </BtnBack>
         </BtnBox>
          <LogoBox>
-          <Logo>New Travel{this.props.result}</Logo>
+          <Logo>New Travel</Logo>
           <BorderBox></BorderBox>
         </LogoBox>
         <InputBox>
@@ -227,8 +225,8 @@ const mapDispatchToProps = (dispatch) => {
       userSignUp : (userInfo) => { 
         return dispatch(userSignUp(userInfo)); 
       },
-      signUpInit : () => {
-        return dispatch(signUpInit());
+      authInit : () => {
+        return dispatch(authInit());
       } 
   };
 }

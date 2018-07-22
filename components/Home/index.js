@@ -1,29 +1,31 @@
 import React from 'react';
-import { Text, View, Button, TouchableHighlight, StatusBar, TextInput, Dimensions } from 'react-native';
+import { StatusBar, Text } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
-import { Ionicons } from '@expo/vector-icons';
+import { getStorage } from '../../actions';
 
 import Header from './Header';
 import Search from './Search';
 import Content from './Content';
 
-const { height, width } = Dimensions.get("window");
-
 class Home extends React.Component {
-  render() {
-    return (
-        <Container>
-            <StatusBar backgroundColor="blue" barStyle="light-content" />
-            <Header/>
-            <HomeBody>
-                <Search/>
-                <Content/>
-            </HomeBody>
-        </Container>
-    );
-  }
+
+    componentDidMount() {
+        if(!this.props.login.logged) this.props.getUsersRequest();
+    }
+
+    render() {
+        return (
+            <Container>
+                <StatusBar backgroundColor="blue" barStyle="light-content" />
+                <Header/>
+                <HomeBody>
+                    <Search/>
+                    <Content/>
+                </HomeBody>
+            </Container>
+        );
+    }
 }
 
 const Container = styled.View`
@@ -49,22 +51,15 @@ const HomeBody = styled.View`
 
 const mapStateToProps = (state) => {
     return {
-        status: state.redux.auth.login.status,
-        users: state.redux.auth.status.currentUser
+        login: state.redux.auth.login
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getUsersRequest: () => {
-            return dispatch(getUsersRequest()); 
+            return dispatch(getStorage()); 
         },
-        loginRequest: () => { 
-            return dispatch(loginRequest()); 
-        },
-        logoutRequest: () => { 
-            return dispatch(logoutRequest()); 
-        }
     };
 };
 

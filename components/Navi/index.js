@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import {ScrollView, Text, View, TouchableOpacity, Dimensions} from 'react-native';
-import {NavigationActions} from 'react-navigation';
+import {ScrollView, View, TouchableOpacity} from 'react-native';
+
 import styled from 'styled-components';
 import { withNavigation } from 'react-navigation';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
-
-const { height, width } = Dimensions.get("window");
+import { connect } from 'react-redux';
 
 const UnsignedContent = (props) => {
   return (
@@ -21,7 +20,7 @@ const UnsignedContent = (props) => {
 const SignedContent = (props) => {
   return (
     <View>
-      <ProfileBox onPressOut={() => {props.navigation.navigate('Mypage')}}>
+      <ProfileBox onPressOut={() => {props.navigation.navigate('MyPage')}}>
         <ProfileImgBox source={require('../../assets/siba.jpg')}/>
         <UserNickname>siba</UserNickname>
       </ProfileBox>
@@ -62,7 +61,7 @@ class SideMenu extends Component {
             <TitleLine></TitleLine>
           </TitleLineBox>
           <View>
-            <UnsignedContent navigation={this.props.navigation} />
+            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} /> : <UnsignedContent navigation={this.props.navigation} /> }
           </View>
         </ScrollView>
       </Container>
@@ -201,4 +200,16 @@ const BtnText = styled.Text`
   font-family : NanumGothic;
 `;
 
-export default withNavigation(SideMenu);
+const mapStateToProps = (state) => {
+  return {
+    login: state.redux.auth.login
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+  };
+}
+
+const SideMenuWithNavi = withNavigation(SideMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(SideMenuWithNavi);

@@ -1,14 +1,9 @@
 import React from 'react';
-import { Text, View, Dimensions, StatusBar } from 'react-native';
+import { Dimensions, StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import Theme from '../../style/theme';
 import ViewHeader from './Header';
 import ViewMiddle from './Middle';
-
-const { height, width } = Dimensions.get("window");
 
 class NewView extends React.Component {
   render() {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { createStackNavigator, createDrawerNavigator, createSwitchNavigator } from 'react-navigation'
-import { Ionicons } from '@expo/vector-icons'
-import { DrawerActions } from 'react-navigation';
+import { createDrawerNavigator, createSwitchNavigator } from 'react-navigation'
+
+
 
 import Home from '../components/Home';
 import View from '../components/View';
@@ -13,6 +13,7 @@ import SignIn from '../components/SignIn';
 import SignUp from '../components/SignUp';
 import Notify from '../components/Feed/Notify';
 import Like from '../components/Feed/Like';
+import MyPage from '../components/MyPage';
 
 const DrawerNavigator = createDrawerNavigator({
     Home: {
@@ -49,6 +50,9 @@ export const AppNavigator = createSwitchNavigator(
         },
         Like : {
             screen : Like
+        },
+        MyPage : {
+            screen : MyPage
         }
     },
     {

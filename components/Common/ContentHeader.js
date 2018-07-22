@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
@@ -16,10 +16,10 @@ class DrawerHeader extends React.Component {
                     size={50} 
                     style={{fontWeight : 'bold'}} 
                     color="#333"
-                    onPress={()=>{this.props.navigation.navigate('New')}}
+                    onPress={()=>{this.props.navigation.navigate('Home')}}
                 />
                 <TitleText>
-                    글관리
+                    {this.props.title}
                 </TitleText>
             </ButtonBox>
         </Header>

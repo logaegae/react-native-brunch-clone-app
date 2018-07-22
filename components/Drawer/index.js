@@ -1,21 +1,16 @@
 import React from 'react';
-import { Text, View, Dimensions, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { loginRequest, logoutRequest, getUsersRequest } from '../../actions';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import Theme from '../../style/theme';
-import DrawerHeader from './Header';
+import DrawerHeader from '../Common/ContentHeader';
 import ContentItem from './ContentItem';
-
-const { height, width } = Dimensions.get("window");
 
 class DrawerView extends React.Component {
   render() {
     return (
         <Container>
             <StatusBar backgroundColor="blue" barStyle="light-content" />
-            <DrawerHeader/>
+            <DrawerHeader title="글관리"/>
             <Body>
                 <ContentItem issued={true}/>
                 <ContentItem issued={false}/>

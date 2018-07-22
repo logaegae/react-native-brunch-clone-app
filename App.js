@@ -54,7 +54,7 @@ export default class Root extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        {this.state.fontLoaded ? <AppWithNavigationState/> : <View><Text>Hello</Text></View>}
+        {this.state.fontLoaded ? <AppWithNavigationState/> : <View><Text>Loading</Text></View>}
       </Provider>
     );
   }
