@@ -6,6 +6,7 @@ import Modal from "react-native-modal";
 import ModalDate from './WriteModalDate';
 import ModalWeather from './WriteModalWeather';
 import ModalBg from './WriteModalBg';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default class WriteCon extends Component {
   constructor(props){
@@ -15,13 +16,18 @@ export default class WriteCon extends Component {
       modalType: "",
       startDate: "",
       finishDate: "",
+      switchOneday : false,
       text: null,
+      weather : {
+        id : 1,
+        name : null
+      }
     };
     this._toggleModal = this._toggleModal.bind(this);
     this._rednerModalType = this._rednerModalType.bind(this);
     this._renderModalContent = this._renderModalContent.bind(this);
   }
-  _handleDate = (startDate, finishDate) => {
+  _handleDate = (startDate, finishDate, switchOneday) => {
     if(startDate){
       this.setState({
         startDate
@@ -32,6 +38,23 @@ export default class WriteCon extends Component {
         finishDate
       });
     }
+    if(finishDate === "remove"){
+      this.setState({
+        finishDate : null
+      });
+    }
+    switchOneday ? 
+    this.setState({
+      switchOneday : true
+    })
+    :this.setState({
+      switchOneday : false
+    });
+  }
+  _handleWeather = (value) => {
+    this.setState({
+      weather : value
+    })
   }
   _toggleModal = (type) => {
     this.setState({ 
@@ -58,14 +81,14 @@ export default class WriteCon extends Component {
       </ModalHeader>
       {this._rednerModalType(
         <ModalDate parentState={this.state} handleDate={this._handleDate}/>, 
-        <ModalWeather parentState={this.state} />,
+        <ModalWeather parentState={this.state} handleWeather={this._handleWeather} parentState={this.state.weather}/>,
         <ModalBg parentState={this.state} />
       )} 
     </View>
   );
   
   render(){
-    const { isModalVisible, startDate, finishDate } = this.state;
+    const { isModalVisible, startDate, finishDate, weather } = this.state;
 
     return (
       <Wrap>
@@ -80,7 +103,7 @@ export default class WriteCon extends Component {
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
               <CommonText>날짜</CommonText>
-              {startDate || finishDate ? <CommonText>{startDate} - {finishDate}</CommonText> : ''};
+              <CommonText>{startDate ? startDate : ''} {finishDate ? '-' + finishDate : ''}</CommonText>
             </Select>
           </DateBox>
           <TitBox>
@@ -91,6 +114,7 @@ export default class WriteCon extends Component {
           <WeatherBox>
             <Select onPress={() => this._toggleModal("weather")}>
               <CommonText>날씨</CommonText>
+              {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : ''}
             </Select>
           </WeatherBox>
           <Row flexEnd>

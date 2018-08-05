@@ -8,18 +8,15 @@ export default class ModalDate extends Component {
     super(props);
     this.state = {
       isModalVisible: false,
-      switchOneday: false,
+      switchOneday: this.props.parentState.switchOneday,
       startDate: this.props.parentState.startDate,
       finishDate: this.props.parentState.finishDate,
     }
   }
 
-  // _toggleModal = () => {
-  //   this.setState({ isModalVisible: !this.state.isModalVisible });
-  // }
-
   render(){
-    const parentState = this.props.parentState;
+    const {switchOneday, startDate, finishDate} = this.state;
+    const today = new Date().toISOString().slice(0, 10);
 
     return(
       <ModalWrap>
@@ -27,20 +24,29 @@ export default class ModalDate extends Component {
           <ModalLabel>One Day Trip</ModalLabel>
           <Switch 
             value={this.state.switchOneday}
-            onValueChange={(value) => this.setState({switchOneday: value})}
-            />
+            onValueChange={(value) => {
+              if(value){
+                this.setState({switchOneday : true});
+                this.props.handleDate(this.state.startDate,"remove", true);
+              }else{
+                this.setState({switchOneday : false});
+                this.props.handleDate(null, null, false);
+              }
+            }}
+          />
         </ModalRow>
         <ModalRow>
-          <ModalLabel>Start</ModalLabel>
+          <ModalLabel>{this.state.switchOneday ? "Date" : "Start"}</ModalLabel>
           <DatePicker
             style={{width: 200}}
             date={this.state.startDate}
             mode="date"
-            placeholder="2018.08.01"
+            placeholder={today}
             format="YYYY.MM.DD"
             confirmBtnText="확인"
             cancelBtnText="취소"
             showIcon={false}
+            maxDate={today}
             customStyles={{
               dateInput: {
                 alignItems: 'flex-end',
@@ -59,21 +65,23 @@ export default class ModalDate extends Component {
             }}
             onDateChange={(date) => {
               this.setState({startDate: date});
-              this.props.handleDate(date,null);
+              this.props.handleDate(date, null, switchOneday);
             }}
           />
         </ModalRow>
+        { !this.state.switchOneday ?
         <ModalRow>
           <ModalLabel>Finish</ModalLabel>
           <DatePicker
             style={{width: 200}}
             date={this.state.finishDate}
             mode="date"
-            placeholder="2018.08.01"
+            placeholder={today}
             format="YYYY.MM.DD"
             confirmBtnText="확인"
             cancelBtnText="취소"
             showIcon={false}
+            minDate={startDate ? startDate : today}
             customStyles={{
               dateInput: {
                 alignItems: 'flex-end',
@@ -92,10 +100,11 @@ export default class ModalDate extends Component {
             }}
             onDateChange={(date) => {
               this.setState({finishDate: date});
-              this.props.handleDate(null,date);
+              this.props.handleDate(null, date, switchOneday);
             }}
           />
-        </ModalRow>
+        </ModalRow> : ''
+        }
       </ModalWrap>
     )
   }

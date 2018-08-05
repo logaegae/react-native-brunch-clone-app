@@ -13,7 +13,7 @@ class Option extends Component{
         </ModalIconBox>
         <ModalLabel>{this.props.select.label}</ModalLabel>
         <ModalCheckBox>
-          {this.props.select.isChecked ? <Feather name="check" color="#666" size={30} /> : ``}              
+          {this.props.select.id === this.props.selectedId ? <Feather name="check" color="#666" size={30} /> : ``}              
         </ModalCheckBox>
       </ModalRow>
     );
@@ -30,7 +30,7 @@ export default class ModalWeather extends Component {
           label: "선택 안 함",
           iconName: "cloud-off-outline",
           iconColor: "transparent",
-          isChecked: true,
+          isChecked: false,
         },
         {
           id: 2,
@@ -82,7 +82,7 @@ export default class ModalWeather extends Component {
           isChecked: false,
         },
       ],
-      selectedOpt: "",
+      selectedOpt: this.props.parentState.id,
     };  
   }
 
@@ -98,7 +98,16 @@ export default class ModalWeather extends Component {
   }
   
   changeActiveOption(index){
-      this.state.weatherOpt.map(( opt ) => { 
+      const id = this.state.weatherOpt[index].id
+      const obj = id !== 1 ? {
+        id : id,
+        name : this.state.weatherOpt[index].iconName
+      } : {
+        id : 1,
+        name : null
+      };
+
+      this.state.weatherOpt.map(( opt ) => {
         opt.isChecked = false; 
       });
 
@@ -106,18 +115,19 @@ export default class ModalWeather extends Component {
 
       this.setState({ weatherOpt: this.state.weatherOpt }, () => {
           this.setState({ 
-            selectedOpt: this.state.weatherOpt[index].id, 
+            selectedOpt: id, 
           });
       });
+      this.props.handleWeather(obj);
   }
 
   render(){
-    const parentState = this.props.parentState;
+    const state = this.state;
 
     return(
       <ModalWrap>
         {this.state.weatherOpt.map(( item, key ) => (
-          <Option key = { key } select = { item } onClick = { this.changeActiveOption.bind( this, key ) }/>
+          <Option key = { key } select = { item } selectedId={state.selectedOpt} onClick = { this.changeActiveOption.bind( this, key ) }/>
         ))}
       </ModalWrap>
     )
