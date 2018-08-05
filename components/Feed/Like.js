@@ -5,8 +5,6 @@ import styled from 'styled-components';
 import LikeItem from './LikeItem';
 import Header from '../Common/ContentHeader';
 
-const { height, width } = Dimensions.get("window");
-
 export default class Like extends Component {
   constructor(props){
     super(props);

@@ -1,10 +1,8 @@
 import React from 'react';
-import { Text, View, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
-
-const { height, width } = Dimensions.get("window");
 
 class NewHeader extends React.Component {
   render() {

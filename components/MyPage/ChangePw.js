@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
-import { Ionicons } from '@expo/vector-icons';
-
+import Header from '../Common/ContentHeader';
+import { connect } from 'react-redux';
 const { height, width } = Dimensions.get("window");
+import { requestChangePw } from '../../actions';
 
-export default class Mypage extends Component {
+const pwPattern = /((?=.*\d)(?=.*[a-zA-Z]).{6,20})/;
+
+class ChangePw extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -14,86 +17,107 @@ export default class Mypage extends Component {
       confirmPw: "",
     }
   }
+
+  componentDidMount() {
+    if(!this.props.login.logged) this.props.navigation.navigate("Home");
+  }
   
   render(){
-    return(
-        <Wrap>
-          <HeaderBox>
-            <BtnIcon onPressOut={() => this.props.navigation.navigate('Mypage')}>
-              <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
-            </BtnIcon>
-            <H1>비밀번호 변경</H1>
-          </HeaderBox>
-          <InputBox>
+
+    let userInfo = this.state;
+
+    const checkValid = () => {
+
+      initForm = (message) => {
+        alert(message);
+        this.setState({
+          currentPw : "",
+          newPw : "",
+          confirmPw : ""
+        });
+      }
+
+      if(!userInfo.newPw.match(pwPattern)) {
+        initForm("비밀번호는 숫자와 문자를 혼합하여 6-20자만 가능합니다");
+        return false;
+      }
+      
+      if(userInfo.newPw !== userInfo.confirmPw) {
+        initForm("비밀번호를 다시 확인해주세요");
+        return false;
+      }
+
+      userInfo.id = this.props.login.id;
+      const token = this.props.login.token;
+      delete userInfo.confirmPw;
+      this.props.requestChangePw(userInfo, token);
+
+  }
+  return(
+      <Wrap>
+        <Header title="비밀번호 변경" />
+        <InputBox>
+          <InputWrap>
+              <InputText 
+              value={this.state.currentPw}
+              onChangeText={(currentPw) => this.setState({currentPw: currentPw})}
+              placeholder="Current Password"
+              placeholderTextColor="#999"
+              secureTextEntry
+              returnKeyType={"done"}
+              autoCorrect={false}
+            />
+          </InputWrap>
             <InputWrap>
-               <InputText 
-                value={this.state.currentPw}
-                onChangeText={(currentPw) => this.setState({currentPw: currentPw})}
-                placeholder="Current Password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                returnKeyType={"done"}
-                autoCorrect={false}
-              />
-            </InputWrap>
-             <InputWrap>
-               <InputText 
-                value={this.state.newPw}
-                onChangeText={(newPw) => this.setState({newPw: newPw})}
-                placeholder="New Password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                returnKeyType={"done"}
-                autoCorrect={false}
-              />
-            </InputWrap>
-             <InputWrap>
-               <InputText 
-                value={this.state.confirmPw}
-                onChangeText={(confirmPw) => this.setState({confirmPw: confirmPw})}
-                placeholder="Confirm Password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                returnKeyType={"done"}
-                autoCorrect={false}
-              />
-            </InputWrap>
-            <Button onPressOut={this.props.requestLogin}>
-              <BtnText>Submit</BtnText>
-            </Button>
-          </InputBox>
-        </Wrap>
-      )
+              <InputText 
+              value={this.state.newPw}
+              onChangeText={(newPw) => this.setState({newPw: newPw})}
+              placeholder="New Password"
+              placeholderTextColor="#999"
+              secureTextEntry
+              returnKeyType={"done"}
+              autoCorrect={false}
+            />
+          </InputWrap>
+            <InputWrap>
+              <InputText 
+              value={this.state.confirmPw}
+              onChangeText={(confirmPw) => this.setState({confirmPw: confirmPw})}
+              placeholder="Confirm Password"
+              placeholderTextColor="#999"
+              secureTextEntry
+              returnKeyType={"done"}
+              autoCorrect={false}
+            />
+          </InputWrap>
+          <Button onPressOut={() => { checkValid() }}>
+            <BtnText>Submit</BtnText>
+          </Button>
+        </InputBox>
+      </Wrap>
+    )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    login: state.redux.auth.login
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    requestChangePw : (userInfo, token) => {
+      return dispatch(requestChangePw(userInfo, token));
+    }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePw);
 
 const Wrap = styled.View`
   flex: 1;
   padding-top: 5%;
-`;
-
-const HeaderBox = styled.View`
-  position: relative;
-  padding: 0 15px;
-  flex: 1.2;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom-color:#ccc;
-  border-bottom-width: 1px;
-`;
-
-const BtnIcon = styled.TouchableOpacity`
-`;
-
-const H1 = styled.Text`
-  z-index:-1;
-  position:absolute;
-  width: ${width};
-  align-items: center;
-  text-align:center;
-  font-size:20px;
-  font-family: 'hd-regular';
 `;
 
 const InputBox = styled.View`
@@ -115,7 +139,6 @@ const InputWrap = styled.View`
 const InputText = styled.TextInput`
   padding: 5px 0;
   width: ${width * 0.7};
-  font-family: 'hd-regular';
   font-size: 15px;
   color:#333;
 `;
@@ -131,7 +154,6 @@ const Button = styled.TouchableOpacity`
 `;
 
 const BtnText = styled.Text`
-  font-family: 'hd-bold';
   font-size: 16px;
   color:#fff;
 `

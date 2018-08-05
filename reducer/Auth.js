@@ -12,13 +12,15 @@ const initialState = {
     login : {
         logged : false,
         name : '',
-        id : ''
+        id : '',
+        token : ''
     }
 };
 
 
 export default function auth(state = initialState, action) {
     switch(action.type) {
+        //Http 상태
         case types.AUTH_GETTING:
             return {
                 ...state,
@@ -92,9 +94,11 @@ export default function auth(state = initialState, action) {
                 login : {
                     logged : true,
                     name : action.name,
-                    id : action.id
+                    id : action.id,
+                    token : action.token
                 }
             };
+        //로그아웃
         case types.AUTH_LOGOUT : 
             return {
                 ...state,
@@ -102,6 +106,15 @@ export default function auth(state = initialState, action) {
                     logged : false,
                     name : '',
                     id : ''
+                }
+            };
+        //이름변경
+        case types.CHANGE_NAME_SUCCESSED : 
+            return {
+                ...state,
+                login : {
+                    ...state.login,
+                    name : action.name
                 }
             };
         default:

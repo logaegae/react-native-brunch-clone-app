@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableHighlight, TextInput, Dimensions, ScrollView, Linking } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
@@ -12,9 +12,8 @@ class Content extends React.Component {
   render() {
     return (
         <ContentContainer>
-            <ContentBox horizontal={true}>
+            <ContentBox>
                 <ContentItem/>
-                <ContentItem last={true}/>
             </ContentBox>
             <ButtonBox>
                 <SimpleLineIcons
@@ -31,12 +30,11 @@ class Content extends React.Component {
 
 const ContentContainer = styled.View`
     flex : 10;
-    width : ${width-20}px;
+    width : ${width-10}px;
 `;
-const ContentBox = styled.ScrollView`
+const ContentBox = styled.View`
     flex : 7;
     width : 100%;
-    background-color : #ddd;
     border-radius : 10px;
 `;
 const ButtonBox = styled.View`

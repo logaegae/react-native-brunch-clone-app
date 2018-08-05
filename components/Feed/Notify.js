@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
-import { Dimensions, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import styled from 'styled-components';
-import { Ionicons } from '@expo/vector-icons';
 
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
-
-const { height, width } = Dimensions.get("window");
 
 export default class Notify extends Component {
   constructor(props){

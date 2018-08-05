@@ -3,7 +3,7 @@ import { CameraRoll, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Feather, Foundation } from '@expo/vector-icons';
 import { connect } from 'react-redux';
-import { requestLogout } from '../../actions';
+import { logoutRequest, authInit, changeNameRequest } from '../../actions';
 import Header from '../Common/ContentHeader';
 
 const { height, width } = Dimensions.get("window");
@@ -12,10 +12,28 @@ class Mypage extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isEditing: false,
-      nickname: "bonobono",
+      isEditing : false,
+      nickname : this.props.login.name
     }
   }
+
+  componentDidMount() {
+    if(!this.props.login.logged) this.props.navigation.navigate("Home");
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.login !== this.props.login) {
+      
+      if( !this.props.login.logged ) {
+        this.props.authInit();
+        this.props.navigation.navigate("Home");
+
+      }else if( this.props.http.status === 'FAILED' || this.props.http.result === 'FAILED' ){
+        this.props.authInit();
+      }
+    }
+  }
+
   _handleCameraRoll = () => {
    CameraRoll.getPhotos({
        first: 20,
@@ -30,8 +48,15 @@ class Mypage extends Component {
    };
 
    _handleChangeNickname(isEditing){
+    
+    const data = {
+      id : this.props.login.id,
+      name : this.state.nickname
+    }
+    const token = this.props.login.token;
     this.setState(function(prevState){
       if(isEditing) {
+        if(data.name !== this.props.login.name) this.props.changeNameRequest(data, token);
         return {isEditing:false}
       } else {
         return {isEditing:true}
@@ -40,8 +65,9 @@ class Mypage extends Component {
   }
 
   render(){
-    const { isLoggedIn } = false;
-    const { isEditing } = false;
+
+    const { isEditing } = this.state;
+    const token = this.props.login.token;
     
     return(
         <Wrap>
@@ -56,13 +82,16 @@ class Mypage extends Component {
               </ImgBox>
               <NicknameBox>
                {!isEditing ? (
-                   <UserNickname>{this.state.nickname}</UserNickname>
+                   <UserNickname ref={ref => {
+                    this.nameInput = ref;
+                  }}>{this.props.login.name}</UserNickname>
                    ) : (
                     <Input 
                       inputRef="NicknameInput"
-                      value={this.state.nickname}
-                      placeholder={this.state.nickname}
+                      value={this.props.login.name}
+                      placeholder={this.props.login.name}
                       placeholderTextColor="#999"
+                      autoFocus = {true}
                       onChangeText={(nickname) => this.setState({nickname: nickname})}
                     />
                    )
@@ -77,7 +106,7 @@ class Mypage extends Component {
               <Button borderType onPressOut={() => this.props.navigation.navigate('ChangePw')}>
                 <BtnText borderType>비밀번호 변경</BtnText>
               </Button>
-              <Button onPressOut={this.props.requestLogout}>
+              <Button onPressOut={this.props.logoutRequest}>
                 <BtnText>Sign Out</BtnText>
               </Button>
             </BtnBox>
@@ -87,23 +116,26 @@ class Mypage extends Component {
   }
 }
 
-
-
-
 const mapStateToProps = (state) => {
   return {
-    status: state.redux.auth.status,
+    login: state.redux.auth.login,
+    http : state.redux.auth.http
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    requestLogout: () => {
-      return dispatch(requestLogout());
-    }
+    logoutRequest : () => {
+      return dispatch(logoutRequest());
+    },
+    changeNameRequest : (userInfo, token) => {
+      return dispatch(changeNameRequest(userInfo, token));
+    },
+    authInit : () => {
+      return dispatch(authInit());
+    },
   }
 }
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Mypage);
 

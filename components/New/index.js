@@ -1,9 +1,9 @@
 import React from 'react';
-import { Dimensions, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import ViewHeader from './Header';
-import ViewMiddle from './Middle';
+import WriteCon from './WriteCon';
 
 class NewView extends React.Component {
   render() {
@@ -12,9 +12,9 @@ class NewView extends React.Component {
             <StatusBar backgroundColor="blue" barStyle="light-content" />
             <ViewHeader/>
             <ViewMiddle/>
-            <Body>
-                <BodyText>텍스트편집기 입력....</BodyText>
-            </Body>
+            <ConBox>
+                <WriteCon />
+            </ConBox>
         </Container>
     );
   }
@@ -23,13 +23,8 @@ class NewView extends React.Component {
 const Container = styled.View`
     flex : 1;
 `;
-const Body = styled.ScrollView`
-    width : 100%;
-    padding : 30px;
-`;
-const BodyText = styled.Text`
-    font-size : 23px;
-    font-family : NanumGothic;
+const ConBox = styled.View`
+  flex:10;
 `;
 
 const mapStateToProps = (state) => {

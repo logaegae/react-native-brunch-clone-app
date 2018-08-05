@@ -33,22 +33,11 @@ const Body = styled.View`
 
 const mapStateToProps = (state) => {
     return {
-        status: state.redux.auth.login.status,
-        users: state.redux.auth.status.currentUser
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getUsersRequest: () => {
-            return dispatch(getUsersRequest()); 
-        },
-        loginRequest: () => { 
-            return dispatch(loginRequest()); 
-        },
-        logoutRequest: () => { 
-            return dispatch(logoutRequest()); 
-        }
     };
 };
 

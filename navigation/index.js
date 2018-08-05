@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator, createSwitchNavigator } from 'react-navigation'
 
-
-
 import Home from '../components/Home';
 import View from '../components/View';
 import New from '../components/New';
@@ -14,6 +12,7 @@ import SignUp from '../components/SignUp';
 import Notify from '../components/Feed/Notify';
 import Like from '../components/Feed/Like';
 import MyPage from '../components/MyPage';
+import ChangePw from '../components/MyPage/ChangePw';
 
 const DrawerNavigator = createDrawerNavigator({
     Home: {
@@ -53,6 +52,9 @@ export const AppNavigator = createSwitchNavigator(
         },
         MyPage : {
             screen : MyPage
+        },
+        ChangePw : {
+            screen : ChangePw
         }
     },
     {

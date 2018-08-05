@@ -5,8 +5,6 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import { withNavigation } from 'react-navigation';
 
-const { height, width } = Dimensions.get("window");
-
 class ViewMiddle extends React.Component {
   render() {
     return (

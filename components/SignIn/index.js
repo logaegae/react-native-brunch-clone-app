@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { userLogin, authInit } from '../../actions';
