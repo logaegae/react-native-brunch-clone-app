@@ -14,7 +14,7 @@ class RadioButton extends Component{
         onPress = { this.props.onClick } activeOpacity = { 0.8 } >
           <ColorCircle style={{backgroundColor: this.props.button.color}}>
           {
-            (this.props.button.selected) ?
+            (this.props.button.id === this.props.selectedId) ?
               (<Feather name="check" color="#fff" size={30} />)
               :
                 null
@@ -162,6 +162,13 @@ export default class ModalBg extends Component {
             selectedColor: this.state.radioItems[index].color,
           });
       });
+      this.props.handleBg({
+        photo : null,
+        color : {
+          id: this.state.radioItems[index].id, 
+          value: this.state.radioItems[index].color
+        }
+      });
   }
 
   
@@ -179,7 +186,7 @@ export default class ModalBg extends Component {
           <ModalLabel>Color</ModalLabel>
           <RadioBox>
             {this.state.radioItems.map(( item, key ) => (
-              <RadioButton key = { key } button = { item } onClick = { this.changeActiveRadioButton.bind( this, key ) }/>
+              <RadioButton key = { key } button = { item } selectedId={!parentState.photo ? parentState.color.id : ""} onClick = { this.changeActiveRadioButton.bind( this, key ) }/>
             ))}
           </RadioBox>
           <Text style={{height:30}}>id: {this.state.selectedItem}, bgColor: {this.state.selectedColor}</Text>

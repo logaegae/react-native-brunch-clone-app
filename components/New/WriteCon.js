@@ -17,10 +17,18 @@ export default class WriteCon extends Component {
       startDate: "",
       finishDate: "",
       switchOneday : false,
+      title : null,
       text: null,
       weather : {
         id : 1,
         name : null
+      },
+      bg : {
+        photo : null,
+        color : {
+          id : 1,
+          value : "#6B5ED1"
+        }
       }
     };
     this._toggleModal = this._toggleModal.bind(this);
@@ -54,7 +62,12 @@ export default class WriteCon extends Component {
   _handleWeather = (value) => {
     this.setState({
       weather : value
-    })
+    });
+  }
+  _handleBg = (value) => {
+    this.setState({
+      bg : value
+    });
   }
   _toggleModal = (type) => {
     this.setState({ 
@@ -81,14 +94,14 @@ export default class WriteCon extends Component {
       </ModalHeader>
       {this._rednerModalType(
         <ModalDate parentState={this.state} handleDate={this._handleDate}/>, 
-        <ModalWeather parentState={this.state} handleWeather={this._handleWeather} parentState={this.state.weather}/>,
-        <ModalBg parentState={this.state} />
+        <ModalWeather parentState={this.state.weather} handleWeather={this._handleWeather} />,
+        <ModalBg parentState={this.state.bg} handleBg={this._handleBg}/>
       )} 
     </View>
   );
   
   render(){
-    const { isModalVisible, startDate, finishDate, weather } = this.state;
+    const { isModalVisible, startDate, finishDate, weather, bg } = this.state;
 
     return (
       <Wrap>
@@ -99,7 +112,7 @@ export default class WriteCon extends Component {
         </Modal>
 
 
-        <HeaderConBox>
+        <HeaderConBox background={!bg.photo ? bg.color.value : "transparent"}>
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
               <CommonText>날짜</CommonText>
@@ -107,9 +120,14 @@ export default class WriteCon extends Component {
             </Select>
           </DateBox>
           <TitBox>
-            <Select> 
+            <Title> 
               <CommonText>제목</CommonText>
-             </Select> 
+              <TitleInput
+                underlineColorAndroid="transparent"
+                placeholder={"입력해주세요."}
+                onChangeText={(text) => this.setState({title: text})}
+              />
+             </Title> 
           </TitBox>
           <WeatherBox>
             <Select onPress={() => this._toggleModal("weather")}>
@@ -143,10 +161,14 @@ const Wrap = styled.View`
 
 const HeaderConBox = styled.View`
   padding: 7%; 
-  background:#5ED9FF;
+  background: ${prop => prop.background};
 `;
 
 const Select = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+`
+const Title = styled.View`
   flex-direction: row;
   align-items: center;
 `
@@ -178,7 +200,9 @@ const TitBox = styled.View`
 
 const TitText = styled.Text`
 `;
-
+const TitleInput = styled.TextInput`
+  font-size : 17px;
+`;
 const Btn = styled.TouchableOpacity`
 `;
 
