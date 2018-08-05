@@ -49,15 +49,18 @@ export default class ModalDate extends Component {
               dateText: {
                 color:'#333',
                 fontSize: 19,
-                fontFamily: 'hd-bold',
+                fontFamily: 'NanumGothic-bold',
               },
               placeholderText: {
                 color:'#bbb',
                 fontSize: 19,
-                fontFamily: 'hd-bold',
+                fontFamily: 'NanumGothic-bold',
               }
             }}
-            onDateChange={(date) => {this.setState({startDate: date})}}
+            onDateChange={(date) => {
+              this.setState({startDate: date});
+              this.props.handleDate(date,null);
+            }}
           />
         </ModalRow>
         <ModalRow>
@@ -79,15 +82,18 @@ export default class ModalDate extends Component {
               dateText: {
                 color:'#333',
                 fontSize: 19,
-                fontFamily: 'hd-bold',
+                fontFamily: 'NanumGothic-bold',
               },
               placeholderText: {
                 color:'#bbb',
                 fontSize: 19,
-                fontFamily: 'hd-bold',
+                fontFamily: 'NanumGothic-bold',
               }
             }}
-            onDateChange={(date) => {this.setState({finishDate: date})}}
+            onDateChange={(date) => {
+              this.setState({finishDate: date});
+              this.props.handleDate(null,date);
+            }}
           />
         </ModalRow>
       </ModalWrap>
@@ -111,6 +117,6 @@ const ModalRow = styled.View`
 
 const ModalLabel = styled.Text`
   color:#333;
-  font-family: 'hd-regular';
+  font-family: 'NanumGothic';
   font-size:17px;
 `;

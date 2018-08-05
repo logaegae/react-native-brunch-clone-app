@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Switch, TouchableHighlight, View, Text, TouchableOpacity, Dimensions, Button } from 'react-native';
+import { TextInput, View, Button } from 'react-native';
 import styled, { css } from 'styled-components';
 import { Entypo } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import ModalDate from './WriteModalDate';
 import ModalWeather from './WriteModalWeather';
 import ModalBg from './WriteModalBg';
-
-const { height, width } = Dimensions.get("window");
 
 export default class WriteCon extends Component {
   constructor(props){
@@ -17,12 +15,23 @@ export default class WriteCon extends Component {
       modalType: "",
       startDate: "",
       finishDate: "",
-      test: "test",
-      text: "",
+      text: null,
     };
     this._toggleModal = this._toggleModal.bind(this);
     this._rednerModalType = this._rednerModalType.bind(this);
     this._renderModalContent = this._renderModalContent.bind(this);
+  }
+  _handleDate = (startDate, finishDate) => {
+    if(startDate){
+      this.setState({
+        startDate
+      });
+    }
+    if(finishDate){
+      this.setState({
+        finishDate
+      });
+    }
   }
   _toggleModal = (type) => {
     this.setState({ 
@@ -48,7 +57,7 @@ export default class WriteCon extends Component {
         <Button value="cancle" title="닫기" onPress={() => this._toggleModal('')}/>
       </ModalHeader>
       {this._rednerModalType(
-        <ModalDate parentState={this.state} />, 
+        <ModalDate parentState={this.state} handleDate={this._handleDate}/>, 
         <ModalWeather parentState={this.state} />,
         <ModalBg parentState={this.state} />
       )} 
@@ -70,8 +79,8 @@ export default class WriteCon extends Component {
         <HeaderConBox>
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
-              <CommonText>날짜 {this.state.modalType}</CommonText>
-              <CommonText>{startDate} - {finishDate}</CommonText>
+              <CommonText>날짜</CommonText>
+              {startDate || finishDate ? <CommonText>{startDate} - {finishDate}</CommonText> : ''};
             </Select>
           </DateBox>
           <TitBox>
@@ -128,10 +137,11 @@ const DateBox = styled.View`
 `;
 
 const CommonText = styled.Text`
-  font-family: 'hd-bold';
+  font-family: 'NanumGothic-bold';
   color:#fff;
   font-size:17px;
   font-weight:500;
+  padding-right : 10px;
 `;
 
 const WeatherBox = styled.View`
@@ -154,8 +164,9 @@ const TextareaBox = styled.View`
 
 const Textarea = styled.TextInput`
   color: #333;
-  font-size:15px;
-  font-family: 'hd-regular';
+  font-size:20px;
+  font-family: 'NanumGothic';
+  height:100%;
 `;
 
 const ModalHeader = styled.View`
@@ -169,6 +180,6 @@ const ModalHeader = styled.View`
 `
 const ModalTit = styled.Text`
   color:#999;
-  font-family: 'hd-regular';
+  font-family: 'NanumGothic';
   font-size:15px;
 `;

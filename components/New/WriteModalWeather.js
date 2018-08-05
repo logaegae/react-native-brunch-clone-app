@@ -146,7 +146,7 @@ const ModalIconBox = styled.View`
 
 const ModalLabel = styled.Text`
   color:#333;
-  font-family: 'hd-regular';
+  font-family: 'NanumGothic';
   font-size:17px;
 `;
 

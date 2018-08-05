@@ -11,7 +11,6 @@ class NewView extends React.Component {
         <Container>
             <StatusBar backgroundColor="blue" barStyle="light-content" />
             <ViewHeader/>
-            <ViewMiddle/>
             <ConBox>
                 <WriteCon />
             </ConBox>

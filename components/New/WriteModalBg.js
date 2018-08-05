@@ -210,7 +210,7 @@ const Btn = styled.TouchableOpacity`
 
 const ModalLabel = styled.Text`
   color: #333;
-  font-family: 'hd-bold';
+  font-family: 'NanumGothic-bold';
   text-decoration: ${props => props.underline ? `underline` : `none`};
   font-size:17px;
 `;
