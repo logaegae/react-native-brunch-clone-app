@@ -35,6 +35,11 @@ export default class WriteCon extends Component {
     this._rednerModalType = this._rednerModalType.bind(this);
     this._renderModalContent = this._renderModalContent.bind(this);
   }
+  componentDidUpdate( prevProps, prevState) {
+    if(JSON.stringify(prevState) !== JSON.stringify(this.state)) this.props.handleState(this.state);
+    // alert(JSON.stringify(nextState,0,2))
+    
+  }
   _handleDate = (startDate, finishDate, switchOneday) => {
     if(startDate){
       this.setState({
@@ -123,8 +128,10 @@ export default class WriteCon extends Component {
             <Title> 
               <CommonText>제목</CommonText>
               <TitleInput
+                color="white"
                 underlineColorAndroid="transparent"
-                placeholder={"입력해주세요."}
+                placeholder={"45자 이내로 입력해주세요."}
+                maxLength={45}
                 onChangeText={(text) => this.setState({title: text})}
               />
              </Title> 
@@ -201,7 +208,10 @@ const TitBox = styled.View`
 const TitText = styled.Text`
 `;
 const TitleInput = styled.TextInput`
+  padding-left : 10px;
+  padding-right : 10px;
   font-size : 17px;
+  width : 90%;
 `;
 const Btn = styled.TouchableOpacity`
 `;

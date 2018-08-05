@@ -46,7 +46,7 @@ export default class ModalDate extends Component {
             confirmBtnText="확인"
             cancelBtnText="취소"
             showIcon={false}
-            maxDate={today}
+            maxDate={finishDate ? finishDate : today}
             customStyles={{
               dateInput: {
                 alignItems: 'flex-end',
@@ -81,7 +81,8 @@ export default class ModalDate extends Component {
             confirmBtnText="확인"
             cancelBtnText="취소"
             showIcon={false}
-            minDate={startDate ? startDate : today}
+            minDate={startDate ? startDate : "1900-01-01"}
+            maxDate={today}
             customStyles={{
               dateInput: {
                 alignItems: 'flex-end',

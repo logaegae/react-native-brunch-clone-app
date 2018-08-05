@@ -79,18 +79,18 @@ export function userLogin (userInfo) {
         // API REQUEST
         return axios.post('http://localhost:9000/api/auth/signIn', userInfo)
         .then((res) => {
-            
+
             const status = res.data.status;
             const name = res.data.name;
             const id = res.data.id;
             const token = res.data.token;
 
             switch(status){
-                case "LOGIN_REJECT" : 
+                case "LOGIN_FAILED" : 
                     alert("Server Error");
                     dispatch(loginRejected());
                     break;
-                case "LOGIN_FAILED" : 
+                case "LOGIN_REJECT" : 
                     alert("아이디와 비밀번호를 확인해주세요.");
                     dispatch(loginFailed());
                     break;
@@ -238,6 +238,29 @@ export function changeNameRequest (userInfo, token) {
             }else{
                 alert("ERORR");
             }
+            dispatch(authInit());
+        }).catch((error) => {
+            // FAILED
+            dispatch(getFailure());
+        });
+    }
+}
+
+//Article 저장
+export function requestSaveArticle (article, token) {
+    return (dispatch) => {
+        dispatch(getting());
+
+        const header = {
+            headers : {
+                'x-access-token' : token
+            }
+        }
+
+        // API REQUEST
+        return axios.post('http://localhost:9000/api/article/write', article, header)
+        .then((res) => {
+            alert(JSON.stringify(res,0,2));
             dispatch(authInit());
         }).catch((error) => {
             // FAILED
