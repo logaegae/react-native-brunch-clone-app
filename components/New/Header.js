@@ -64,7 +64,8 @@ const SaveText = styled.Text`
 
 const mapStateToProps = (state) => {
     return {
-      login: state.redux.auth.login
+      login: state.redux.auth.login,
+      http : state.redux.http
     };
   }
 

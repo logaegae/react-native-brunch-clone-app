@@ -260,7 +260,11 @@ export function requestSaveArticle (article, token) {
         // API REQUEST
         return axios.post('http://localhost:9000/api/article/write', article, header)
         .then((res) => {
-            alert(JSON.stringify(res,0,2));
+            if(res.data.status === "ARTICLE_SAVE_FAILED"){
+                alert("ERROR\n"+res.data.message);
+            }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
+                alert("저장되었습니다.")
+            }
             dispatch(authInit());
         }).catch((error) => {
             // FAILED
