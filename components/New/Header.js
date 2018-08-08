@@ -3,9 +3,24 @@ import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
-import { requestSaveArticle } from '../../actions';
+import { requestSaveArticle, article_getInit } from '../../actions';
 
 class NewHeader extends React.Component {
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.http !== this.props.http) {
+    
+          if(this.props.http.status === "SUCCESSED") {
+    
+            this.props.article_getInit();
+            alert("저장되었습니다.");
+            this.props.navigation.navigate("Drawer");
+    
+          }else if(this.props.result === "FAILED"){
+            alert("저장 실패");
+          }
+        }
+    }
     
     render() {
         const token = this.props.login.token;
@@ -65,7 +80,7 @@ const SaveText = styled.Text`
 const mapStateToProps = (state) => {
     return {
       login: state.redux.auth.login,
-      http : state.redux.http
+      http : state.redux.article.http
     };
   }
 
@@ -73,6 +88,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         requestSaveArticle : (article, token) => {
             return dispatch(requestSaveArticle(article, token));
+        },
+        article_getInit : () => {
+            return dispatch(article_getInit());
         }
     };
 };
