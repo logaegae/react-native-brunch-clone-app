@@ -6,10 +6,11 @@ const initialState = {
         //GETTING : 요청중
         //FAILED : 요청 실패
         //SUCCESSED : 요청 성공
+        result : null,
         status: 'INIT'
-    }
+    },
+    myArticle : []
 };
-
 
 export default function auth(state = initialState, action) {
     switch(action.type) {
@@ -18,28 +19,32 @@ export default function auth(state = initialState, action) {
             return {
                 ...state,
                 http: {
-                    status: 'GETTING'
+                    status: 'GETTING',
+                    result : null
                 }
             };
         case types.ARTICLE_GETFAIL:
             return {
                 ...state,
                 http: {
-                    status: 'FAILED'
+                    status: 'FAILED',
+                    result : null
                 }
             };
         case types.ARTICLE_GETSUCCESS:
             return {
                 ...state,
                 http: {
-                    status: 'SUCCESSED'
+                    status: 'SUCCESSED',
+                    result : action._id
                 }
             };
         case types.ARTICLE_GETINIT:
             return {
                 ...state,
                 http: {
-                    status: 'INIT'
+                    status: 'INIT',
+                    result : null
                 }
             };
         default:

@@ -173,6 +173,10 @@ export const getStorage = () => {
 //비밀번호 변경
 export const requestChangePw = (userInfo, token) => {
     return (dispatch) => {
+        if(!token) {
+            alert("ERROR\nNo Token Info");
+            return false;
+        }
         dispatch(getting());
 
         const header = {
@@ -206,6 +210,10 @@ export const requestChangePw = (userInfo, token) => {
 //Name 변경
 export const changeNameRequest = (userInfo, token) => {
     return (dispatch) => {
+        if(!token) {
+            alert("ERROR\nNo Token Info");
+            return false;
+        }
         dispatch(getting());
 
         const header = {

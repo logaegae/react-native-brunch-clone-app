@@ -10,7 +10,27 @@ class NewView extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            article : null
+            article : {
+                _id : null,
+                isModalVisible: false,
+                switchOneday : false,
+                modalType: "",
+                startDate: "",
+                finishDate: "",
+                title : null,
+                text: null,
+                weather : {
+                    id : 1,
+                    name : null
+                },
+                bg : {
+                    photo : null,
+                    color : {
+                    id : 1,
+                    value : "#6B5ED1"
+                    }
+                }
+            }
         }
     }
     _handleState = (article) => {
@@ -23,9 +43,9 @@ class NewView extends React.Component {
         return (
             <Container>
                 <StatusBar backgroundColor="blue" barStyle="light-content" />
-                <ViewHeader article={this.state.article}/>
+                <ViewHeader article={this.state.article} handleState={this._handleState}/>
                 <ConBox>
-                    <WriteCon handleState={this._handleState}/>
+                    <WriteCon handleState={this._handleState} article={article}/>
                 </ConBox>
             </Container>
         );

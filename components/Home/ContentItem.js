@@ -13,7 +13,7 @@ class ContentItem extends React.Component {
         super(props);
         this.state = {
             errors: [],
-        }
+        };
         this.props = props;
         this._carousel = {};
         this.init();
@@ -183,7 +183,6 @@ const WriterText = styled.Text`
     font-size : 28px;
     font-weight : 600;
     font-family : NanumGothic;
-
 `;
 const WrittenDateWrap = styled.View`
     align-items : flex-end;

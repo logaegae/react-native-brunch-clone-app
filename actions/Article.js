@@ -18,9 +18,10 @@ export const article_getFailure = () => {
         type : ARTICLE_GETFAIL
     }
 }
-export const article_getSuccess = () => {
+export const article_getSuccess = (_id) => {
     return {
-        type : ARTICLE_GETSUCCESS
+        type : ARTICLE_GETSUCCESS,
+        _id
     }
 }
 export const article_getInit = () => {
@@ -33,6 +34,11 @@ export const article_getInit = () => {
 //Article 저장
 export const requestSaveArticle = (article, token) => {
     return (dispatch) => {
+        if(!token) {
+            alert("ERROR\nNo Token Info");
+            return false;
+        }
+        
         dispatch(article_getting());
 
         const header = {
@@ -48,7 +54,7 @@ export const requestSaveArticle = (article, token) => {
                 alert("ERROR\n"+res.data.message);
                 dispatch(article_getFailure());
             }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
-                dispatch(article_getSuccess());
+                dispatch(article_getSuccess(res.data._id));
             }
         }).catch((error) => {
             dispatch(article_getFailure());

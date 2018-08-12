@@ -3,23 +3,38 @@ import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
+import { ConfirmDialog } from 'react-native-simple-dialogs';
 import { requestSaveArticle, article_getInit } from '../../actions';
 
 class NewHeader extends React.Component {
 
+    state = {
+        showDialog : false,
+        showDialog2 : false
+    }
     componentDidUpdate(prevProps) {
         if(prevProps.http !== this.props.http) {
     
           if(this.props.http.status === "SUCCESSED") {
-    
+            
+            this.props.handleState({
+                ...this.props.article,
+                _id : this.props.http.result
+            });
             this.props.article_getInit();
-            alert("저장되었습니다.");
-            this.props.navigation.navigate("Drawer");
+            this.setState({
+                showDialog : true
+            });
     
           }else if(this.props.result === "FAILED"){
             alert("저장 실패");
           }
         }
+    }
+    _closeConfirm(){
+        this.setState({
+            showDialog2 : true
+        });
     }
     
     render() {
@@ -32,8 +47,8 @@ class NewHeader extends React.Component {
                         size={50} 
                         style={{fontWeight : 'bold'}} 
                         color="#333"
-                        onPress={()=>{this.props.navigation.navigate('Home')}}
-                    />
+                        onPress={()=>{this._closeConfirm()}}
+                        />
                     <TitleText>
                         글쓰기
                     </TitleText>
@@ -43,6 +58,36 @@ class NewHeader extends React.Component {
                         저장
                     </SaveText>
                 </ButtonBox>
+                <ConfirmDialog 
+                    visible={this.state.showDialog} 
+                    title="저장되었습니다."
+                    message="글관리에서 목록을 확인할까요?"
+                    onTouchOutside={() => this.setState({showDialog: false})}
+                    positiveButton={{
+                        title: "YES",
+                        onPress: () => this.props.navigation.navigate("Drawer")
+                    }}
+                    negativeButton={{
+                        title: "NO",
+                        onPress: () => this.setState({showDialog: false})
+                    }}
+                >
+                </ConfirmDialog>
+                <ConfirmDialog 
+                    visible={this.state.showDialog2} 
+                    title="나가기"
+                    message={`작성 중인 내용을 ${String.fromCharCode(13)}저장하지 않고 나가시겠습니까?`}
+                    onTouchOutside={() => this.setState({showDialog2: false})}
+                    positiveButton={{
+                        title: "YES",
+                        onPress: () => this.props.navigation.navigate("Home")
+                    }}
+                    negativeButton={{
+                        title: "NO",
+                        onPress: () => this.setState({showDialog2: false})
+                    }}
+                >
+                </ConfirmDialog>
             </Header>
         );
     }
@@ -87,6 +132,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         requestSaveArticle : (article, token) => {
+            if(article === null) {
+                alert("아무 내용도 입력하지 않으셨네요?");
+                return false;
+            }
             return dispatch(requestSaveArticle(article, token));
         },
         article_getInit : () => {

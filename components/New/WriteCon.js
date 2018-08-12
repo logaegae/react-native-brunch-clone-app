@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TextInput, View, Button } from 'react-native';
+import { Text, View, Button } from 'react-native';
 import styled, { css } from 'styled-components';
 import { Entypo } from '@expo/vector-icons';
 import Modal from "react-native-modal";
@@ -12,101 +12,101 @@ export default class WriteCon extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isModalVisible: false,
-      modalType: "",
-      startDate: "",
-      finishDate: "",
-      switchOneday : false,
-      title : null,
-      text: null,
-      weather : {
-        id : 1,
-        name : null
-      },
-      bg : {
-        photo : null,
-        color : {
-          id : 1,
-          value : "#6B5ED1"
-        }
-      }
-    };
+    }
     this._toggleModal = this._toggleModal.bind(this);
     this._rednerModalType = this._rednerModalType.bind(this);
     this._renderModalContent = this._renderModalContent.bind(this);
-  }
-  componentDidUpdate( prevProps, prevState) {
-    if(JSON.stringify(prevState) !== JSON.stringify(this.state)) this.props.handleState(this.state);
-    // alert(JSON.stringify(nextState,0,2))
-    
+    this._handleDate = this._handleDate.bind(this);
+    this._handleBg = this._handleBg.bind(this);
+    this._handleWeather = this._handleWeather.bind(this);
   }
   _handleDate = (startDate, finishDate, switchOneday) => {
     if(startDate){
-      this.setState({
+      this.props.handleState({
+        ...this.props.article,
         startDate
       });
     }
     if(finishDate){
-      this.setState({
+      this.props.handleState({
+        ...this.props.article,
         finishDate
       });
     }
     if(finishDate === "remove"){
-      this.setState({
+      this.props.handleState({
+        ...this.props.article,
         finishDate : null
       });
     }
     switchOneday ? 
-    this.setState({
+    this.props.handleState({
+      ...this.props.article,
       switchOneday : true
     })
-    :this.setState({
+    :this.props.handleState({
+      ...this.props.article,
       switchOneday : false
     });
   }
   _handleWeather = (value) => {
-    this.setState({
-      weather : value
-    });
+    const obj = {
+      ...this.props.article,
+      weather : {
+        ...this.props.article.weather,
+        ...value
+      }
+    }
+    this.props.handleState(obj);
   }
   _handleBg = (value) => {
-    this.setState({
-      bg : value
-    });
+    const obj = {
+      ...this.props.article,
+      bg : {
+        ...this.props.article.bg,
+        ...value
+      }
+    }
+    this.props.handleState(obj);
   }
   _toggleModal = (type) => {
-    this.setState({ 
-      isModalVisible: !this.state.isModalVisible, 
+    this.props.handleState({ 
+      ...this.props.article,
+      isModalVisible: !this.props.article.isModalVisible, 
       modalType: type 
     });
   };
 
   _rednerModalType(date, weather, bg){
-      switch (this.state.modalType) {
+      switch (this.props.article.modalType) {
         case "date":   return date;
         case "weather": return weather;
         case "bg":  return bg;
     }
   }
 
-  _renderModalContent = () => (
-    <View>    
-      <ModalHeader>
-        <ModalTit>
-          {this._rednerModalType("날짜", "날씨", "카드 배경")} 선택하기
-        </ModalTit>
-        <Button value="cancle" title="닫기" onPress={() => this._toggleModal('')}/>
-      </ModalHeader>
-      {this._rednerModalType(
-        <ModalDate parentState={this.state} handleDate={this._handleDate}/>, 
-        <ModalWeather parentState={this.state.weather} handleWeather={this._handleWeather} />,
-        <ModalBg parentState={this.state.bg} handleBg={this._handleBg}/>
-      )} 
-    </View>
-  );
+  _renderModalContent = () => {
+    const article = this.props.article;
+    return (
+      <View>    
+        <ModalHeader>
+          <ModalTit>
+            {this._rednerModalType("날짜", "날씨", "카드 배경")} 선택하기
+          </ModalTit>
+          <Button value="cancle" title="닫기" onPress={() => this._toggleModal('')}/>
+        </ModalHeader>
+        {this._rednerModalType(
+          <ModalDate parentState={article} handleDate={this._handleDate}/>, 
+          <ModalWeather parentState={article.weather} handleWeather={this._handleWeather} />,
+          <ModalBg parentState={article.bg} handleBg={this._handleBg}/>
+        )} 
+      </View>
+    );
+  }
   
   render(){
-    const { isModalVisible, startDate, finishDate, weather, bg } = this.state;
+    const article = this.props.article;
+    const { startDate, finishDate, weather, bg, modalType, isModalVisible, text } = this.props.article;
 
     return (
       <Wrap>
@@ -132,7 +132,7 @@ export default class WriteCon extends Component {
                 underlineColorAndroid="transparent"
                 placeholder={"45자 이내로 입력해주세요."}
                 maxLength={45}
-                onChangeText={(text) => this.setState({title: text})}
+                onChangeText={(text) => this.props.handleState({...article, title: text})}
               />
              </Title> 
           </TitBox>
@@ -151,10 +151,10 @@ export default class WriteCon extends Component {
         <TextareaBox>
           <Textarea
             multiline={true}
-            onChangeText={(text) => this.setState({text})}
+            onChangeText={(text) => this.props.handleState({...article,text})}
             placeholder="당신의 여행은 어땠나요?"
             placeholderStyle={{color:"#999", fontSize:15}}
-            value={this.state.text}/>
+            value={text}/>
         </TextareaBox>
       </Wrap>
     )
