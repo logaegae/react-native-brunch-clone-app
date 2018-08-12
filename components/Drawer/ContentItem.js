@@ -27,7 +27,7 @@ export default class ContentItem extends Component {
   
   
   render(){
-    const { isPulished, text, writtenDate, title, bgStyle, startDate, finishDate, weather } = this.props;
+    const { isPulished, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather } = this.props;
     
     return (
       <Wrap backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor : "transparent"}>  
@@ -54,7 +54,7 @@ export default class ContentItem extends Component {
         <TextBox>
           <ConText numberOfLines={3}>{text}</ConText>
         </TextBox>
-        <WrittenDate>{writtenDate}</WrittenDate>
+        <WrittenDate>{updatedDate ? updatedDate : writtenDate}</WrittenDate>
       </Wrap>
     )
   }
