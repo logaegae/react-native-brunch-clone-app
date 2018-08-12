@@ -33,7 +33,7 @@ export default class ContentItem extends Component {
       <Wrap backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor : "transparent"}>  
         <ControlBox>
           <BtnPublishing onPressOut={() => this._handlePublishing(isPulished)} visual={isPulished}>
-            <TextPublishing visual={isPulished}>{!isPulished ? ("발행") : ("발행 취소")}</TextPublishing>
+            <TextPublishing color={!bgStyle.photoUrl ? bgStyle.backgroundColor : "black"} visual={isPulished}>{!isPulished ? ("발행") : ("발행 취소")}</TextPublishing>
           </BtnPublishing>
           <BtnEdit>
             <Entypo name="dots-three-vertical" color="#fff" size={20} />
@@ -44,7 +44,7 @@ export default class ContentItem extends Component {
             <DateText>{startDate}{finishDate? ' - '+finishDate : ''}</DateText>
           </DateBox>
           <WeatherBox>
-            <MaterialCommunityIcons name={weather ? weather : "weather-sunny"} color="#fff" size={20} style={{marginLeft:3}}/>
+            <MaterialCommunityIcons name={weather ? weather : "weather-sunny"} color="#fff" size={34} style={{marginLeft:3}}/>
           </WeatherBox>
         </FirstRow>
         <TitBox>
@@ -54,7 +54,7 @@ export default class ContentItem extends Component {
         <TextBox>
           <ConText numberOfLines={3}>{text}</ConText>
         </TextBox>
-        <WrittenDate>{updatedDate ? updatedDate : writtenDate}</WrittenDate>
+        <WrittenDate>{updatedDate ? updatedDate.replace('T'," ").replace(".736Z","") : writtenDate.replace('T'," ").replace(".736Z","")}</WrittenDate>
       </Wrap>
     )
   }
@@ -65,7 +65,6 @@ const Wrap = styled.View`
   margin-bottom:7%;
   background-color:${prop=>prop.backgroundColor};
   border-radius: 10px;
-  flex:1;
 `;
 
 
@@ -87,9 +86,8 @@ const BtnPublishing = styled.TouchableOpacity`
 `
 const TextPublishing = styled.Text`
   font-family: 'NanumGothic';
-  color:#fff;
+  color:${prop=>prop.color};
   font-size:14px;
-  ${props => { if(!props.visual) return `color:#5ED9FF;` } }
 `;
 
 const BtnEdit = styled.TouchableOpacity`
@@ -158,4 +156,6 @@ const WrittenDate = styled.Text`
   font-family: 'NanumGothic';
   color:#fff;
   font-size:12px;
+  width:100%;
+  height:20px;
 `;
