@@ -32,13 +32,17 @@ export const article_getInit = () => {
 
 //action functions
 //Article 저장
-export const requestSaveArticle = (article, token) => {
+export const requestSaveArticle = (oriArticle, token) => {
     return (dispatch) => {
         if(!token) {
             alert("ERROR\nNo Token Info");
             return false;
         }
-        
+        let article = oriArticle;
+        article.backgroundColor = article.bg.color.value || "#6B5ED1";
+        article.photoUrl = article.bg.photo || null;
+        article.weather = article.weather && article.weather.name ? article.weather.name : null;
+
         dispatch(article_getting());
 
         const header = {

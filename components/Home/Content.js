@@ -1,10 +1,11 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Text } from 'react-native';
 import styled from 'styled-components';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import ContentItem from './ContentItem';
 import { withNavigation } from 'react-navigation';
+import { connect } from 'react-redux';
 
 const { height, width } = Dimensions.get("window");
 
@@ -20,7 +21,10 @@ class Content extends React.Component {
                     name="plus" 
                     size={40}
                     color={Theme.mainColor}
-                    onPress={()=>{this.props.navigation.navigate('New')}}
+                    onPress={()=>{
+                        if(this.props.login.logged && this.props.login.token) this.props.navigation.navigate('New');
+                        else this.props.navigation.navigate('SignIn');
+                    }}
                 />
             </ButtonBox>
         </ContentContainer>
@@ -45,4 +49,17 @@ const ButtonBox = styled.View`
     padding-top: 10px;
 `;
 
-export default withNavigation(Content);
+const mapStateToProps = (state) => {
+    return {
+        login: state.redux.auth.login
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+    };
+};
+
+const ContentWithNavi = withNavigation(Content);
+export default connect(mapStateToProps, mapDispatchToProps)(ContentWithNavi);
+

@@ -5,11 +5,19 @@ import { connect } from 'react-redux';
 import DrawerHeader from '../Common/ContentHeader';
 import ContentItem from './ContentItem';
 import axios from 'axios';
+import Theme from '../../style/theme';
 
 class DrawerView extends React.Component {
 
+    constructor(props){
+        super(props);
+        this._handleUpdate = this._handleUpdate.bind(this);
+    }
+
     state = {
-        articles : []
+        articles : [],
+        message : "로딩중...",
+        buttonShow : false
     }
 
     componentDidMount(){
@@ -22,9 +30,39 @@ class DrawerView extends React.Component {
             if(res.data.status === "ARTICLE_GET_FAILED"){
                 alert("ERROR\n"+res.data.message);
             }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
-                this.setState({
+                let newState = {
                     articles : res.data.data
-                });
+                }
+                if(res.data.data.length === 0 ) {
+                    newState.message = "저장한 글이 없습니다.";
+                    newState.buttonShow = true;
+                }else newState.message = "";
+
+                this.setState(newState);
+            }
+        }).catch((error) => {
+            alert("ERROR\n"+error.message);
+        });
+    }
+
+    _handleUpdate(_id, obj) {
+        const token = this.props.login.token;
+        const toUpdateObj = {
+            ...obj,
+            _id
+        };
+        const header = {
+            headers : {
+                'x-access-token' : token
+            }
+        }
+
+        axios.post('http://localhost:9000/api/article/write', toUpdateObj, header)
+        .then((res) => {
+            if(res.data.status === "ARTICLE_GET_FAILED"){
+                alert("ERROR\n"+res.data.message);
+            }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
+                alert(JSON.stringify(res.data, 0, 2));
             }
         }).catch((error) => {
             alert("ERROR\n"+error.message);
@@ -32,16 +70,25 @@ class DrawerView extends React.Component {
     }
 
     render() {
-        const { articles } = this.state;
+        const { articles, message, buttonShow } = this.state;
         return (
             <Container>
                 <StatusBar backgroundColor="blue" barStyle="light-content" />
                 <DrawerHeader title="글관리"/>
                 <ScrollView>
-                    <Text>{JSON.stringify(articles[0],0,2)}</Text>
                     <ConBox>
-                        {articles.map((item, index)=>
-                        (<ContentItem key={index} {...item} />))}
+                        {articles.length === 0 
+                            ? (<NoItemText>{message}</NoItemText>)
+                            : articles.map((item, index) =>
+                            (<ContentItem key={index} {...item} handleUpdate={this._handleUpdate}/>))
+                        }
+                        {buttonShow ? <WriteArticleButton
+                            title="글 쓰러 가기"
+                            color={Theme.mainColor}
+                            onPress={()=>{
+                                this.props.navigation.navigate("New");
+                            }}/> 
+                        : ''}
                     </ConBox>
                 </ScrollView>
             </Container>
@@ -55,7 +102,17 @@ const Container = styled.View`
 const ConBox = styled.View`
   padding: 7%;
 `;
-
+const NoItemText = styled.Text`
+    width : 100%;
+    padding : 7%;
+    font-family : NanumGothic;
+    font-size : 22px;
+    text-align : center;
+`;
+const WriteArticleButton = styled.Button`
+    font-size : 18px;
+    font-family : NanumGothic;
+`;
 const mapStateToProps = (state) => {
     return {
         myArticle : state.redux.myArticle,

@@ -21,33 +21,22 @@ export default class WriteCon extends Component {
     this._handleWeather = this._handleWeather.bind(this);
   }
   _handleDate = (startDate, finishDate, switchOneday) => {
+    let obj = {
+      ...this.props.article,
+    };
     if(startDate){
-      this.props.handleState({
-        ...this.props.article,
-        startDate
-      });
+      obj.startDate = startDate;
     }
     if(finishDate){
-      this.props.handleState({
-        ...this.props.article,
-        finishDate
-      });
+      obj.finishDate = finishDate;
     }
     if(finishDate === "remove"){
-      this.props.handleState({
-        ...this.props.article,
-        finishDate : null
-      });
+      obj.finishDate = null;
     }
-    switchOneday ? 
-    this.props.handleState({
-      ...this.props.article,
-      switchOneday : true
-    })
-    :this.props.handleState({
-      ...this.props.article,
-      switchOneday : false
-    });
+    switchOneday 
+    ? obj.switchOneday = true
+    : obj.switchOneday = false
+    this.props.handleState(obj);
   }
   _handleWeather = (value) => {
     const obj = {
@@ -88,7 +77,7 @@ export default class WriteCon extends Component {
   _renderModalContent = () => {
     const article = this.props.article;
     return (
-      <View>    
+      <View>
         <ModalHeader>
           <ModalTit>
             {this._rednerModalType("날짜", "날씨", "카드 배경")} 선택하기
@@ -116,12 +105,11 @@ export default class WriteCon extends Component {
           {this._renderModalContent()}
         </Modal>
 
-
         <HeaderConBox background={!bg.photo ? bg.color.value : "transparent"}>
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
               <CommonText>날짜</CommonText>
-              <CommonText>{startDate ? startDate : ''} {finishDate ? '-' + finishDate : ''}</CommonText>
+              <CommonText>{startDate ? startDate : ''}{finishDate ? ' - ' + finishDate : ''}</CommonText>
             </Select>
           </DateBox>
           <TitBox>

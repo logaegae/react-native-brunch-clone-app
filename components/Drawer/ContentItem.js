@@ -15,24 +15,29 @@ export default class ContentItem extends Component {
     }
   }
 
-  _handlePublishing(isPulished){
-    this.setState(function(prevState){
-      if(isPulished) {
-        return {isPulished:false}
-      } else {
-        return {isPulished:true}
-      }
-    });
+  _handlePublishing(){
+    const obj = {
+      bgStyle : this.props.bgStyle,
+      weather: this.props.weather,
+      startDate : this.props.startDate,
+      finishDate : this.props.finishDate,
+      title: this.props.title,
+      text : this.props.text,
+
+      published: !this.props.isPublished,
+      delYn : this.props.delYn
+    }
+    this.props.handleUpdate(this.props._id, obj);
   }
   
   
   render(){
-    const { isPulished, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather } = this.props;
+    const { isPulished, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather, _id } = this.props;
     
     return (
       <Wrap backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor : "transparent"}>  
         <ControlBox>
-          <BtnPublishing onPressOut={() => this._handlePublishing(isPulished)} visual={isPulished}>
+          <BtnPublishing onPressOut={() => this._handlePublishing()} visual={isPulished}>
             <TextPublishing color={!bgStyle.photoUrl ? bgStyle.backgroundColor : "black"} visual={isPulished}>{!isPulished ? ("발행") : ("발행 취소")}</TextPublishing>
           </BtnPublishing>
           <BtnEdit>
@@ -67,7 +72,7 @@ const Wrap = styled.View`
   border-radius: 10px;
 `;
 
-
+ 
 const ControlBox = styled.View`
   flex-direction: row;
   justify-content: space-between;

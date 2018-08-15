@@ -4,18 +4,17 @@ import styled from 'styled-components';
 import DatePicker from 'react-native-datepicker';
 
 export default class ModalDate extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      isModalVisible: false,
-      switchOneday: this.props.parentState.switchOneday,
-      startDate: this.props.parentState.startDate,
-      finishDate: this.props.parentState.finishDate,
-    }
+
+  state = {
+    isModalVisible: false,
+    switchOneday: this.props.parentState.switchOneday,
+    startDate: this.props.parentState.startDate,
+    finishDate: this.props.parentState.finishDate,
   }
 
   render(){
-    const {switchOneday, startDate, finishDate} = this.state;
+    const {switchOneday, startDate, finishDate} = this.props.parentState;
+
     const today = new Date().toISOString().slice(0, 10);
 
     return(
@@ -23,23 +22,23 @@ export default class ModalDate extends Component {
         <ModalRow>
           <ModalLabel>One Day Trip</ModalLabel>
           <Switch 
-            value={this.state.switchOneday}
+            value={switchOneday}
             onValueChange={(value) => {
               if(value){
-                this.setState({switchOneday : true});
-                this.props.handleDate(this.state.startDate,"remove", true);
+                // this.setState({switchOneday : true});
+                this.props.handleDate(startDate,"remove", true);
               }else{
-                this.setState({switchOneday : false});
+                // this.setState({switchOneday : false});
                 this.props.handleDate(null, null, false);
               }
             }}
           />
         </ModalRow>
         <ModalRow>
-          <ModalLabel>{this.state.switchOneday ? "Date" : "Start"}</ModalLabel>
+          <ModalLabel>{switchOneday ? "Date" : "Start"}</ModalLabel>
           <DatePicker
             style={{width: 200}}
-            date={this.state.startDate}
+            date={startDate}
             mode="date"
             placeholder={today}
             format="YYYY.MM.DD"
@@ -64,17 +63,16 @@ export default class ModalDate extends Component {
               }
             }}
             onDateChange={(date) => {
-              this.setState({startDate: date});
               this.props.handleDate(date, null, switchOneday);
             }}
           />
         </ModalRow>
-        { !this.state.switchOneday ?
+        { !switchOneday ?
         <ModalRow>
           <ModalLabel>Finish</ModalLabel>
           <DatePicker
             style={{width: 200}}
-            date={this.state.finishDate}
+            date={finishDate}
             mode="date"
             placeholder={today}
             format="YYYY.MM.DD"
@@ -100,7 +98,6 @@ export default class ModalDate extends Component {
               }
             }}
             onDateChange={(date) => {
-              this.setState({finishDate: date});
               this.props.handleDate(null, date, switchOneday);
             }}
           />
