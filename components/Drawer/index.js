@@ -15,7 +15,7 @@ class DrawerView extends React.Component {
     }
 
     state = {
-        articles : [],
+        articles : new Map(),
         message : "로딩중...",
         buttonShow : false
     }
@@ -30,10 +30,13 @@ class DrawerView extends React.Component {
             if(res.data.status === "ARTICLE_GET_FAILED"){
                 alert("ERROR\n"+res.data.message);
             }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
+
+                const articles = res.data.data;
+
                 let newState = {
-                    articles : res.data.data
+                    articles
                 }
-                if(res.data.data.length === 0 ) {
+                if(Object.keys(articles).length === 0 ) {
                     newState.message = "저장한 글이 없습니다.";
                     newState.buttonShow = true;
                 }else newState.message = "";
@@ -45,9 +48,9 @@ class DrawerView extends React.Component {
         });
     }
 
-    _handleUpdate(_id, obj) {
+    _handleUpdate(_id, obj, target) {
         const token = this.props.login.token;
-        const toUpdateObj = {
+        const objToUpdate = {
             ...obj,
             _id
         };
@@ -57,16 +60,36 @@ class DrawerView extends React.Component {
             }
         }
 
-        axios.post('http://localhost:9000/api/article/write', toUpdateObj, header)
+        axios.post('http://localhost:9000/api/article/write', objToUpdate, header)
         .then((res) => {
-            if(res.data.status === "ARTICLE_GET_FAILED"){
+            if(res.data.status === "ARTICLE_SAVE_FAILED"){
                 alert("ERROR\n"+res.data.message);
-            }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
-                alert(JSON.stringify(res.data, 0, 2));
+            }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
+
+                let newArticles = Object.assign({}, this.state.articles);
+                
+                if(target === "published"){
+                    newArticles[res.data.article._id].published = res.data.article.published;
+                }
+                else if(target === "delYn"){
+                    delete newArticles[res.data.article._id];
+                }
+
+                this.setState({
+                    ...this.state,
+                    articles : newArticles
+                });
             }
         }).catch((error) => {
             alert("ERROR\n"+error.message);
         });
+    }
+    _getArticleItems () {
+        var indents = [];
+        Object.values(this.state.articles).forEach((e,i)=>{
+            indents.push(<ContentItem key={i} {...e} handleUpdate={this._handleUpdate}/>);
+        });
+        return indents;
     }
 
     render() {
@@ -77,10 +100,9 @@ class DrawerView extends React.Component {
                 <DrawerHeader title="글관리"/>
                 <ScrollView>
                     <ConBox>
-                        {articles.length === 0 
+                        {Object.keys(articles).length === 0 
                             ? (<NoItemText>{message}</NoItemText>)
-                            : articles.map((item, index) =>
-                            (<ContentItem key={index} {...item} handleUpdate={this._handleUpdate}/>))
+                            : this._getArticleItems()
                         }
                         {buttonShow ? <WriteArticleButton
                             title="글 쓰러 가기"

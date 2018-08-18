@@ -38,9 +38,10 @@ export const requestSaveArticle = (oriArticle, token) => {
             alert("ERROR\nNo Token Info");
             return false;
         }
-        let article = oriArticle;
-        article.backgroundColor = article.bg.color.value || "#6B5ED1";
-        article.photoUrl = article.bg.photo || null;
+        let article = Object.assign({},oriArticle);
+        article.bgStyle = {};
+        article.bgStyle.backgroundColor = article.bg.color.value || article.bgStyle.backgroundColor || "#6B5ED1";
+        article.bgStyle.photoUrl = article.bg.photo || (article.bgStyle ? article.bgStyle.photoUrl : null) || null;
         article.weather = article.weather && article.weather.name ? article.weather.name : null;
 
         dispatch(article_getting());

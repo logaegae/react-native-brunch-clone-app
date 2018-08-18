@@ -39,6 +39,8 @@ class NewHeader extends React.Component {
     
     render() {
         const token = this.props.login.token;
+        const article = this.props.article;
+        const goBack = this.props.goBack;
         return (
             <Header>
                 <ButtonBox>
@@ -53,7 +55,7 @@ class NewHeader extends React.Component {
                         글쓰기
                     </TitleText>
                     <SaveText
-                        onPress={()=>{this.props.requestSaveArticle(this.props.article, token)}}
+                        onPress={()=>{this.props.requestSaveArticle(article, token)}}
                     >
                         저장
                     </SaveText>
@@ -80,7 +82,7 @@ class NewHeader extends React.Component {
                     onTouchOutside={() => this.setState({showDialog2: false})}
                     positiveButton={{
                         title: "YES",
-                        onPress: () => this.props.navigation.navigate("Home")
+                        onPress: () => this.props.navigation.navigate(goBack)
                     }}
                     negativeButton={{
                         title: "NO",

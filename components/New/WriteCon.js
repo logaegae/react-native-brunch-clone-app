@@ -100,11 +100,14 @@ export default class WriteCon extends Component {
     return (
       <Wrap>
         <Modal 
-          isVisible={isModalVisible} 
+          isVisible={isModalVisible}
+          onBackdropPress={()=>{
+            this.setState({isModalVisible : false})
+          }}
           style={{ justifyContent: 'flex-end', margin:0 }}>
           {this._renderModalContent()}
         </Modal>
-
+        
         <HeaderConBox background={!bg.photo ? bg.color.value : "transparent"}>
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
@@ -127,6 +130,7 @@ export default class WriteCon extends Component {
           <WeatherBox>
             <Select onPress={() => this._toggleModal("weather")}>
               <CommonText>날씨</CommonText>
+              <Text>{weather.name}</Text>
               {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : ''}
             </Select>
           </WeatherBox>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import styled from 'styled-components';
+import { Text } from 'react-native';
 import { AppNavigator } from './navigation';
 import { Font } from 'expo';
 
@@ -54,8 +55,13 @@ export default class Root extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        {this.state.fontLoaded ? <AppWithNavigationState/> : <View><Text>Loading</Text></View>}
+        {this.state.fontLoaded ? <AppWithNavigationState/> : <Load><Text>Loading</Text></Load>}
       </Provider>
     );
   }
 }
+const Load = styled.View`
+  flex: 1;
+  justify-content : center;
+  align-items : center;
+`;

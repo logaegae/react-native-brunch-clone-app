@@ -2,20 +2,21 @@ import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import Modal from "react-native-modal";
+import { withNavigation } from 'react-navigation';
 
 const { height, width } = Dimensions.get("window");
 
-export default class ContentItem extends Component {
+class ContentItem extends Component {
   constructor(props){
     super(props);
     this.state = {
-      conText: `봄바람이다 풀밭에 속잎나고 가지에 싹이 트고 꽃 피고 새 우는 봄날의 천지는 얼마나 기쁘며 얼마나 아름다우냐`,
-      isPulished: false,
-      writtenDate: "9시간 전",
+      isModalVisible : false
     }
+    this._renderModalContent = this._renderModalContent.bind(this);
   }
 
-  _handlePublishing(){
+  _handleUpdate(objToChange){
     const obj = {
       bgStyle : this.props.bgStyle,
       weather: this.props.weather,
@@ -24,50 +25,85 @@ export default class ContentItem extends Component {
       title: this.props.title,
       text : this.props.text,
 
-      published: !this.props.isPublished,
-      delYn : this.props.delYn
+      published: this.props.published,
+      delYn : this.props.delYn,
+      ...objToChange
     }
-    this.props.handleUpdate(this.props._id, obj);
+    this.props.handleUpdate(this.props._id, obj, Object.keys(objToChange)[0]);
   }
   
+  _renderModalContent = (_id) => (
+    <ModalWrap>    
+      <ModalSelect>
+        <ModalOption first onPress={() => this.props.navigation.navigate("New", {'_id': _id})}>
+          <ModalBtnText>수정</ModalBtnText>
+        </ModalOption>
+        <ModalOption onPress={() => {
+          this._handleUpdate({delYn : !this.props.delYn});
+          this.setState({ isModalVisible: false });
+        }}>
+          <ModalBtnText red>삭제</ModalBtnText>
+        </ModalOption>        
+      </ModalSelect>
+      <ModalCancle onPress={() => this.setState({ isModalVisible: false })}>  
+        <ModalBtnText>취소</ModalBtnText>
+      </ModalCancle>
+    </ModalWrap>
+  );
   
   render(){
-    const { isPulished, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather, _id } = this.props;
-    
+    const { published, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather, _id } = this.props;
+    const {isModalVisible} = this.state;
     return (
-      <Wrap backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor : "transparent"}>  
-        <ControlBox>
-          <BtnPublishing onPressOut={() => this._handlePublishing()} visual={isPulished}>
-            <TextPublishing color={!bgStyle.photoUrl ? bgStyle.backgroundColor : "black"} visual={isPulished}>{!isPulished ? ("발행") : ("발행 취소")}</TextPublishing>
-          </BtnPublishing>
-          <BtnEdit>
-            <Entypo name="dots-three-vertical" color="#fff" size={20} />
-          </BtnEdit>
-        </ControlBox>
-        <FirstRow>
-          <DateBox>
-            <DateText>{startDate}{finishDate? ' - '+finishDate : ''}</DateText>
-          </DateBox>
-          <WeatherBox>
-            <MaterialCommunityIcons name={weather ? weather : "weather-sunny"} color="#fff" size={34} style={{marginLeft:3}}/>
-          </WeatherBox>
-        </FirstRow>
-        <TitBox>
-          <TitText>{title}</TitText>
-          <BorderBox></BorderBox>
-        </TitBox>
-        <TextBox>
-          <ConText numberOfLines={3}>{text}</ConText>
-        </TextBox>
-        <WrittenDate>{updatedDate ? updatedDate.replace('T'," ").replace(".736Z","") : writtenDate.replace('T'," ").replace(".736Z","")}</WrittenDate>
-      </Wrap>
+      <Wrap1>
+         <Modal 
+          isVisible={isModalVisible} 
+          style={{ justifyContent: 'flex-end', margin:0 }}
+          onBackdropPress={()=>{
+            this.setState({isModalVisible : false})
+          }}
+        >
+          {this._renderModalContent(_id)}
+        </Modal>
+
+        <Wrap2 backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor ? bgStyle.backgroundColor : "transparent" : "transparent"}>  
+          <ControlBox>
+            <BtnPublishing onPressOut={() => this._handleUpdate({published : !published})} visual={published}>
+              <TextPublishing color={!published ? bgStyle.backgroundColor ? bgStyle.backgroundColor : "black" : "white"} visual={published}>{!published ? ("발행하기") : ("발행취소")}</TextPublishing>
+            </BtnPublishing>
+            <BtnEdit onPress={() => this.setState({ isModalVisible: true })}>
+              <Entypo name="dots-three-vertical" color="#fff" size={20} />
+            </BtnEdit>
+          </ControlBox>
+          <FirstRow>
+            <DateBox>
+              <DateText>{startDate}{finishDate? ' - '+finishDate : ''}</DateText>
+            </DateBox>
+            <WeatherBox>
+              <MaterialCommunityIcons name={weather ? weather : "weather-sunny"} color="#fff" size={34} style={{marginLeft:3}}/>
+            </WeatherBox>
+          </FirstRow>
+          <TitBox>
+            <TitText>{title}</TitText>
+            <BorderBox></BorderBox>
+          </TitBox>
+          <TextBox>
+            <ConText numberOfLines={3}>{text}</ConText>
+          </TextBox>
+          <WrittenDate>{updatedDate ? updatedDate.substring(0,19).replace('T',' ') : writtenDate.substring(0,19).replace('T',' ')}</WrittenDate>
+        </Wrap2>
+      </Wrap1>
     )
   }
 }
-    
-const Wrap = styled.View`
+
+export default withNavigation(ContentItem);
+
+const Wrap1 = styled.View`
+  margin-bottom: 7%;
+`;    
+const Wrap2 = styled.View`
   padding: 7% 10%;
-  margin-bottom:7%;
   background-color:${prop=>prop.backgroundColor};
   border-radius: 10px;
 `;
@@ -163,4 +199,33 @@ const WrittenDate = styled.Text`
   font-size:12px;
   width:100%;
   height:20px;
+`;
+
+const ModalWrap = styled.View`
+  padding: 30px;
+`;
+
+const ModalSelect = styled.View`
+  background: #fff;
+  border-radius:15px;
+`;
+
+const ModalCancle = styled.TouchableOpacity`
+  margin-top:15px;
+  padding: 20px 0;
+  align-items: center;
+  background: #fff;
+  border-radius:15px;
+`;
+
+const ModalOption = styled.TouchableOpacity`
+  padding: 20px 0;
+  align-items: center;
+  border-top-color:#ccc;
+  border-top-width: ${props => props.first ? "0" : "1px"}
+`;
+
+const ModalBtnText = styled.Text`
+  font-size:18px;
+  color: ${props => props.red ? "red" : "blue"}
 `;
