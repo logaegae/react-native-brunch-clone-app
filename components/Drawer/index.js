@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import DrawerHeader from '../Common/ContentHeader';
 import ContentItem from './ContentItem';
+import Modal from "react-native-modal";
 import axios from 'axios';
 import Theme from '../../style/theme';
 
@@ -12,12 +13,16 @@ class DrawerView extends React.Component {
     constructor(props){
         super(props);
         this._handleUpdate = this._handleUpdate.bind(this);
+        this._handleModal = this._handleModal.bind(this);
+        this._renderModalContent = this._renderModalContent.bind(this);
     }
 
     state = {
-        articles : new Map(),
+        articles : {},
         message : "로딩중...",
-        buttonShow : false
+        buttonShow : false,
+        isModalVisible : false,
+        _id : null
     }
 
     componentDidMount(){
@@ -67,40 +72,87 @@ class DrawerView extends React.Component {
             }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
 
                 let newArticles = Object.assign({}, this.state.articles);
+                let newState = {};
                 
                 if(target === "published"){
                     newArticles[res.data.article._id].published = res.data.article.published;
                 }
                 else if(target === "delYn"){
                     delete newArticles[res.data.article._id];
+                    if(Object.keys(newArticles).length === 0){
+                        newState.message = "저장한 글이 없습니다.";
+                        newState.buttonShow = true;
+                    }
                 }
 
                 this.setState({
                     ...this.state,
-                    articles : newArticles
+                    articles : newArticles,
+                    ...newState
                 });
             }
         }).catch((error) => {
             alert("ERROR\n"+error.message);
         });
     }
+
+    _renderModalContent = () => {
+        const _id = this.state._id;
+        return (
+            <ModalWrap>    
+                <ModalSelect>
+                    <ModalOption first onPress={() => this.props.navigation.navigate("New", {'_id': _id})}>
+                    <ModalBtnText>수정</ModalBtnText>
+                    </ModalOption>
+                    <ModalOption onPress={() => {
+                    this._handleUpdate(_id, {delYn : true}, "delYn");
+                    this.setState({ isModalVisible: false });
+                    }}>
+                    <ModalBtnText red>삭제</ModalBtnText>
+                    </ModalOption>        
+                </ModalSelect>
+                <ModalCancle onPress={() => this.setState({ isModalVisible: false })}>  
+                    <ModalBtnText>취소</ModalBtnText>
+                </ModalCancle>
+            </ModalWrap>
+        );
+    }
+
+    _handleModal = (_id) => {
+        this.setState({
+            ...this.state,
+            _id,
+            isModalVisible : !this.state.isModalVisible
+        });
+    }
+
     _getArticleItems () {
-        var indents = [];
+        if(Object.keys(this.state.articles).length === 0) return '';
+        let indents = [];
         Object.values(this.state.articles).forEach((e,i)=>{
-            indents.push(<ContentItem key={i} {...e} handleUpdate={this._handleUpdate}/>);
+            indents.push(<ContentItem key={i} {...e} handleUpdate={this._handleUpdate} handleModal={this._handleModal}/>);
         });
         return indents;
     }
 
     render() {
-        const { articles, message, buttonShow } = this.state;
+        const { articles, message, buttonShow, isModalVisible, _id } = this.state;
         return (
             <Container>
+                <Modal 
+                isVisible={isModalVisible} 
+                style={{ justifyContent: 'flex-end', margin:0 }}
+                onBackdropPress={()=>{
+                    this.setState({isModalVisible : false})
+                }}
+                >
+                    {this._renderModalContent()}
+                </Modal>
                 <StatusBar backgroundColor="blue" barStyle="light-content" />
                 <DrawerHeader title="글관리"/>
                 <ScrollView>
                     <ConBox>
-                        {Object.keys(articles).length === 0 
+                        {Object.keys(articles).length === 0
                             ? (<NoItemText>{message}</NoItemText>)
                             : this._getArticleItems()
                         }
@@ -131,10 +183,41 @@ const NoItemText = styled.Text`
     font-size : 22px;
     text-align : center;
 `;
+
 const WriteArticleButton = styled.Button`
     font-size : 18px;
     font-family : NanumGothic;
 `;
+
+const ModalWrap = styled.View`
+  padding: 30px;
+`;
+
+const ModalSelect = styled.View`
+  background: #fff;
+  border-radius:15px;
+`;
+
+const ModalCancle = styled.TouchableOpacity`
+  margin-top:15px;
+  padding: 20px 0;
+  align-items: center;
+  background: #fff;
+  border-radius:15px;
+`;
+
+const ModalOption = styled.TouchableOpacity`
+  padding: 20px 0;
+  align-items: center;
+  border-top-color:#ccc;
+  border-top-width: ${props => props.first ? "0" : "1px"}
+`;
+
+const ModalBtnText = styled.Text`
+  font-size:18px;
+  color: ${props => props.red ? "red" : "blue"}
+`;
+
 const mapStateToProps = (state) => {
     return {
         myArticle : state.redux.myArticle,

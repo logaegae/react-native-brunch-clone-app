@@ -12,6 +12,7 @@ export default class WriteCon extends Component {
   constructor(props){
     super(props);
     this.state = {
+      isModalVisible : false
     }
     this._toggleModal = this._toggleModal.bind(this);
     this._rednerModalType = this._rednerModalType.bind(this);
@@ -95,14 +96,14 @@ export default class WriteCon extends Component {
   
   render(){
     const article = this.props.article;
-    const { startDate, finishDate, weather, bg, modalType, isModalVisible, text } = this.props.article;
+    const { startDate, finishDate, weather, bg, title, text, isModalVisible } = this.props.article;
 
     return (
       <Wrap>
         <Modal 
           isVisible={isModalVisible}
           onBackdropPress={()=>{
-            this.setState({isModalVisible : false})
+            this._toggleModal('');
           }}
           style={{ justifyContent: 'flex-end', margin:0 }}>
           {this._renderModalContent()}
@@ -112,7 +113,7 @@ export default class WriteCon extends Component {
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
               <CommonText>날짜</CommonText>
-              <CommonText>{startDate ? startDate : ''}{finishDate ? ' - ' + finishDate : ''}</CommonText>
+              <CommonText>{startDate ? startDate.split('T')[0] : ''}{finishDate ? ' - ' + finishDate.split('T')[0] : ''}</CommonText>
             </Select>
           </DateBox>
           <TitBox>
@@ -123,6 +124,7 @@ export default class WriteCon extends Component {
                 underlineColorAndroid="transparent"
                 placeholder={"45자 이내로 입력해주세요."}
                 maxLength={45}
+                value={title}
                 onChangeText={(text) => this.props.handleState({...article, title: text})}
               />
              </Title> 
@@ -130,7 +132,6 @@ export default class WriteCon extends Component {
           <WeatherBox>
             <Select onPress={() => this._toggleModal("weather")}>
               <CommonText>날씨</CommonText>
-              <Text>{weather.name}</Text>
               {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : ''}
             </Select>
           </WeatherBox>

@@ -45,7 +45,6 @@ class NewView extends React.Component {
             if(res.data.status === "ARTICLE_GET_FAILED"){
                 alert("ERROR\n"+res.data.message);
             }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
-                alert(JSON.stringify(res.data.data));
                 const article = res.data.data;
                 this.setState({
                     article : {

@@ -13,8 +13,9 @@ export default class ModalDate extends Component {
   }
 
   render(){
-    const {switchOneday, startDate, finishDate} = this.props.parentState;
-
+    const {switchOneday} = this.props.parentState;
+    const startDate = this.props.parentState.startDate ? this.props.parentState.startDate.split('T')[0] : null;
+    const finishDate = this.props.parentState.finishDate ? this.props.parentState.finishDate.split('T')[0] : null;
     const today = new Date().toISOString().slice(0, 10);
 
     return(

@@ -59,7 +59,7 @@ export const requestSaveArticle = (oriArticle, token) => {
                 alert("ERROR\n"+res.data.message);
                 dispatch(article_getFailure());
             }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
-                dispatch(article_getSuccess(res.data._id));
+                dispatch(article_getSuccess(res.data.article._id));
             }
         }).catch((error) => {
             dispatch(article_getFailure());
