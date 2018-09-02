@@ -1,3 +1,4 @@
+import { domain } from '../config';
 import { 
     ARTICLE_GETTING,
     ARTICLE_GETFAIL,
@@ -53,7 +54,7 @@ export const requestSaveArticle = (oriArticle, token) => {
         }
 
         // API REQUEST
-        return axios.post('http://localhost:9000/api/article/write', article, header)
+        return axios.post(domain+'/api/article/write', article, header)
         .then((res) => {
             if(res.data.status === "ARTICLE_SAVE_FAILED"){
                 alert("ERROR\n"+res.data.message);

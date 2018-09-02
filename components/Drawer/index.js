@@ -7,6 +7,7 @@ import ContentItem from './ContentItem';
 import Modal from "react-native-modal";
 import axios from 'axios';
 import Theme from '../../style/theme';
+import { domain } from '../../config';
 
 class DrawerView extends React.Component {
 
@@ -30,7 +31,7 @@ class DrawerView extends React.Component {
             id : this.props.login.id,
             includePublish : true
         };
-        axios.post('http://localhost:9000/api/article/getUserArticle', obj)
+        axios.post(domain+'/api/article/getUserArticle', obj)
         .then((res) => {
             if(res.data.status === "ARTICLE_GET_FAILED"){
                 alert("ERROR\n"+res.data.message);
@@ -65,7 +66,7 @@ class DrawerView extends React.Component {
             }
         }
 
-        axios.post('http://localhost:9000/api/article/write', objToUpdate, header)
+        axios.post(domain+'api/article/write', objToUpdate, header)
         .then((res) => {
             if(res.data.status === "ARTICLE_SAVE_FAILED"){
                 alert("ERROR\n"+res.data.message);
