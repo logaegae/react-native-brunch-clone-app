@@ -3,6 +3,7 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
+import timeAgo from '../../lib/timeAgo';
 
 const { height, width } = Dimensions.get("window");
 
@@ -45,7 +46,7 @@ class ContentItem extends Component {
           </ControlBox>
           <FirstRow>
             <DateBox>
-              <DateText>{startDate ? startDate.split('T')[0] : ''}{finishDate? ' - '+finishDate.split('T')[0] : ''}</DateText>
+              <DateText>{startDate ? startDate : ''}{finishDate? ' - '+finishDate : ''}</DateText>
             </DateBox>
             <WeatherBox>
               {weather ? <MaterialCommunityIcons name={weather} color="#fff" size={34} style={{marginLeft:3}}/> : ''}
@@ -58,7 +59,7 @@ class ContentItem extends Component {
           <TextBox>
             <ConText numberOfLines={3}>{text}</ConText>
           </TextBox>
-          <WrittenDate>{updatedDate ? updatedDate.substring(0,19).replace('T',' ') : writtenDate.substring(0,19).replace('T',' ')}</WrittenDate>
+          <WrittenDate>{updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</WrittenDate>
         </Wrap2>
       </Wrap1>
     )
