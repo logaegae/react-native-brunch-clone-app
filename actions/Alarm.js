@@ -8,8 +8,7 @@ import { domain } from '../config';
 export const setAlarmIcon = (bool) => {
     return {
         type : ALARM_SETICON,
-        alarmIcon : bool,
-        alarmHandler : null
+        alarmIcon : bool
     }
 }
 
