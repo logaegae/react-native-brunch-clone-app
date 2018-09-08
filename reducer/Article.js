@@ -12,7 +12,7 @@ const initialState = {
     myArticle : []
 };
 
-export default function auth(state = initialState, action) {
+export default function article(state = initialState, action) {
     switch(action.type) {
         //Http 상태
         case types.ARTICLE_GETTING:

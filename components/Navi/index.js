@@ -6,6 +6,7 @@ import { withNavigation } from 'react-navigation';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import { connect } from 'react-redux';
+import { alarmIconReapeat } from '../../actions'
 
 const UnsignedContent = (props) => {
   return (
@@ -34,7 +35,7 @@ const SignedContent = (props) => {
       </BtnBox>
       <IconBox>
         <IconBtn onPressOut={() => props.navigation.navigate('Notify')}>
-          <IconNew yellow></IconNew>
+          {props.alarmIcon ? <IconNew yellow></IconNew> : ''}
           <MaterialCommunityIcons name="bell-outline" color="#fff" size={30} />
         </IconBtn>
         <IconBtn onPressOut={() => props.navigation.navigate('Like')}>
@@ -47,7 +48,15 @@ const SignedContent = (props) => {
 }
 
 class SideMenu extends Component {
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.login.logged !== this.props.login.logged && this.props.login.logged && this.props.login.token) {
+      this.props.alarmIconReapeat(this.props.login.token);
+    }
+  }
+
   render () {
+    const { alarmIcon } = this.props.alarm;
     return (
       <Container>
         <ScrollView>
@@ -61,7 +70,7 @@ class SideMenu extends Component {
             <TitleLine></TitleLine>
           </TitleLineBox>
           <View>
-            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} name={this.props.login.name}/> : <UnsignedContent navigation={this.props.navigation} /> }
+            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} name={this.props.login.name} alarmIcon={alarmIcon}/> : <UnsignedContent navigation={this.props.navigation} /> }
           </View>
         </ScrollView>
       </Container>
@@ -202,12 +211,16 @@ const BtnText = styled.Text`
 
 const mapStateToProps = (state) => {
   return {
-    login: state.redux.auth.login
+    login: state.redux.auth.login,
+    alarm : state.redux.alarm
   };
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    alarmIconReapeat : (token) => {
+      return dispatch(alarmIconReapeat(token));
+    }
   };
 }
 
