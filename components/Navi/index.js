@@ -6,7 +6,7 @@ import { withNavigation } from 'react-navigation';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import { connect } from 'react-redux';
-import { alarmIconReapeat } from '../../actions'
+import { alarmIconReapeat, clearAlarmIconReapeat } from '../../actions'
 
 const UnsignedContent = (props) => {
   return (
@@ -52,6 +52,9 @@ class SideMenu extends Component {
   componentDidUpdate(prevProps) {
     if(prevProps.login.logged !== this.props.login.logged && this.props.login.logged && this.props.login.token) {
       this.props.alarmIconReapeat(this.props.login.token);
+    }
+    if(prevProps.alarm.alarmIcon !== this.props.alarm.alarmIcon && this.props.alarm.alarmIcon) {
+      this.props.clearAlarmIconReapeat();
     }
   }
 
@@ -220,6 +223,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     alarmIconReapeat : (token) => {
       return dispatch(alarmIconReapeat(token));
+    },
+    clearAlarmIconReapeat : () => {
+      return dispatch(clearAlarmIconReapeat());
     }
   };
 }

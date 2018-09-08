@@ -4,6 +4,7 @@ import {
 import axios from 'axios';
 import { domain } from '../config';
 
+const getAlarmRepeat = null;
 //action creator
 export const setAlarmIcon = (bool) => {
     return {
@@ -19,9 +20,15 @@ export const alarmIconReapeat = (token) => {
         //한번하고
         getAlarmFn(token, dispatch);
         //10초마다 하기
-        this.getAlarmRepeat = setInterval(()=>{
+        getAlarmRepeat = setInterval(()=>{
             getAlarmFn(token, dispatch);
         }, 10000);
+    }
+}
+
+export const clearAlarmIconReapeat = (token) => {
+    return (dispatch) => {
+        clearInterval(getAlarmRepeat);
     }
 }
 
