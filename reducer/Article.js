@@ -39,6 +39,14 @@ export default function auth(state = initialState, action) {
                     result : action._id
                 }
             };
+        case types.ARTICLE_UPDATESUCCESS:
+            return {
+                ...state,
+                http: {
+                    status: 'UPDATED',
+                    result : action._id
+                }
+            };
         case types.ARTICLE_GETINIT:
             return {
                 ...state,

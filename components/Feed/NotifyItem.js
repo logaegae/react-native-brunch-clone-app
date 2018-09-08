@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import styled from 'styled-components';
-import { Ionicons } from '@expo/vector-icons';
-
-const { height, width } = Dimensions.get("window");
+import timeAgo from '../../lib/timeAgo';
 
 export default class NotifyItem extends Component {
   constructor(props){
@@ -13,21 +10,24 @@ export default class NotifyItem extends Component {
   }
   
   render(){
+    const { title, confirmed, registedDate, alarmType, likePersonName, likeLength } = this.props;
+    const typeMessage = {
+      publish : "을 발행하였습니다.",
+      unpublish : "이 발행취소되었습니다.",
+      delete : "이 삭제되었습니다.",
+      new : "이 만들어졌습니다.",
+      update : "이 수정되었습니다.",
+      like : "을 님이 좋아합니다.",
+      likes : `을 ${likePersonName}님이 외 ${likeLength}명이 좋아합니다.`
+    }
     return(
         <Wrap>
           <ConBox>
-            <Tit>45days in Western Europe</Tit>
-            <Con>이 발행 되었습니다.</Con>
+            <Tit>{title}</Tit>
+            <Con>{typeMessage[alarmType]}</Con>
             <TimeBox>
-              <New></New>
-              <Time>5초 전</Time>
-            </TimeBox>
-          </ConBox>
-          <ConBox>
-            <Tit>임시저장한 글 임시저장한 글</Tit>
-            <Con>이 수정 되었습니다.</Con>
-            <TimeBox>
-              <Time>5시간 전</Time>
+              {!confirmed ? <New></New> : ''}
+              <Time>{timeAgo(registedDate)}</Time>
             </TimeBox>
           </ConBox>
         </Wrap>

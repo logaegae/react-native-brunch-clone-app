@@ -8,7 +8,7 @@ import Modal from "react-native-modal";
 import axios from 'axios';
 import Theme from '../../style/theme';
 import { domain } from '../../config';
-import alarm from '../../lib/alarm';
+
 
 class DrawerView extends React.Component {
 
@@ -59,30 +59,25 @@ class DrawerView extends React.Component {
         const token = this.props.login.token;
         const objToUpdate = {
             ...obj,
-            _id
+            _id,
+            changed : target
         };
         const header = {
             headers : {
                 'x-access-token' : token
             }
         }
-
         axios.post(domain+'/api/article/write', objToUpdate, header)
         .then((res) => {
-            if(res.data.status === "ARTICLE_SAVE_FAILED"){
+            if(res.data.status === "ARTICLE_UPDATE_FAILED"){
                 alert("ERROR\n"+res.data.message);
-            }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
+            }else if(res.data.status === "ARTICLE_UPDATE_SUCCESSED"){
 
                 let newArticles = Object.assign({}, this.state.articles);
                 let newState = {};
                 
                 if(target === "published"){
                     newArticles[res.data.article._id].published = res.data.article.published;
-                    alarm({
-                        id : this.props.login.id,
-                        title : objToUpdate.title,
-                        alarmType : objToUpdate.published ? "published" : "unpublished"
-                    }, token);
                 }
                 else if(target === "delYn"){
                     delete newArticles[res.data.article._id];

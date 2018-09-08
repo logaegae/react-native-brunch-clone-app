@@ -14,21 +14,19 @@ class NewHeader extends React.Component {
     }
     componentDidUpdate(prevProps) {
         if(prevProps.http !== this.props.http) {
-    
-          if(this.props.http.status === "SUCCESSED") {
-            
-            this.props.handleState({
-                ...this.props.article,
-                _id : this.props.http.result
-            });
-            this.props.article_getInit();
-            this.setState({
-                showDialog : true
-            });
-    
-          }else if(this.props.result === "FAILED"){
-            alert("저장 실패");
-          }
+            if(this.props.http.status === "SUCCESSED" || "UPDATED") {
+                
+                this.props.handleState({
+                    ...this.props.article,
+                    _id : this.props.http.result
+                });
+                this.props.article_getInit();
+                this.setState({
+                    showDialog : true
+                });
+            }else if(this.props.result === "FAILED"){
+                alert("저장 실패");
+            }
         }
     }
     _closeConfirm(){

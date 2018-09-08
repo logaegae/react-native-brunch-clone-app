@@ -3,10 +3,10 @@ import {
     ARTICLE_GETTING,
     ARTICLE_GETFAIL,
     ARTICLE_GETSUCCESS,
+    ARTICLE_UPDATESUCCESS,
     ARTICLE_INIT
 } from './ActionTypes'
 import axios from 'axios';
-import { AsyncStorage } from "react-native";
 
 //action creator
 export const article_getting = () => {
@@ -22,6 +22,12 @@ export const article_getFailure = () => {
 export const article_getSuccess = (_id) => {
     return {
         type : ARTICLE_GETSUCCESS,
+        _id
+    }
+}
+export const article_updateSuccess = (_id) => {
+    return {
+        type : ARTICLE_UPDATESUCCESS,
         _id
     }
 }
@@ -56,11 +62,16 @@ export const requestSaveArticle = (oriArticle, token) => {
         // API REQUEST
         return axios.post(domain+'/api/article/write', article, header)
         .then((res) => {
-            if(res.data.status === "ARTICLE_SAVE_FAILED"){
+            // alert(JSON.stringify(res,0,2));
+            if(res.data.status == "ARTICLE_SAVE_FAILED" || res.data.status == "ARTICLE_UPDATE_FAILED"){
                 alert("ERROR\n"+res.data.message);
                 dispatch(article_getFailure());
-            }else if(res.data.status === "ARTICLE_SAVE_SUCCESSED"){
+            }else if(res.data.status == "ARTICLE_SAVE_SUCCESSED"){
+                // alert("ARTICLE_SAVE_SUCCESSED")
                 dispatch(article_getSuccess(res.data.article._id));
+            }else if(res.data.status == "ARTICLE_UPDATE_SUCCESSED"){
+                // alert("ARTICLE_UPDATE_SUCCESSED")
+                dispatch(article_updateSuccess(res.data.article._id));
             }
         }).catch((error) => {
             dispatch(article_getFailure());

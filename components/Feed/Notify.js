@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { ScrollView } from 'react-native';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-
+import axios from 'axios';
+import { domain } from '../../config';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
 
-export default class Notify extends Component {
+class Notify extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -15,11 +17,13 @@ export default class Notify extends Component {
   }
 
   componentDidMount(){
-    const obj = {
-        id : this.props.login.id,
-        includePublish : true
-    };
-    axios.post(domain+'/api/alarm/getUserAlarm', obj)
+    const token = this.props.login.token;
+    const header = {
+      headers : {
+          'x-access-token' : token
+      }
+  }
+    axios.post(domain+'/api/alarm/getUserAlarm', {}, header)
     .then((res) => {
         if(res.data.status === "ALARM_GET_FAILED"){
             alert("ERROR\n"+res.data.message);
@@ -31,8 +35,7 @@ export default class Notify extends Component {
                 alarms
             }
             if(Object.keys(alarms).length === 0 ) {
-                newState.message = "저장한 글이 없습니다.";
-                newState.buttonShow = true;
+                newState.message = "알려드릴 게 없네요.";
             }else newState.message = "";
 
             this.setState(newState);
@@ -40,6 +43,15 @@ export default class Notify extends Component {
     }).catch((error) => {
         alert("ERROR\n"+error.message);
     });
+  }
+
+  _getAlarmItems () {
+    if(Object.keys(this.state.alarms).length === 0) return '';
+    let indents = [];
+    Object.values(this.state.alarms).forEach((e,i)=>{
+        indents.push(<NotifyItem key={i} {...e} />);
+    });
+    return indents;
   }
   
   render(){
@@ -51,12 +63,8 @@ export default class Notify extends Component {
             <ConBox>
               {Object.keys(alarms).length === 0
                 ? (<NoItemText>{message}</NoItemText>)
-                : this._getArticleItems()
+                : this._getAlarmItems()
               }
-              <NotifyItem />
-              <NotifyItem />
-              <NotifyItem />
-              <NotifyItem />
             </ConBox>
           </ScrollView>  
         </Wrap>
@@ -79,3 +87,16 @@ const NoItemText = styled.Text`
     font-size : 22px;
     text-align : center;
 `;
+
+const mapStateToProps = (state) => {
+  return {
+      login: state.redux.auth.login,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Notify);
