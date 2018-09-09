@@ -6,6 +6,7 @@ import axios from 'axios';
 import { domain } from '../../config';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
+import { setAlarmIcon } from '../../actions';
 
 class Notify extends Component {
   constructor(props){
@@ -16,14 +17,24 @@ class Notify extends Component {
     }
   }
 
+  inverterHandler = null;
+
   componentDidMount(){
+    //enhancement > 새로운것만 가져오기
+    this.getAlarmList();
+    this.inverterHandler = setInterval(()=>{
+      this.getAlarmList();
+    },10000);
+  }
+
+  getAlarmList (obj) {
     const token = this.props.login.token;
     const header = {
       headers : {
           'x-access-token' : token
       }
-  }
-    axios.post(domain+'/api/alarm/getUserAlarm', {}, header)
+    }
+    axios.post(domain+'/api/alarm/getUserAlarm', obj, header)
     .then((res) => {
         if(res.data.status === "ALARM_GET_FAILED"){
             alert("ERROR\n"+res.data.message);
@@ -52,6 +63,28 @@ class Notify extends Component {
         indents.push(<NotifyItem key={i} {...e} />);
     });
     return indents;
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.inverterHandler);
+
+    const token = this.props.login.token;
+    const header = {
+      headers : {
+          'x-access-token' : token
+      }
+    }
+    axios.post(domain+'/api/alarm/confirmAlarm', {}, header)
+    .then((res) => {
+        if(res.data.status === "ALARM_SET_FAILED"){
+          // alert('false');
+        }else if(res.data.status === "ALARM_SET_SUCCESSED"){
+          // alert('true');
+          this.props.setAlarmIcon(false);
+        }
+    }).catch((error) => {
+        alert("ERROR\n"+error.message);
+    });
   }
   
   render(){
@@ -96,6 +129,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    setAlarmIcon : (bool) => {
+      return dispatch(setAlarmIcon(bool));
+    }
   };
 };
 

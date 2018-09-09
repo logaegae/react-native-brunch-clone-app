@@ -53,6 +53,9 @@ class SideMenu extends Component {
     if(prevProps.login.logged !== this.props.login.logged && this.props.login.logged && this.props.login.token) {
       this.props.alarmIconReapeat(this.props.login.token);
     }
+    if(prevProps.alarm.alarmIcon !== this.props.alarm.alarmIcon && !this.props.alarm.alarmIcon) {
+      this.props.alarmIconReapeat(this.props.login.token);
+    }
     if(prevProps.alarm.alarmIcon !== this.props.alarm.alarmIcon && this.props.alarm.alarmIcon) {
       this.props.clearAlarmIconReapeat();
     }
