@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import axios from 'axios';
-import { domain } from '../../config';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
 import { setAlarmIcon } from '../../actions';
+import axiosRequest from '../../lib/axiosRequest';
 
 class Notify extends Component {
   constructor(props){
@@ -27,32 +26,22 @@ class Notify extends Component {
     },10000);
   }
 
-  getAlarmList (obj) {
-    const token = this.props.login.token;
-    const header = {
-      headers : {
-          'x-access-token' : token
+  getAlarmList () {
+    //@ Boolean Fn ( path, obj, token ) / promise
+    axiosRequest('/api/alarm/getUserAlarm', {}, this.props.login.token)
+    .then((res)=>{
+      const alarms = res.data.data;
+      let newState = {
+          alarms
       }
-    }
-    axios.post(domain+'/api/alarm/getUserAlarm', obj, header)
-    .then((res) => {
-        if(res.data.status === "ALARM_GET_FAILED"){
-            alert("ERROR\n"+res.data.message);
-        }else if(res.data.status === "ALARM_GET_SUCCESSED"){
-
-            const alarms = res.data.data;
-
-            let newState = {
-                alarms
-            }
-            if(Object.keys(alarms).length === 0 ) {
-                newState.message = "알려드릴 게 없네요.";
-            }else newState.message = "";
-
-            this.setState(newState);
-        }
-    }).catch((error) => {
-        alert("ERROR\n"+error.message);
+      if(Object.keys(alarms).length === 0 ) {
+          newState.message = "알려드릴 게 없네요.";
+      }else newState.message = "";
+      this.setState(newState);
+    }).catch((err) => {
+      if(res.data.status){}
+      else
+        alert(err);
     });
   }
 
@@ -65,25 +54,16 @@ class Notify extends Component {
     return indents;
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.inverterHandler);
-
-    const token = this.props.login.token;
-    const header = {
-      headers : {
-          'x-access-token' : token
-      }
-    }
-    axios.post(domain+'/api/alarm/confirmAlarm', {}, header)
-    .then((res) => {
-        if(res.data.status === "ALARM_SET_FAILED"){
-          // alert('false');
-        }else if(res.data.status === "ALARM_SET_SUCCESSED"){
-          // alert('true');
-          this.props.setAlarmIcon(false);
-        }
-    }).catch((error) => {
-        alert("ERROR\n"+error.message);
+    
+    axiosRequest('/api/alarm/confirmAlarm', {}, this.props.login.token)
+    .then((res)=>{
+      this.props.setAlarmIcon(false);
+    }).catch((err) => {
+      if(res.data.status){}
+      else
+        alert(err);
     });
   }
   
