@@ -13,6 +13,7 @@ const initialState = {
         logged : false,
         name : '',
         id : '',
+        _id : '',
         token : ''
     }
 };
@@ -95,6 +96,7 @@ export default function auth(state = initialState, action) {
                     logged : true,
                     name : action.name,
                     id : action.id,
+                    _id : action._id,
                     token : action.token
                 }
             };
@@ -105,7 +107,8 @@ export default function auth(state = initialState, action) {
                 login : {
                     logged : false,
                     name : '',
-                    id : ''
+                    id : '',
+                    _id : ''
                 }
             };
         //이름변경

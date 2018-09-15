@@ -28,7 +28,7 @@ class Notify extends Component {
 
   getAlarmList () {
     //@ Boolean Fn ( path, obj, token ) / promise
-    axiosRequest('/api/alarm/getUserAlarm', {}, this.props.login.token)
+    axiosRequest('/api/alarm/getUserAlarm', {type:'notify'}, this.props.login.token)
     .then((res)=>{
       const alarms = res.data.data;
       let newState = {
@@ -57,7 +57,7 @@ class Notify extends Component {
   componentWillUnmount () {
     clearInterval(this.inverterHandler);
     
-    axiosRequest('/api/alarm/confirmAlarm', {}, this.props.login.token)
+    axiosRequest('/api/alarm/confirmAlarm', {type:'notify'}, this.props.login.token)
     .then((res)=>{
       this.props.setNotifyIcon(false);
     }).catch((err) => {

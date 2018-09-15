@@ -9,6 +9,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-28.0.0.tar.gz",
     "react-native-datepicker": "^1.7.2",
     "react-native-modal": "^6.5.0",
+    "react-native-parallax-scroll-view": "^0.21.3",
     "react-native-simple-dialogs": "^0.4.0",
     "react-native-snap-carousel": "^3.7.2",
     "react-navigation": "^2.3.1",

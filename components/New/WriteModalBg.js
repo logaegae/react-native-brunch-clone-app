@@ -42,7 +42,7 @@ export default class ModalBg extends Component {
         },
         {
           id: 3,
-          color: '#5ED9FF',
+          color: '#5CC5FA',
           selected: false
         },
         {
@@ -52,32 +52,32 @@ export default class ModalBg extends Component {
         },
         {
           id: 5,
-          color: '#58DE5E',
+          color: '#72DE6A',
           selected: false
         },
         {
           id: 6,
-          color: '#FF753D',
+          color: '#FF754A',
           selected: false
         }, 
         {
           id: 7,
-          color: '#F8A71E',
+          color: '#F8A72D',
           selected: false,
         },
         {
           id: 8,
-          color: '#FFC316',
+          color: '#FFC040',
           selected: false
         },
         {
           id: 9,
-          color: '#FFE225',
+          color: '#FFD747',
           selected: false
         },
         {
           id: 10,
-          color: '#C2E330',
+          color: '#C1DB59',
           selected: false
         },
         {
@@ -87,50 +87,49 @@ export default class ModalBg extends Component {
         }, 
         {
           id: 12,
-          color: '#E86DB7',
+          color: '#E878AA',
           selected: false,
         },
         {
           id: 13,
-          color: '#FF89E8',
+          color: '#FF98C6',
           selected: false
         },
         {
           id: 14,
-          color: '#BC61E3',
+          color: '#D287E8',
           selected: false
         },
         {
           id: 15,
-          color: '#9964EF',
+          color: '#9964D5',
           selected: false
         },
         {
           id: 16,
-          color: '#aaa',
+          color: '#bbb',
           selected: false
         }, 
         {
           id: 17,
-          color: '#888',
+          color: '#999',
           selected: false,
         },
         {
           id: 18,
-          color: '#666',
+          color: '#777',
           selected: false
         },
         {
           id: 19,
-          color: '#444',
+          color: '#555',
           selected: false
         },
         {
           id: 20,
-          color: '#222',
+          color: '#333',
           selected: false
         }
-
       ], 
       selectedItem: '',
       selectedColor: '', 

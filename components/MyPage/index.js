@@ -51,6 +51,7 @@ class Mypage extends Component {
     
     const data = {
       id : this.props.login.id,
+      _id : this.props.login._id,
       name : this.state.nickname
     }
     const token = this.props.login.token;

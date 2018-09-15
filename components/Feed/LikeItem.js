@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import styled from 'styled-components';
-import { Ionicons } from '@expo/vector-icons';
-
-const { height, width } = Dimensions.get("window");
+import timeAgo from '../../lib/timeAgo';
 
 export default class LikeItem extends Component {
   constructor(props){
@@ -13,21 +10,18 @@ export default class LikeItem extends Component {
   }
   
   render(){
+    const { title, confirmed, registedDate, alarmType, likePersonName, likeLength } = this.props;
+    const typeMessage = {
+      like : likeLength != 1 ? `을 ${likePersonName}님이 외 ${likeLength}명이 좋아합니다.` : `을 ${likePersonName}님이 좋아합니다.`
+    }
     return(
         <Wrap>
           <ConBox>
-            <Tit>45days in Western Europe</Tit>
-            <Con>을 <Strong>Nickname2</Strong> 회원님 <Strong>외 7명</Strong>이 좋아합니다.</Con>
+            <Tit>{title}</Tit>
+            <Con>{typeMessage[alarmType]}</Con>
             <TimeBox>
-              <New></New>
-              <Time>10분 전</Time>
-            </TimeBox>
-          </ConBox>
-          <ConBox>
-            <Tit>45days in Western Europe</Tit>
-            <Con>을 <Strong>Nickname2</Strong> 회원님이 좋아합니다.</Con>
-            <TimeBox>
-              <Time>5시간 전</Time>
+              {!confirmed ? <New></New> : ''}
+              <Time>{timeAgo(registedDate)}</Time>
             </TimeBox>
           </ConBox>
         </Wrap>

@@ -3,6 +3,7 @@ import { Text, View, TouchableHighlight, TextInput, Dimensions } from 'react-nat
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
+import { withNavigation } from 'react-navigation';
 
 const { height, width } = Dimensions.get("window");
 
@@ -16,7 +17,7 @@ class Search extends React.Component {
                         placeholder={"검색..."}
                         placeholderTextColor={"#999"}
                     />
-                    <SearchButton>
+                    <SearchButton onPressOut={() => this.props.navigation.navigate('Search')}>
                         <Ionicons name="ios-search" size={40} color={Theme.mainColor}/>
                     </SearchButton>
                 </SearchBox>
@@ -52,4 +53,4 @@ const SearchButton = styled.TouchableHighlight`
     align-items : center;
 `;
 
-export default Search;
+export default withNavigation(Search);

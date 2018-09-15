@@ -17,8 +17,6 @@ export default class NotifyItem extends Component {
       delete : "이 삭제되었습니다.",
       new : "이 만들어졌습니다.",
       update : "이 수정되었습니다.",
-      like : "을 님이 좋아합니다.",
-      likes : `을 ${likePersonName}님이 외 ${likeLength}명이 좋아합니다.`
     }
     return(
         <Wrap>

@@ -1,9 +1,12 @@
 import React from 'react';
-import { View, Text, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import Carousel from 'react-native-snap-carousel';
+import axios from 'axios';
+import { domain } from '../../config';
+import timeAgo from '../../lib/timeAgo';
 
 const { height, width } = Dimensions.get("window");
 
@@ -13,81 +16,89 @@ class ContentItem extends React.Component {
         super(props);
         this.state = {
             errors: [],
+            cardCon : []
         };
         this.props = props;
         this._carousel = {};
-        this.init();
+        this.getList();
+        this.handleLike = this.handleLike.bind(this);
     }
 
-    init(){
-        this.state = {
-          cardCon: [
-            {
-              bgStyle : {
-                backgroundColor: "#1adeb8",
-              },
-              weather: "weather-sunny",
-              travelDate: "2018.01.01 - 2018.01.01",
-              title: "45일동안 서유럽 한바퀴, 45days in Wetern Europe",
-              isLiked: false,
-              likeCount: 120,
-              writtenDate: "9시간 전",
-              profileImg: "https://image.fmkorea.com/files/attach/new/20180501/486616/909844983/1039257189/2761aa3169424351e01076f85b61ba45.jpeg",
-              nickname: "bonobono"
-            }, {
-              bgStyle : {
-                backgroundColor: "#5ED9FF",
-              },
-              weather: "weather-sunny",
-              travelDate: "2018.01.01 - 2018.01.01",
-              title: "자전거 여행의 매력, 느림보 제주 여행",
-              isLiked: false,
-              likeCount: 80,
-              writtenDate: "12시간 전",
-              profileImg: "http://t1.daumcdn.net/friends/prod/editor/fe1fbe7c-4c82-446e-bc5c-f571d90b0ba9.jpg",
-              nickname: "어피치"
-            }, {
-              bgStyle : {
-                backgroundColor: "#ffd021",
-              },
-              weather: "weather-cloudy",
-              travelDate: "2018.01.01 - 2018.01.01",
-              title: "단 기간 여행이 만족스러웠던 아담한 동네, 블라디보스톡",
-              isLiked: false,
-              likeCount: 102,
-              writtenDate: "18시간 전",
-              profileImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2KYrEEV1hf0hBxY-N7XqOK-8Csx-z0Wa_oZ9WcJEp9xVKVsgx",
-              nickname: "바바파파"
-            }, 
-          ]
-        };
+    componentDidMount() {
+        this.getList();
     }
+
+    handleLike(_id) {
+        const header = {
+            headers : {
+                'x-access-token' : this.props.token
+            }
+        }
+        axios.post(domain + '/api/article/toggleLike', {_id}, header)
+        .then((res) => {
+            if(res.data.status === 'SUCCESS'){
+                let list = this.state.cardCon;
+                for(i=0;i<list.length;i++){
+                    if(list[i]._id === _id){ 
+                        list[i].isLiked = res.data.like;
+                        break;
+                    }
+                }
+                if(res.data.addAction){
+                    this.props.setLikeIcon(true);
+                }
+                this.setState({
+                    ...this.state,
+                    cardCon : list
+                })
+            }
+        });
+    }
+
+    getList() {
+        axios.get(domain+'/api/article/getMainList')
+        .then((res)=>{
+            if(res.data.status === 'SUCCESS'){
+                this.setState({
+                    ...this.state,
+                    cardCon : res.data.list
+                });
+            }
+        })
+    }
+
     _renderItem = ( {item, index} ) => {
+        const { nickname } = this.props;
         return (
-            <Content style={item.bgStyle}>
+            <Content bgStyle={item.bgStyle}>
                 <WeatherBox>
                     <MaterialCommunityIcons name={item.weather} size={50} style={{marginLeft : 5, marginRight : 5}} color="white"/>
                 </WeatherBox>
                 <DateBox>
-                    <DateText>{item.travelDate}</DateText>
+                    <DateText>{item.startDate ? item.startDate : ''}{item.finishDate? ' - '+item.finishDate : ''}</DateText>
                 </DateBox>
                 <TitleBox>
-                    <TitleText onPress={()=>{this.props.navigation.navigate('View')}}>
+                    <TitleText onPress={()=>{this.props.navigation.navigate('ArticleView')}}>
                         {item.title}
                     </TitleText>
-                    <HeartBox>
-                        <HeartText>
-                            {item.likeCount}
-                        </HeartText>
-                        <MaterialCommunityIcons name="heart-outline" size={25} style={{marginLeft : 5, marginRight : 5}} color="white"/>
-                    </HeartBox>
+                    <LikeBox>
+                        <BtnLike>
+                            {item.isLiked && item.isLiked.indexOf(nickname) != -1 ? (
+                            <Ionicons name="md-heart" color="#EC4568" size={25} onPress={()=>{this.handleLike(item._id)}}/>
+                            ) : (
+                            <Ionicons name="md-heart-outline" color="#fff" size={20} onPress={()=>{this.handleLike(item._id)}} />
+                            )
+                            }
+                            <LikeNum>{item.isLiked.length}</LikeNum>
+                        </BtnLike>
+                    </LikeBox>
                     <WrittenDateWrap>
-                        <WrittenDate> · {item.writtenDate}</WrittenDate>
+                        <WrittenDate> · {item.updatedDate ? timeAgo(item.updatedDate, true) : timeAgo(item.writtenDate, true)}</WrittenDate>
                     </WrittenDateWrap>
                 </TitleBox>
-                <WriterBox>
+                <WriterBox onPress={()=>{this.props.navigation.navigate('WriterView')}}>
                     <ProfileImgBox source={require('../../assets/siba.jpg')}/>
-                    <WriterText>{item.nickname}</WriterText>
+                    <WriterText>{item.__id.name}</WriterText>
                 </WriterBox>
             </Content>
         )
@@ -124,7 +135,7 @@ const Content = styled.View`
     flex : 1;
     padding : 10px 20px;
     border-radius : 10px;
-    background-color : #fdcb6e;
+    background-color : ${props => props.bgStyle.photoUrl ? "transparent" : props.bgStyle.backgroundColor};
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.16);
 `;
 const WeatherBox = styled.View`
@@ -145,17 +156,7 @@ const DateText = styled.Text`
     font-size : 18px;
     font-family : NanumGothic;
 `;
-const HeartBox = styled.View`
-    width : 100%;
-    flex-direction : row-reverse;
-    padding-top : 30px;
-`;
-const HeartText = styled.Text`
-    color : white;
-    font-size : 25px;
-    margin-top : -3px;
-    font-family : NanumGothic;
-`;
+
 const TitleBox = styled.View`
     width : 100%;
     height : 60%;
@@ -165,7 +166,7 @@ const TitleText = styled.Text`
     font-size : 30px;
     font-family : NanumGothic-bold;
 `;
-const WriterBox = styled.View`
+const WriterBox = styled.TouchableOpacity`
     width : 100%;
     height : 15%;
     flex-direction : row;
@@ -194,5 +195,22 @@ const WrittenDate = styled.Text`
     font-size : 15px;
     font-weight : 600;
     color:#fff;
+`;
+const LikeBox = styled.View`
+  flex-direction: row;
+  justify-content: flex-end;
+`;
+
+const BtnLike = styled.TouchableOpacity`
+  align-items: center;
+  flex-direction: row;
+`;
+
+const LikeNum = styled.Text`
+  font-family: NanumGothic-bold;
+  margin-left:3px;
+  color:#fff;
+  font-size:25px;
+  font-weight:500;
 `;
 export default withNavigation(ContentItem);

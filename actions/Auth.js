@@ -25,10 +25,11 @@ export const getFailure = () => {
         type : AUTH_GETFAIL
     }
 }
-export const loginSuccess = (id, name, token) => {
+export const loginSuccess = (id, _id, name, token) => {
     return {
         type : AUTH_LOGIN_SUCCESS,
         id,
+        _id,
         name,
         token
     }
@@ -83,6 +84,7 @@ export const userLogin = (userInfo) => {
             const status = res.data.status;
             const name = res.data.name;
             const id = res.data.id;
+            const _id = res.data._id;
             const token = res.data.token;
 
             switch(status){
@@ -98,13 +100,14 @@ export const userLogin = (userInfo) => {
                     try {
                         AsyncStorage.setItem('@BrunchApp:Auth', JSON.stringify({
                             id,
+                            _id,
                             name,
                             token
                         }));
                     } catch (error) {
                         alert("Storage Error : " + error);
                     } finally {
-                        dispatch(loginSuccess(id, name, token));
+                        dispatch(loginSuccess(id, _id, name, token));
                         break;
                     }
             }
@@ -163,7 +166,7 @@ export const getStorage = () => {
             const _storedData = await AsyncStorage.getItem('@BrunchApp:Auth');
             if(_storedData) {
                 _storedData = JSON.parse(_storedData);
-                dispatch(loginSuccess(_storedData.id, _storedData.name, _storedData.token));
+                dispatch(loginSuccess(_storedData.id, _storedData._id, _storedData.name, _storedData.token));
             }
         } catch (error) {
             alert("Error retrieving data : " + error);
@@ -234,6 +237,7 @@ export const changeNameRequest = (userInfo, token) => {
                 try {
                     AsyncStorage.setItem('@BrunchApp:Auth', JSON.stringify({
                         id : userInfo.id,
+                        _id : userInfo._id,
                         name : userInfo.name,
                         token
                     }));
