@@ -8,7 +8,7 @@ import Modal from "react-native-modal";
 import axios from 'axios';
 import Theme from '../../style/theme';
 import { domain } from '../../config';
-import { setAlarmIcon } from '../../actions';
+import { setNotifyIcon } from '../../actions';
 
 
 class DrawerView extends React.Component {
@@ -79,7 +79,7 @@ class DrawerView extends React.Component {
                 
                 if(target === "published"){
                     newArticles[res.data.article._id].published = res.data.article.published;
-                    this.props.setAlarmIcon(true);
+                    this.props.setNotifyIcon(true);
                 }
                 else if(target === "delYn"){
                     delete newArticles[res.data.article._id];
@@ -87,7 +87,7 @@ class DrawerView extends React.Component {
                         newState.message = "저장한 글이 없습니다.";
                         newState.buttonShow = true;
                     }
-                    this.props.setAlarmIcon(true);
+                    this.props.setNotifyIcon(true);
                 }
 
                 this.setState({
@@ -232,8 +232,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setAlarmIcon : (bool) => {
-            return dispatch(setAlarmIcon(bool));
+        setNotifyIcon : (bool) => {
+            return dispatch(setNotifyIcon(bool));
         }
     };
 };

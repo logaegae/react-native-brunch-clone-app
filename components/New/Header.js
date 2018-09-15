@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 import { requestSaveArticle, article_getInit } from '../../actions';
-import { setAlarmIcon } from '../../actions';
+import { setNotifyIcon } from '../../actions';
 
 class NewHeader extends React.Component {
 
@@ -25,7 +25,7 @@ class NewHeader extends React.Component {
                 this.setState({
                     showDialog : true
                 });
-                this.props.setAlarmIcon(true);
+                this.props.setNotifyIcon(true);
             }else if(this.props.result === "FAILED"){
                 alert("저장 실패");
             }
@@ -143,8 +143,8 @@ const mapDispatchToProps = (dispatch) => {
         article_getInit : () => {
             return dispatch(article_getInit());
         },
-        setAlarmIcon : (bool) => {
-            return dispatch(setAlarmIcon(bool));
+        setNotifyIcon : (bool) => {
+            return dispatch(setNotifyIcon(bool));
         }
     };
 };

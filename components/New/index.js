@@ -1,9 +1,10 @@
 import React from 'react';
-import { StatusBar, Text } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import axios from 'axios';
 import ViewHeader from './Header';
 import WriteCon from './WriteCon';
+import { domain } from '../../config';
 
 class NewView extends React.Component {
 
@@ -40,7 +41,7 @@ class NewView extends React.Component {
 
         if(!_id) return false;
 
-        axios.post('http://localhost:9000/api/article/getOneArticle',{_id})
+        axios.post(domain+'/api/article/getOneArticle',{_id})
         .then((res) => {
             if(res.data.status === "ARTICLE_GET_FAILED"){
                 alert("ERROR\n"+res.data.message);

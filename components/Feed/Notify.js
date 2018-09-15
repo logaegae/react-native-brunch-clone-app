@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
-import { setAlarmIcon } from '../../actions';
+import { setNotifyIcon } from '../../actions';
 import axiosRequest from '../../lib/axiosRequest';
 
 class Notify extends Component {
@@ -59,7 +59,7 @@ class Notify extends Component {
     
     axiosRequest('/api/alarm/confirmAlarm', {}, this.props.login.token)
     .then((res)=>{
-      this.props.setAlarmIcon(false);
+      this.props.setNotifyIcon(false);
     }).catch((err) => {
       if(res.data.status){}
       else
@@ -109,8 +109,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setAlarmIcon : (bool) => {
-      return dispatch(setAlarmIcon(bool));
+    setNotifyIcon : (bool) => {
+      return dispatch(setNotifyIcon(bool));
     }
   };
 };

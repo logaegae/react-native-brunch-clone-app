@@ -6,7 +6,7 @@ import { withNavigation } from 'react-navigation';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Theme from '../../style/theme';
 import { connect } from 'react-redux';
-import { alarmIconReapeat, clearAlarmIconReapeat } from '../../actions'
+import { notifyIconReapeat, clearNotifyIconReapeat, likeIconReapeat, clearLikeIconReapeat } from '../../actions'
 
 const UnsignedContent = (props) => {
   return (
@@ -35,11 +35,11 @@ const SignedContent = (props) => {
       </BtnBox>
       <IconBox>
         <IconBtn onPressOut={() => props.navigation.navigate('Notify')}>
-          {props.alarmIcon ? <IconNew yellow></IconNew> : ''}
+          {props.notifyIcon ? <IconNew yellow></IconNew> : ''}
           <MaterialCommunityIcons name="bell-outline" color="#fff" size={30} />
         </IconBtn>
         <IconBtn onPressOut={() => props.navigation.navigate('Like')}>
-          <IconNew pink></IconNew>
+          {props.likeIcon ? <IconNew pink></IconNew> : ''}
           <MaterialCommunityIcons name="heart-outline" color="#fff" size={30} style={{marginTop:5}}/>
         </IconBtn>
       </IconBox>
@@ -51,18 +51,25 @@ class SideMenu extends Component {
 
   componentDidUpdate(prevProps) {
     if(prevProps.login.logged !== this.props.login.logged && this.props.login.logged && this.props.login.token) {
-      this.props.alarmIconReapeat(this.props.login.token);
+      this.props.notifyIconReapeat(this.props.login.token);
+      this.props.likeIconReapeat(this.props.login.token);
     }
-    if(prevProps.alarm.alarmIcon !== this.props.alarm.alarmIcon && !this.props.alarm.alarmIcon) {
-      this.props.alarmIconReapeat(this.props.login.token);
+    if(prevProps.alarm.notifyIcon !== this.props.alarm.notifyIcon && !this.props.alarm.notifyIcon) {
+      this.props.notifyIconReapeat(this.props.login.token);
     }
-    if(prevProps.alarm.alarmIcon !== this.props.alarm.alarmIcon && this.props.alarm.alarmIcon) {
-      this.props.clearAlarmIconReapeat();
+    if(prevProps.alarm.notifyIcon !== this.props.alarm.notifyIcon && this.props.alarm.notifyIcon) {
+      this.props.clearNotifyIconReapeat();
+    }
+    if(prevProps.alarm.likeIcon !== this.props.alarm.likeIcon && !this.props.alarm.likeIcon) {
+      this.props.likeIconReapeat(this.props.login.token);
+    }
+    if(prevProps.alarm.likeIcon !== this.props.alarm.likeIcon && this.props.alarm.likeIcon) {
+      this.props.clearLikeIconReapeat();
     }
   }
 
   render () {
-    const { alarmIcon } = this.props.alarm;
+    const { notifyIcon, likeIcon } = this.props.alarm;
     return (
       <Container>
         <ScrollView>
@@ -76,7 +83,7 @@ class SideMenu extends Component {
             <TitleLine></TitleLine>
           </TitleLineBox>
           <View>
-            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} name={this.props.login.name} alarmIcon={alarmIcon}/> : <UnsignedContent navigation={this.props.navigation} /> }
+            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} name={this.props.login.name} notifyIcon={notifyIcon} likeIcon={likeIcon}/> : <UnsignedContent navigation={this.props.navigation} /> }
           </View>
         </ScrollView>
       </Container>
@@ -224,11 +231,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    alarmIconReapeat : (token) => {
-      return dispatch(alarmIconReapeat(token));
+    notifyIconReapeat : (token) => {
+      return dispatch(notifyIconReapeat(token));
     },
-    clearAlarmIconReapeat : () => {
-      return dispatch(clearAlarmIconReapeat());
+    clearNotifyIconReapeat : () => {
+      return dispatch(clearNotifyIconReapeat());
+    },
+    likeIconReapeat : (token) => {
+      return dispatch(likeIconReapeat(token));
+    },
+    clearLikeIconReapeat : () => {
+      return dispatch(clearLikeIconReapeat());
     }
   };
 }
