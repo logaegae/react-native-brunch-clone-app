@@ -32,7 +32,7 @@ export default class ArticleView extends Component {
     const { bgStyle } = this.state;
     return (
       <View key="background">
-        {bgStyle.photoUrl === null || bgStyle.photoUrl === "" ? (
+        {!bgStyle.photoUrl ? (
           <View style={{
             width: width,
             height: 320,
@@ -90,11 +90,11 @@ export default class ArticleView extends Component {
 
   renderHeaderContent(){
 
-    const { title, startDate, finishDate, __id, writtenDate } = this.state;
+    const { title, startDate, finishDate, __id, weather } = this.state;
 
     return(
       <HeaderConBox>
-        <ArticleHeaderCon title={title} startDate={startDate} finishDate={finishDate} writer={__id} />
+        <ArticleHeaderCon title={title} startDate={startDate} finishDate={finishDate} writer={__id} weather={weather}/>
       </HeaderConBox>
     )
   }
@@ -120,7 +120,6 @@ export default class ArticleView extends Component {
             renderForeground={() => this.renderHeaderContent()}
             >
             <ConText>
-              {JSON.stringify(this.state.isScrolling)}
               {text}
             </ConText>
           </ParallaxScrollView>                
