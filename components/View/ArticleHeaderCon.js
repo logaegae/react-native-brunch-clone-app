@@ -31,7 +31,7 @@ export default class ArticleHeaderCon extends Component {
             </TitBox>
           </ConBox>
           <Row>
-            <WriterBox>
+            <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : writer.name})}>
               <ProfileImgBox source={require('../../assets/siba.jpg')}/>
               <WriterNickname>{writer.name}</WriterNickname>
             </WriterBox>              

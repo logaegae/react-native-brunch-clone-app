@@ -109,7 +109,7 @@ class ContentItem extends React.Component {
               </Row>
             </FlexBox>
             <FlexBox flexEnd>
-              <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView')}>
+              <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : item.__id.name})}>
                 <ProfileImgBox source={{ uri: item.__id.profileImg }} />
                 <WriterNickname>{item.__id.name}</WriterNickname>
               </WriterBox>

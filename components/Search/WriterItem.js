@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { withNavigation } from 'react-navigation';
 
-export default class WriterItem extends Component {
+class WriterItem extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -13,7 +14,7 @@ export default class WriterItem extends Component {
     const { name, articleLength } = this.props;
     
     return (
-      <Wrap>  
+      <Wrap onPressOut={() => this.props.navigation.navigate('WriterView',{name})}>  
         <Row>
           <WriterBox>
             <ProfileImgBox source={require('../../assets/siba.jpg')}/>
@@ -63,3 +64,5 @@ const ArticleNumText = styled.Text`
   color:#666;
   font-size:12px;
 `;
+
+export default withNavigation(WriterItem);
