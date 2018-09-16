@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Dimensions, ScrollView } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
+import axios from 'axios';
 import ArticleTab from './ArticleTab';
 import WriterTab from './WriterTab';
+import { domain } from '../../config';
 
 const { height, width } = Dimensions.get("window");
 
@@ -14,7 +15,9 @@ export default class Search extends Component {
     this.state = {
       tab: 1,
       on: true,
-      inputValue: ""
+      inputValue: this.props.navigation.getParam('text') || null,
+      list : [],
+      text : null
     } 
   }
 
@@ -26,6 +29,8 @@ export default class Search extends Component {
     this.setState({
       tab: 1,
       on: true,
+    },() => {
+      this._handleSearch();
     })
   }
 
@@ -33,18 +38,41 @@ export default class Search extends Component {
     this.setState({
       tab: 2,
       on: false,
+    },() => {
+      this._handleSearch();
     })
   }
 
-  render(){
+  _handleSearch(){
+    const state = this.state;
+    const { inputValue } = this.state;
+      if(inputValue){
+        axios.post(domain+'/api/search/articleAndWiter', {text:inputValue,tab : state.tab})
+        .then((res) => {
+          if(res.data.status === 'SUCCESS'){
+            alert(res.data.list.length)
+            this.setState({
+              ...state,
+              list : res.data.list
+            });
+          }
+        }).catch((error) => {
+          alert("ERROR\n"+error.message);
+      });
+    }
+  }
 
-    const { tab, on, inputValue } = this.state;
-    
+  componentDidMount(){
+    this._handleSearch();
+  }
+
+  render(){
+    const { tab, on, inputValue, list } = this.state;
     return(
         <Wrap>
           <HeaderBox>
             <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
-              <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
+              <Ionicons name="ios-arrow-round-back" color="#333" size={50}/>
             </BtnIcon>
             <SearchBox>
               <InputSearch
@@ -52,7 +80,9 @@ export default class Search extends Component {
                 onChangeText={this._handleTextChange}
                 placeholder="Search"
               />
-              <Feather name="search" color="#afafaf" size={20} />
+              <BtnIcon onPressOut={() => this._handleSearch()}>
+                <Feather name="search" color="#afafaf" size={20}/>
+              </BtnIcon>
             </SearchBox>
           </HeaderBox>
           <TabBox>
@@ -65,7 +95,7 @@ export default class Search extends Component {
           </TabBox>
           <ScrollView>
           <ConBox>
-              {tab === 1 ? <ArticleTab /> : <WriterTab />}
+              {tab === 1 ? <ArticleTab list={list}/> : <WriterTab list={list}/>}
             </ConBox>  
           </ScrollView>           
         </Wrap>
@@ -77,6 +107,7 @@ const Wrap = styled.View`
   flex: 1;
   margin-top:7%;
   margin-bottom:-7%;
+  padding : 10px 0;
 `;
 
 const HeaderBox = styled.View`

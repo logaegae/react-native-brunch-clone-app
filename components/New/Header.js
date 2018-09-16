@@ -45,9 +45,8 @@ class NewHeader extends React.Component {
             <Header>
                 <ButtonBox>
                     <Ionicons 
-                        name="md-arrow-back" 
+                        name="ios-arrow-round-back"
                         size={50} 
-                        style={{fontWeight : 'bold'}} 
                         color="#333"
                         onPress={()=>{this._closeConfirm()}}
                         />

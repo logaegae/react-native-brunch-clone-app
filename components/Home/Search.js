@@ -8,7 +8,18 @@ import { withNavigation } from 'react-navigation';
 const { height, width } = Dimensions.get("window");
 
 class Search extends React.Component {
+    
+    state = {
+        text : null
+    }
+
+    handleSearchText(text) {
+        this.setState({
+            text
+        })
+    }
     render() {
+        const { text } = this.state;
         return (
             <SearchContainer>
                 <SearchBox>
@@ -16,8 +27,10 @@ class Search extends React.Component {
                         underlineColorAndroid="transparent"
                         placeholder={"검색..."}
                         placeholderTextColor={"#999"}
+                        onChangeText={(text) => this.handleSearchText(text)}
+                        value={text}
                     />
-                    <SearchButton onPressOut={() => this.props.navigation.navigate('Search')}>
+                    <SearchButton onPressOut={() => this.props.navigation.navigate('Search',{text})}>
                         <Ionicons name="ios-search" size={40} color={Theme.mainColor}/>
                     </SearchButton>
                 </SearchBox>

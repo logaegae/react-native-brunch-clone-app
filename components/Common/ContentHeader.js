@@ -12,9 +12,8 @@ class DrawerHeader extends React.Component {
         <Header>
             <ButtonBox>
                 <Ionicons 
-                    name="md-arrow-back" 
+                    name="ios-arrow-round-back" 
                     size={50} 
-                    style={{fontWeight : 'bold'}} 
                     color="#333"
                     onPress={()=>{this.props.navigation.navigate('Home')}}
                 />
@@ -48,10 +47,6 @@ const TitleText = styled.Text`
     font-weight : bold;
     top: 50px;
     z-index : -1;
-`;
-const SaveText = styled.Text`
-    font-size : 20px;
-    text-decoration : underline;
 `;
 
 

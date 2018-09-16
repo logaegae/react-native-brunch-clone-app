@@ -10,7 +10,8 @@ export default class ArticleTab extends Component {
   constructor(props){
     super(props);
     this.state = {
-      resultNum: 3,
+      list : this.props.list,
+      resultNum: this.props.list.length,
     } 
   }
 

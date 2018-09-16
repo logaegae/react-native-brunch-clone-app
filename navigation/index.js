@@ -1,11 +1,10 @@
-import React from 'react';
-import { StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator, createSwitchNavigator } from 'react-navigation'
 
 import Home from '../components/Home';
 import ArticleView from '../components/View/ArticleView';
 import WriterView from '../components/View/WriterView';
 import New from '../components/New';
+import List from '../components/List';
 import DrawerList from '../components/Drawer';
 import SideMenu from '../components/Navi';
 import SignIn from '../components/SignIn';
@@ -39,6 +38,9 @@ export const AppNavigator = createSwitchNavigator(
         },
         New : {
             screen : New
+        },
+        List : {
+            screen : List
         },
         Drawer : {
             screen : DrawerList

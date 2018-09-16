@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import timeAgo from '../../lib/timeAgo';
 
 const { height, width } = Dimensions.get("window");
 
@@ -9,23 +10,17 @@ export default class ArticleItem extends Component {
   constructor(props){
     super(props);
     this.state = {
-      conText: `봄바람이다 풀밭에 속잎나고 가지에 싹이 트고 꽃 피고 새 우는 봄날의 천지는 얼마나 기쁘며 얼마나 아름다우냐`,
-      isPulished: false,
-      isLiked: false,
-      likeCount: 120,
-      writerNickname: 'nickname',
-      writtenDate: '9시간 전',
     }
   }
   
   render(){
-    const { conText, isLiked, likeCount, writerNickname, writtenDate } = this.state;
+    const { title, text, isLiked, __id, startDate, finishDate } = this.props;
     
     return (
       <Wrap>  
         <FirstRow>
           <DateBox>
-            <DateText>2018.01.01 - 2018.01.01</DateText>
+            <DateText>{startDate ? startDate : ''}{finishDate? ' - '+finishDate : ''}</DateText>
           </DateBox>
           <WeatherBox>
             <MaterialCommunityIcons name="weather-sunny" color="#999" size={20} style={{marginLeft:3}}/>
@@ -33,25 +28,25 @@ export default class ArticleItem extends Component {
           </WeatherBox>
         </FirstRow>
         <TitBox>
-          <TitText>45일동안 서유럽 한바퀴, 45days in Wetern Europe</TitText>
+          <TitText>{title}</TitText>
         </TitBox>
         <TextBox>
-          <ConText numberOfLines={3}>{conText}</ConText>
+          <ConText numberOfLines={3}>{text}</ConText>
         </TextBox>
         <LastRow>
-          <WriterText>by. {writerNickname}</WriterText>
+          <WriterText>by. {__id.name}</WriterText>
           <RightBox>
             <BtnLike onPressOut={this.props.likeToggle}>
-              {isLiked ? (
+              {item.isLiked && item.isLiked.indexOf(__id.name) != -1 ? (
                 <Ionicons name="md-heart" color="#EC4568" size={13} />
                 ) : (
                 <Ionicons name="md-heart-outline" color="#666" size={13} />
                 )
               }
-              <LikeNum>{likeCount}</LikeNum>
+              <LikeNum>{isLiked.length}</LikeNum>
             </BtnLike>
             <Dot></Dot>
-            <WrittenDateText>{writtenDate}</WrittenDateText>
+            <WrittenDateText>{item.updatedDate ? timeAgo(item.updatedDate, true) : timeAgo(item.writtenDate, true)}</WrittenDateText>
           </RightBox>
         </LastRow>
       </Wrap>
