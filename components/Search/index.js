@@ -16,7 +16,8 @@ export default class Search extends Component {
       tab: 1,
       on: true,
       inputValue: this.props.navigation.getParam('text') || null,
-      list : [],
+      list1 : [],
+      list2 : [],
       text : null
     } 
   }
@@ -50,11 +51,11 @@ export default class Search extends Component {
         axios.post(domain+'/api/search/articleAndWiter', {text:inputValue,tab : state.tab})
         .then((res) => {
           if(res.data.status === 'SUCCESS'){
-            alert(res.data.list.length)
-            this.setState({
-              ...state,
-              list : res.data.list
-            });
+            let obj = {
+              ...state
+            }
+            obj["list"+state.tab] = res.data.list
+            this.setState(obj);
           }
         }).catch((error) => {
           alert("ERROR\n"+error.message);
@@ -67,7 +68,7 @@ export default class Search extends Component {
   }
 
   render(){
-    const { tab, on, inputValue, list } = this.state;
+    const { tab, on, inputValue, list1, list2 } = this.state;
     return(
         <Wrap>
           <HeaderBox>
@@ -95,7 +96,7 @@ export default class Search extends Component {
           </TabBox>
           <ScrollView>
           <ConBox>
-              {tab === 1 ? <ArticleTab list={list}/> : <WriterTab list={list}/>}
+              {tab === 1 ? <ArticleTab list={list1}/> : <WriterTab list={list2}/>}
             </ConBox>  
           </ScrollView>           
         </Wrap>

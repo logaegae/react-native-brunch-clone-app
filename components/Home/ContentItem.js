@@ -20,7 +20,6 @@ class ContentItem extends React.Component {
         };
         this.props = props;
         this._carousel = {};
-        this.getList();
         this.handleLike = this.handleLike.bind(this);
     }
 
@@ -64,7 +63,7 @@ class ContentItem extends React.Component {
                     cardCon : res.data.list
                 });
             }
-        })
+        }).catch((err)=>{});
     }
 
     _renderItem = ( {item, index} ) => {
@@ -81,7 +80,7 @@ class ContentItem extends React.Component {
               </BgBox>
             ) : null }
             <FlexBox flex2>
-              <ViewLinkBox onPressOut={() => this.props.navigation.navigate('ArticleView')}>
+              <ViewLinkBox onPressOut={() => this.props.navigation.navigate('ArticleView',{item})}>
                 <WeatherBox>
                   <MaterialCommunityIcons name={item.weather} color="#fff" size={24} style={{marginLeft:3, marginRight:3}}/>
                 </WeatherBox>

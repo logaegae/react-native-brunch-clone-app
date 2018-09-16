@@ -28,7 +28,11 @@ export default class ArticleTab extends Component {
             <ResultBox>
               <ResultText>글 검색결과 {list.length}건</ResultText>
             </ResultBox>
-            <ArticleItem {...list} />
+            {list.map((item) => {
+              return (
+                <ArticleItem {...item} key={item._id}/>
+              )
+            })}
           </View>
           )}       
       </Wrap>

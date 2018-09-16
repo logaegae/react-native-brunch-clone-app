@@ -32,7 +32,7 @@ class ContentItem extends Component {
   }
   
   render(){
-    const { published, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather, _id, handleModal } = this.props;
+    const { published, text, writtenDate, updatedDate, title, bgStyle, startDate, finishDate, weather, handleModal, _id } = this.props;
     return (
       <Wrap1>
         <Wrap2 backgroundColor={!bgStyle.photoUrl ? bgStyle.backgroundColor ? bgStyle.backgroundColor : "transparent" : "transparent"}>  

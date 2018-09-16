@@ -1,30 +1,25 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
 import styled from 'styled-components';
-
-const { height, width } = Dimensions.get("window");
 
 export default class WriterItem extends Component {
   constructor(props){
     super(props);
     this.state = {
-      writerNickname: 'nickname',
-      articleNum: 3,
     }
   }
 
 
   render(){
-    const { writerNickname, articleNum } = this.state;
+    const { name, articleLength } = this.props;
     
     return (
       <Wrap>  
         <Row>
           <WriterBox>
             <ProfileImgBox source={require('../../assets/siba.jpg')}/>
-            <WriterText>{writerNickname}</WriterText>
+            <WriterText>{name}</WriterText>
           </WriterBox>
-          <ArticleNumText>글수 {articleNum}</ArticleNumText>
+          <ArticleNumText>글수 {articleLength}</ArticleNumText>
         </Row>
       </Wrap>
     )

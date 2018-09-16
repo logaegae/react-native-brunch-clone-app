@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import timeAgo from '../../lib/timeAgo';
-
-const { height, width } = Dimensions.get("window");
 
 export default class ArticleItem extends Component {
   constructor(props){
@@ -14,8 +11,7 @@ export default class ArticleItem extends Component {
   }
   
   render(){
-    const { title, text, isLiked, __id, startDate, finishDate } = this.props;
-    
+    const { title, text, isLiked, __id, startDate, finishDate, writtenDate, updatedDate, weather } = this.props;
     return (
       <Wrap>  
         <FirstRow>
@@ -23,8 +19,7 @@ export default class ArticleItem extends Component {
             <DateText>{startDate ? startDate : ''}{finishDate? ' - '+finishDate : ''}</DateText>
           </DateBox>
           <WeatherBox>
-            <MaterialCommunityIcons name="weather-sunny" color="#999" size={20} style={{marginLeft:3}}/>
-            <MaterialCommunityIcons name="weather-partlycloudy" color="#999" size={20} style={{marginLeft:3}} />
+            <MaterialCommunityIcons name={weather} color="#999" size={20} style={{marginLeft:3}}/>
           </WeatherBox>
         </FirstRow>
         <TitBox>
@@ -37,7 +32,7 @@ export default class ArticleItem extends Component {
           <WriterText>by. {__id.name}</WriterText>
           <RightBox>
             <BtnLike onPressOut={this.props.likeToggle}>
-              {item.isLiked && item.isLiked.indexOf(__id.name) != -1 ? (
+              {isLiked && isLiked.indexOf(__id.name) != -1 ? (
                 <Ionicons name="md-heart" color="#EC4568" size={13} />
                 ) : (
                 <Ionicons name="md-heart-outline" color="#666" size={13} />
@@ -46,7 +41,7 @@ export default class ArticleItem extends Component {
               <LikeNum>{isLiked.length}</LikeNum>
             </BtnLike>
             <Dot></Dot>
-            <WrittenDateText>{item.updatedDate ? timeAgo(item.updatedDate, true) : timeAgo(item.writtenDate, true)}</WrittenDateText>
+            <WrittenDateText>{updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</WrittenDateText>
           </RightBox>
         </LastRow>
       </Wrap>
