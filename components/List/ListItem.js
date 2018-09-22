@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
+import { TouchableOpacity, Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
+import timeAgo from '../../lib/timeAgo';
 
 const { height, width } = Dimensions.get("window");
 
@@ -10,61 +11,66 @@ class ListItem extends Component {
   constructor(props){
     super(props);
     this.state = {
-      bgStyle : {
-        backgroundColor: "#1adeb8",
-        photoUrl: "http://img.insight.co.kr/static/2018/04/26/700/2mj61hb3b5kz181s70qd.jpg",
-      },
-      weather: "weather-sunny",
-      startDate: "2018.01.01",
-      finishDate: "2018.01.02",      
-      title: "45일동안 서유럽 한바퀴, 45days in Wetern Europe",
-      text: "봄바람이다 풀밭에 속잎나고 가지에 싹이 트고 꽃 피고 새 봄바람이다 풀밭에 속잎나고 가지에 싹이 트고 꽃 피고 새",
-      isLiked: false,
-      likeCount: 120,
-      updatedDate: "9시간 전",
-      profileImg: "https://image.fmkorea.com/files/attach/new/20180501/486616/909844983/1039257189/2761aa3169424351e01076f85b61ba45.jpeg",
-      nickname: "bonobono"
     }
   }
   
   render(){
-    const { title, text, startDate, finishDate, weather, bgStyle, updatedDate, profileImg, nickname, isLiked, likeCount } = this.state;
+    const { _id, title, text, startDate, finishDate, weather, bgStyle, updatedDate, __id, isLiked } = this.props;
     
+    // bgStyle.backgroundColor = ""
+    // bgStyle.photoUrl = "http://holotrip.co.kr/wp-content/uploads/2017/05/%EC%97%90%ED%8E%A01.jpg";
+    // bgStyle.backgroundColor = "#ccc"
+    //bgStyle.photoUrl = ""
+    //__id.profileImg = "http://t1.daumcdn.net/friends/prod/editor/fe1fbe7c-4c82-446e-bc5c-f571d90b0ba9.jpg";
+
     return (
-      <Wrap background={bgStyle.backgroundColor}> 
-        <WriterBox>
-          <ProfileImgBox source={{ uri: profileImg }} />
-          <WriterNickname>{nickname}</WriterNickname>  
-        </WriterBox> 
-        <FirstRow>
-          <DateBox>
-            <DateText>{startDate ? startDate : ''} {finishDate ? '- ' + finishDate : ''}</DateText>
-          </DateBox>
-          <WeatherBox>
-            <MaterialCommunityIcons name={weather} color="#fff" size={20} style={{marginLeft:3}}/>
-          </WeatherBox>
-        </FirstRow>
-        <TitBox>
-          <TitText>{title}</TitText>
-          <BorderBox></BorderBox>
-        </TitBox>
-        <TextBox>
-          <ConText numberOfLines={3}>{text}</ConText>
-        </TextBox>
-        <Row>
-          <LikeBox>
-            <BtnLike>
-              {isLiked ? (
-                <Ionicons name="md-heart" color="#EC4568" size={13} />
+      <Wrap>
+        <Wrapper bg={!bgStyle.photoUrl ? 
+          ( "background-color:" + bgStyle.backgroundColor) : null }>
+          {!bgStyle.backgroundColor ? (
+            <BgBox>
+              <BgImage source={{ uri: bgStyle.photoUrl }} />
+              <BgMask></BgMask>
+            </BgBox>
+          ) : null }
+          <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : __id.name})}>
+            <ProfileImgBox source={{ uri: __id.profileImg }} />
+            <WriterNickname>{__id.name}</WriterNickname>  
+          </WriterBox> 
+          <FirstRow>
+            <DateBox>
+              <DateText>{startDate ? startDate : ''} {finishDate ? '- ' + finishDate : ''}</DateText>
+            </DateBox>
+            <WeatherBox>
+              <MaterialCommunityIcons name={weather} color="#fff" size={20} style={{marginLeft:3}}/>
+            </WeatherBox>
+          </FirstRow>
+          <TouchableOpacity onPressOut={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>
+            <TitBox>
+              <TitText>{title}</TitText>
+              <BorderBox></BorderBox>
+            </TitBox>
+            <TextBox>
+              <ConText numberOfLines={2}>{text}</ConText>
+            </TextBox>
+          </TouchableOpacity>
+          <Row>
+            <LikeBox>
+              {isLiked && isLiked.indexOf(__id.name) != -1 ? (
+                <BtnLike onPress={()=>{this.props._handleLike(_id)}}>
+                  <Ionicons name="md-heart" color="#EC4568" size={13} />
+                  <LikeNum>{isLiked.length}</LikeNum>
+                </BtnLike>
                 ) : (
-                <Ionicons name="md-heart-outline" color="#fff" size={13} />
-                )
-              }
-              <LikeNum>{likeCount}</LikeNum>
-            </BtnLike>
-          </LikeBox>
-          <UpdatedDate> · {updatedDate}</UpdatedDate>
-        </Row>
+                <BtnLike onPress={()=>{this.props._handleLike(_id)}}>
+                  <Ionicons name="md-heart-outline" color="#fff" size={13}/>
+                  <LikeNum>{isLiked.length}</LikeNum>
+                </BtnLike>
+              )}
+            </LikeBox>
+            <UpdatedDate> · {updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</UpdatedDate>
+          </Row>
+        </Wrapper>
       </Wrap>
     )
   }
@@ -73,10 +79,40 @@ class ListItem extends Component {
 export default withNavigation(ListItem);
     
 const Wrap = styled.View`
-  padding: 7% 10%;
   margin-bottom:7%;
-  background:${prop => prop.background}; 
   border-radius: 10px;
+`;
+  
+  const Wrapper = styled.View`
+  position: relative;
+  padding:7% 10%;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-radius: 10px;
+  ${prop => prop.bg}; 
+`;
+
+const BgBox = styled.View`
+  flex: 1;
+  overflow:hidden;
+  position:absolute;
+  top:0;
+  bottom: 0;
+  left:0;
+  right:0;
+  border-radius: 10px;
+`;
+
+const BgImage = styled.Image`
+  width: 100%;
+  height:100%;
+`;
+
+const BgMask = styled.View`
+  position:absolute;
+  width: 100%;
+  height:100%;
+  backgroundColor: rgba(0,0,0,0.5);
 `;
 
 const WriterBox = styled.TouchableOpacity`

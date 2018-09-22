@@ -7,6 +7,7 @@ import Carousel from 'react-native-snap-carousel';
 import axios from 'axios';
 import { domain } from '../../config';
 import timeAgo from '../../lib/timeAgo';
+import ToggleLike from '../Common/ToggleLike';
 
 const { height, width } = Dimensions.get("window");
 
@@ -20,38 +21,10 @@ class ContentItem extends React.Component {
         };
         this.props = props;
         this._carousel = {};
-        this.handleLike = this.handleLike.bind(this);
     }
 
     componentDidMount() {
         this.getList();
-    }
-
-    handleLike(_id) {
-        const header = {
-            headers : {
-                'x-access-token' : this.props.token
-            }
-        }
-        axios.post(domain + '/api/article/toggleLike', {_id}, header)
-        .then((res) => {
-            if(res.data.status === 'SUCCESS'){
-                let list = this.state.cardCon;
-                for(i=0;i<list.length;i++){
-                    if(list[i]._id === _id){ 
-                        list[i].isLiked = res.data.like;
-                        break;
-                    }
-                }
-                if(res.data.addAction){
-                    this.props.setLikeIcon(true);
-                }
-                this.setState({
-                    ...this.state,
-                    cardCon : list
-                })
-            }
-        });
     }
 
     getList() {
@@ -94,22 +67,12 @@ class ContentItem extends React.Component {
                 </TxtBox>
               </ViewLinkBox>
               <Row>
-                <LikeBox>
-                  <BtnLike>
-                    {item.isLiked && item.isLiked.indexOf(item.__id.name) != -1 ? (
-                      <Ionicons name="md-heart" color="#EC4568" size={30}  onPress={()=>{this.handleLike(item._id)}}/>
-                      ) : (
-                      <Ionicons name="md-heart-outline" color="#fff" size={30}  onPress={()=>{this.handleLike(item._id)}}/>
-                      )
-                    }
-                    <LikeNum>{item.isLiked.length}</LikeNum>
-                  </BtnLike>
-                </LikeBox>
+                <ToggleLike heartSize={20} numSize={20} isLiked={item.isLiked} _id={item._id}/>
                 <UpdatedDate> · {item.updatedDate ? timeAgo(item.updatedDate, true) : timeAgo(item.writtenDate, true)}</UpdatedDate>
               </Row>
             </FlexBox>
             <FlexBox flexEnd>
-              <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : item.__id.name})}>
+              <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : item.__id._id})}>
                 <ProfileImgBox source={{ uri: item.__id.profileImg }} />
                 <WriterNickname>{item.__id.name}</WriterNickname>
               </WriterBox>
@@ -233,24 +196,6 @@ const Row = styled.View`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-`;
-
-const LikeBox = styled.View`
-  flex-direction: row;
-  justify-content: flex-end;
-`;
-
-const BtnLike = styled.TouchableOpacity`
-  align-items: center;
-  flex-direction: row;
-`;
-
-const LikeNum = styled.Text`
-  font-family: NanumGothic;
-  margin-left:3px;
-  color:#fff;
-  font-size:14px;
-  font-weight:500;
 `;
 
 const UpdatedDate = styled.Text`

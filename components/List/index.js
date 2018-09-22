@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Dimensions, ScrollView } from 'react-native';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { setLikeIcon } from '../../actions';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { domain } from '../../config';
 
 import ListItem from './ListItem';
 
@@ -12,7 +15,7 @@ class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      items: [],
+      items: {},
       loading: true,
       message: "로딩 중..."
     }
@@ -20,20 +23,80 @@ class List extends Component {
 
   componentDidMount(){
     this.setState({
-      items: this.props.article.items,
       loading: false,
     })
+    this.getList();
+  }
+
+  getList() {
+    const _this = this;
+    axios.get(domain + '/api/article/getAllList')
+    .then((res)=>{
+        if(res.data.status === 'SUCCESS'){
+            this.setState({
+                ...this.state,
+                items : res.data.list
+            },()=>{
+              // alert(JSON.stringify(_this.state.items))
+            });
+        }
+    })
+    .catch((err)=>{})
+  }
+
+  handleLike(_id) {
+    const header = {
+        headers : {
+            'x-access-token' : this.props.login.token
+        }
+    }
+    axios.post(domain + '/api/article/toggleLike', {_id}, header)
+    .then((res) => {
+        if(res.data.status === 'SUCCESS'){
+            let list = this.state.items;
+            for(i=0;i<list.length;i++){
+                if(list[i]._id === _id){ 
+                    list[i].isLiked = res.data.like;
+                    break;
+                }
+            }
+            if(res.data.addAction){
+                this.props.setLikeIcon(true);
+            }
+            this.setState({
+                ...this.state,
+                items : list
+            })
+        }
+    });
+  }
+
+  _getItemList () {
+    if(Object.keys(this.state.items).length === 0) return '';
+    var indents = [];
+    Object.values(this.state.items).forEach((e, i) => {
+      indents.push(
+      <ListItem 
+        key={i} {...e} 
+        token={this.props.login.token} 
+        nickname={this.props.login.nickname} 
+        setLikeIcon={this.props.setLikeIcon} 
+        _handleLike={(_id)=>{this.handleLike(_id)}}
+        />);
+    })
+
+    return indents;
   }
 
   render(){
-    const { loading, message } = this.state;
+    const { items, message } = this.state;
 
     return(
         <Wrap>
           <HeaderBox>
             <BtnBox>
               <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
-                <Ionicons name="ios-arrow-round-back" color="#333" size={50}/>
+                <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
               </BtnIcon>
             </BtnBox>
             <LogoBox>
@@ -42,11 +105,10 @@ class List extends Component {
           </HeaderBox>
           <ScrollView>
             <ConBox>
-              {/* <NoDataBox><NoDataText>{message}</NoDataText></NoDataBox> */}
-              <ListItem />
-              <ListItem />
-              <ListItem />
-              <ListItem />
+              {Object.keys(items).length === 0 
+                ? (<NoDataBox><NoDataText>{message}</NoDataText></NoDataBox>)
+                : this._getItemList()
+              }
             </ConBox>
           </ScrollView>
         </Wrap>
@@ -56,11 +118,19 @@ class List extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    article : state.redux.article,
+    login: state.redux.auth.login,
   };
 }
 
-export default connect(mapStateToProps)(List);
+const mapDispatchToProps = (dispatch) => {
+  return {
+      setLikeIcon : (bool) => {
+        return dispatch(setLikeIcon(bool));
+      }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(List);
 
 const Wrap = styled.View`
   flex: 1;

@@ -1,20 +1,68 @@
 import React, { Component } from 'react';
-import { Dimensions, StatusBar } from 'react-native';
+import { Dimensions, StatusBar, Text } from 'react-native';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { setLikeIcon } from '../../actions'  
 import { Ionicons } from '@expo/vector-icons';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import axios from 'axios';
+import { domain } from '../../config';
 
 import WriterViewItem from './WriterViewItem';
 
 const { height, width } = Dimensions.get("window");
 
-export default class WriterView extends Component {
+class WriterView extends Component {
   constructor(props){
     super(props);
     this.state = {
-      writerNickname: "bonobono 보노보노",
-      articleNum: 3,
+      items: {},
+      message: "로딩 중...",
+      writer : {}
     }
+  }
+
+  componentDidMount(){
+    axios.post(domain + '/api/article/getUsersArticle', {_id : this.props.navigation.getParam('writer_id')})
+        .then((res) => {
+            if(res.data.status === 'SUCCESS'){
+                this.setState({
+                    writer : res.data.writer,
+                    items : res.data.list
+                })
+            }else{
+              alert('ERROR');
+            }
+        }).catch(err => {
+          alert('Server Connection Error');
+        });
+  }
+
+  handleLike(_id) {
+    const header = {
+        headers : {
+            'x-access-token' : this.props.login.token
+        }
+    }
+    axios.post(domain + '/api/article/toggleLike', {_id}, header)
+    .then((res) => {
+        if(res.data.status === 'SUCCESS'){
+            let list = this.state.items;
+            for(i=0;i<list.length;i++){
+                if(list[i]._id === _id){ 
+                    list[i].isLiked = res.data.like;
+                    break;
+                }
+            }
+            if(res.data.addAction){
+                this.props.setLikeIcon(true);
+            }
+            this.setState({
+                ...this.state,
+                items : list
+            })
+        }
+    });
   }
 
   renderFixedHeader() {
@@ -30,7 +78,7 @@ export default class WriterView extends Component {
   renderSticky(){
     return(
       <StickyBox>
-        <Nickname style={{marginTop: 5}}>{this.state.writerNickname}</Nickname>
+        <Nickname style={{marginTop: 5}}>{this.state.writer.name}</Nickname>
       </StickyBox>
     )
   }
@@ -39,17 +87,35 @@ export default class WriterView extends Component {
     return(
       <HeaderConBox>
         <ProfileBox>
-          <ProfileImgBox source={require('../../assets/siba.jpg')}/>
-          <Nickname>{this.state.writerNickname}</Nickname>
-          <ArticleNum>글수 {this.state.articleNum}</ArticleNum>
+          <ProfileImgBox source={{uri: this.state.writer.profileImg}} />
+          <Nickname>{this.state.writer.name}</Nickname>
+          <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
         </ProfileBox> 
       </HeaderConBox>
     )
   }
 
+  _getItemList () {
+    if(Object.keys(this.state.items).length === 0) return '';
+    var indents = [];
+    Object.values(this.state.items).forEach((e, i) => {
+      indents.push(
+        <WriterViewItem 
+          key={i} {...e} 
+          token={this.props.login.token} 
+          nickname={this.props.login.name} 
+          setLikeIcon={this.props.setLikeIcon} 
+          _handleLike={(_id) => {this.handleLike(_id)}} 
+          />);
+    })
+
+    return indents;
+  }
  
 
-  render(){    
+  render(){  
+    const { items, message } = this.state;
+
     return(
         <Wrap>         
           <StatusBar hidden={false} />
@@ -66,9 +132,11 @@ export default class WriterView extends Component {
             renderForeground={() => this.renderHeaderContent()}
             >
             <ConBox>
-              <WriterViewItem />
-              <WriterViewItem />
-              <WriterViewItem />
+              {/* <Text>{JSON.stringify(this.state.items)}</Text> */}
+              {Object.keys(items).length === 0 
+              ? (<NoDataBox><NoDataText>{message}</NoDataText></NoDataBox>)
+              : this._getItemList()
+            }
             </ConBox>
           </ParallaxScrollView> 
         </Wrap>
@@ -76,10 +144,25 @@ export default class WriterView extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    login: state.redux.auth.login,
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+      setLikeIcon : (bool) => {
+        return dispatch(setLikeIcon(bool));
+      }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WriterView);
+
 const Wrap = styled.View`
   flex: 1;
-  margin-top:7%;
-  margin-bottom: -7%;
+  margin:8% 0 -8%;
 `;
 
 const StickyBox = styled.View`
@@ -132,6 +215,8 @@ const ProfileImgBox = styled.Image`
   height : 100px;
   border-radius : 50px;
   background-color : #ccc;
+  border-width: 1px;
+  border-color: #e5e5e5;
 `;
 
 const Nickname = styled.Text`
@@ -150,4 +235,15 @@ const ArticleNum = styled.Text`
 
 const ConBox = styled.View`
   padding:7%;
+`;
+
+const NoDataBox = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
+
+const NoDataText = styled.Text`
+  color:#666;
+  font-size:16px;
+  font-family: NanumGothic;
 `;

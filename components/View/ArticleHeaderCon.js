@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { withNavigation } from 'react-navigation';
 const { height, width } = Dimensions.get("window");
 
-export default class ArticleHeaderCon extends Component {
+class ArticleHeaderCon extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -14,7 +14,7 @@ export default class ArticleHeaderCon extends Component {
 
   render(){
 
-    const { title, startDate, finishDate, writer, weather } = this.props;
+    const { title, startDate, finishDate, __id, weather } = this.props.state;
 
     return(
         <Wrap>
@@ -31,10 +31,10 @@ export default class ArticleHeaderCon extends Component {
             </TitBox>
           </ConBox>
           <Row>
-            <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : writer.name})}>
+            <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
               <ProfileImgBox source={require('../../assets/siba.jpg')}/>
-              <WriterNickname>{writer.name}</WriterNickname>
-            </WriterBox>              
+              <WriterNickname>{__id.name}</WriterNickname>
+            </WriterBox>
           </Row>       
         </Wrap>
       )
@@ -119,3 +119,5 @@ const WrittenDate = styled.Text`
   color:#fff;
   font-size:12px;
 `;
+
+export default withNavigation(ArticleHeaderCon);

@@ -1,87 +1,94 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import timeAgo from '../../lib/timeAgo';
+import { withNavigation } from 'react-navigation';
+import ToggleLike from '../Common/ToggleLike';
 
 const { height, width } = Dimensions.get("window");
 
-export default class WriterViewItem extends Component {
+class WriterViewItem extends Component {
   constructor(props){
     super(props);
     this.state = {
-      conText: `봄바람이다 풀밭에 속잎나고 가지에 싹이 트고 꽃 피고 새 우는 봄날의 천지는 얼마나 기쁘며 얼마나 아름다우냐`,
-      isPulished: false,
-      writtenDate: "9시간 전",
-      isLiked: false,
-      likeCount: 120,
     }
   }
 
-  _handlePublishing(isPulished){
-    this.setState(function(prevState){
-      if(isPulished) {
-        return {isPulished:false}
-      } else {
-        return {isPulished:true}
-      }
-    });
-  }
-
-  _handleLikeStatus(isLiked){
-    this.setState(function(prevState){
-      if(isLiked) {
-        return {isLiked:false, likeCount: prevState.likeCount -1}
-      } else {
-        return {isLiked:true, likeCount: prevState.likeCount +1}
-      }
-    });
-  }
 
   render(){
-    const { isPulished, conText, writtenDate, isLiked, likeCount  } = this.state;
-    
+    const { _id, startDate, finishDate, weather, title, text, writtenDate, updatedDate, bgStyle, isLiked, __id } = this.props;
     return (
       <Wrap>  
-        <FirstRow>
-          <DateBox>
-            <DateText>2018.01.01 - 2018.01.01</DateText>
-          </DateBox>
-          <WeatherBox>
-            <MaterialCommunityIcons name="weather-sunny" color="#fff" size={20} style={{marginLeft:3}}/>
-            <MaterialCommunityIcons name="weather-partlycloudy" color="#fff" size={20} style={{marginLeft:3}} />
-          </WeatherBox>
-        </FirstRow>
-        <TitBox>
-          <TitText>45일동안 서유럽 한바퀴, 45days in Wetern Europe</TitText>
-          <BorderBox></BorderBox>
-        </TitBox>
-        <TextBox>
-          <ConText numberOfLines={3}>{conText}</ConText>
-        </TextBox>
-        <LastRow>
-          <LikeBox>
-              <BtnLike onPressOut={() => this._handleLikeStatus(isLiked)}>
-                {isLiked ? (
-                  <Ionicons name="md-heart" color="#EC4568" size={13} />
-                  ) : (
-                  <Ionicons name="md-heart-outline" color="#fff" size={13} />
-                  )
-                }
-                <LikeNum>{likeCount}</LikeNum>
-              </BtnLike>
-            </LikeBox>
-          <WrittenDate> · {writtenDate}</WrittenDate>
-        </LastRow>
+        <Wrapper bg={!bgStyle.photoUrl ? 
+          ( "background-color:" + bgStyle.backgroundColor) : null }>
+          {!bgStyle.backgroundColor ? (
+            <BgBox>
+              <BgImage source={{ uri: bgStyle.photoUrl }} />
+              <BgMask></BgMask>
+            </BgBox>
+          ) : null }
+          <FirstRow>
+            <DateBox>
+            <DateText>{startDate ? startDate : ''} {finishDate ? '- ' + finishDate : ''}</DateText>
+            </DateBox>
+            <WeatherBox>
+              <MaterialCommunityIcons name={weather} color="#fff" size={20} style={{marginLeft:3}}/>
+            </WeatherBox>
+          </FirstRow>
+          <TouchableOpacity onPressOut={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>
+            <TitBox>
+              <TitText>{title}</TitText>
+              <BorderBox></BorderBox>
+            </TitBox>
+            <TextBox>
+              <ConText numberOfLines={2}>{text}</ConText>
+            </TextBox>
+          </TouchableOpacity>
+          <LastRow>
+            <ToggleLike heartSize={15} numSize={15} numYn={false} isLiked={isLiked} _id={_id}/>
+            <UpdatedDate> · {updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</UpdatedDate>
+          </LastRow>
+        </Wrapper>  
       </Wrap>
     )
   }
 }
     
 const Wrap = styled.View`
-  padding: 7% 10%;
-  margin-bottom:7%;
-  background:#5ED9FF;
+  margin-bottom:8%;
+`;
+
+const Wrapper = styled.View`
+  position: relative;
+  padding:7% 10%;
+  flex-direction: column;
+  justify-content: flex-start;
   border-radius: 10px;
+  ${prop => prop.bg}; 
+`;
+
+const BgBox = styled.View`
+  flex: 1;
+  overflow:hidden;
+  position:absolute;
+  top:0;
+  bottom: 0;
+  left:0;
+  right:0;
+  border-radius: 10px;
+`;
+
+const BgImage = styled.Image`
+  width: 100%;
+  height:100%;
+`;
+
+const BgMask = styled.View`
+  position:absolute;
+  width: 100%;
+  height:100%;
+  backgroundColor: rgba(0,0,0,0.5);
 `;
 
 const FirstRow = styled.View`
@@ -166,8 +173,10 @@ const LikeNum = styled.Text`
   font-weight:500;
 `;
 
-const WrittenDate = styled.Text`
+const UpdatedDate = styled.Text`
   font-family: NanumGothic;
   color:#fff;
   font-size:12px;
 `;
+
+export default withNavigation(WriterViewItem);
