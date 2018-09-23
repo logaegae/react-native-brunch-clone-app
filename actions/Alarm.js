@@ -26,6 +26,9 @@ export const setLikeIcon = (bool) => {
 //Ararm Icons check
 export const notifyIconReapeat = (token) => {
     return (dispatch) => {
+        if(getNotifyRepeat) {
+            clearInterval(getNotifyRepeat);
+        }
         //한번하고
         getAlarmFn(token, dispatch, 'notify');
         //10초마다 하기
@@ -43,6 +46,9 @@ export const clearNotifyIconReapeat = (token) => {
 
 export const likeIconReapeat = (token) => {
     return (dispatch) => {
+        if(getLikeRepeat) {
+            clearInterval(getLikeRepeat);
+        }
         //한번하고
         getAlarmFn(token, dispatch, 'like');
         //10초마다 하기

@@ -13,6 +13,7 @@ import {
 import axios from 'axios';
 import { AsyncStorage } from "react-native";
 import { domain } from '../config';
+import { setLikeIcon, setNotifyIcon, clearNotifyIconReapeat, clearLikeIconReapeat } from './Alarm';
 
 //action creator
 export const getting = () => {
@@ -152,6 +153,10 @@ export const logoutRequest = () => {
     return async (dispatch) => {
         try {
             await AsyncStorage.removeItem('@BrunchApp:Auth');
+            dispatch(setNotifyIcon(false));
+            dispatch(setLikeIcon(false));
+            dispatch(clearNotifyIconReapeat());
+            dispatch(clearLikeIconReapeat());
             dispatch(logOut());
         } catch (error) {
             alert("Error retrieving data : " + error);

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { userLogin, authInit } from '../../actions';
+import { userLogin, authInit, notifyIconReapeat, likeIconReapeat } from '../../actions';
 import { Ionicons, Feather } from '@expo/vector-icons';
 
 const { height, width } = Dimensions.get("window");
@@ -22,6 +22,8 @@ class SignIn extends Component {
       const { http } = this.props.auth;
       if( this.props.auth.login.logged && http.status === 'SUCCESSED' && http.result === 'SUCCESSED') {
         this.props.authInit();
+        this.props.notifyIconReapeat(this.props.login.token);
+        this.props.likeIconReapeat(this.props.login.token);
         this.props.navigation.navigate("Home");
 
       }else if( http.status === 'FAILED' || http.result === 'FAILED' ){
@@ -164,7 +166,8 @@ const P = styled.Text`
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.redux.auth
+    auth: state.redux.auth,
+    login : state.redux.auth.login
   };
 }
 
@@ -175,7 +178,13 @@ const mapDispatchToProps = (dispatch) => {
       },
       authInit: () => {
         return dispatch(authInit());
-      }
+      },
+      notifyIconReapeat: (token) => {
+        return dispatch(notifyIconReapeat(token));
+      },
+      likeIconReapeat: (token) => {
+        return dispatch(likeIconReapeat(token));
+      },
   };
 }
 

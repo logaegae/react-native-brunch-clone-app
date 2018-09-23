@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Dimensions, ScrollView } from 'react-native';
+import { Dimensions, ScrollView, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { setLikeIcon } from '../../actions';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { domain } from '../../config';
+import { debounce } from "debounce";
 
 import ListItem from './ListItem';
 
@@ -17,7 +18,9 @@ class List extends Component {
     this.state = {
       items: {},
       loading: true,
-      message: "로딩 중..."
+      message: "로딩 중...",
+      endYn : false,
+      listCount : 1
     }
   }
 
@@ -28,16 +31,30 @@ class List extends Component {
     this.getList();
   }
 
+  _onEndReached(){
+    if(!this.state.endYn)(debounce(()=>{
+      const listCount = ++this.state.listCount;
+      this.setState({
+        ...this.state,
+        listCount
+      },()=>{
+        this.getList();
+      })
+    },1000))();
+  }
+
   getList() {
-    const _this = this;
-    axios.get(domain + '/api/article/getAllList')
+    const obj = {
+      listCount : this.state.listCount
+    }
+    axios.post(domain + '/api/article/getAllList',obj)
     .then((res)=>{
         if(res.data.status === 'SUCCESS'){
             this.setState({
                 ...this.state,
-                items : res.data.list
+                items : res.data.list,
+                endYn : res.data.endYn
             },()=>{
-              // alert(JSON.stringify(_this.state.items))
             });
         }
     })

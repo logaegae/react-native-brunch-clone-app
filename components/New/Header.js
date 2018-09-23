@@ -16,7 +16,6 @@ class NewHeader extends React.Component {
     componentDidUpdate(prevProps) {
         if(prevProps.http !== this.props.http) {
             if(this.props.http.status === "SUCCESSED" || "UPDATED") {
-                
                 this.props.handleState({
                     ...this.props.article,
                     _id : this.props.http.result

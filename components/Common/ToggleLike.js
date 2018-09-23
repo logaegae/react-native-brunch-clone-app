@@ -23,12 +23,12 @@ class ToggleLike extends Component {
             }
         }
         if(!this.props.login.token) return alert('Please Login');
-        
+
         axios.post(domain + '/api/article/toggleLike', {_id}, header)
         .then((res) => {
             if(res.data.status === 'SUCCESS'){
                 if(res.data.addAction){
-                    this.props.setLikeIcon(true);
+                    // this.props.setLikeIcon(true);
                 }
                 this.setState({
                     isLiked : res.data.like

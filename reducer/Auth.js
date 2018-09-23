@@ -108,7 +108,8 @@ export default function auth(state = initialState, action) {
                     logged : false,
                     name : '',
                     id : '',
-                    _id : ''
+                    _id : '',
+                    token : ''
                 }
             };
         //이름변경

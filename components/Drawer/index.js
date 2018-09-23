@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, ScrollView, Text } from 'react-native';
+import { StatusBar, ScrollView, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import DrawerHeader from '../Common/ContentHeader';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import Theme from '../../style/theme';
 import { domain } from '../../config';
 import { setNotifyIcon } from '../../actions';
+import { debounce } from "debounce";
 
 
 class DrawerView extends React.Component {
@@ -25,13 +26,16 @@ class DrawerView extends React.Component {
         message : "로딩중...",
         buttonShow : false,
         isModalVisible : false,
-        _id : null
+        _id : null,
+        endYn : false,
+        listCount : 1
     }
 
-    componentDidMount(){
+    getUserArticles(){
         const obj = {
             id : this.props.login.id,
-            includePublish : true
+            includePublish : true,
+            listCount : ++this.state.listCount
         };
         axios.post(domain+'/api/article/getUserArticle', obj)
         .then((res) => {
@@ -42,7 +46,10 @@ class DrawerView extends React.Component {
                 const articles = res.data.data;
 
                 let newState = {
-                    articles
+                    ...this.state,
+                    articles,
+                    listCount : obj.listCount,
+                    endYn : res.data.endYn
                 }
                 if(Object.keys(articles).length === 0 ) {
                     newState.message = "저장한 글이 없습니다.";
@@ -54,6 +61,22 @@ class DrawerView extends React.Component {
         }).catch((error) => {
             alert("ERROR\n"+error.message);
         });
+    }
+
+    componentDidMount(){
+        this.getUserArticles();
+    }
+
+    _onEndReached(){
+        if(!this.state.endYn)(debounce(()=>{
+          const listCount = ++this.state.listCount;
+          this.setState({
+            ...this.state,
+            listCount
+          },()=>{
+            this.getUserArticles();
+          })
+        },1000))();
     }
 
     _handleUpdate(_id, obj, target) {
@@ -130,18 +153,19 @@ class DrawerView extends React.Component {
             isModalVisible : !this.state.isModalVisible
         });
     }
-
-    _getArticleItems () {
-        if(Object.keys(this.state.articles).length === 0) return '';
-        let indents = [];
-        Object.values(this.state.articles).forEach((e,i)=>{
-            indents.push(<ContentItem key={i} {...e} handleUpdate={this._handleUpdate} handleModal={this._handleModal}/>);
+    objectToArray(obj) {
+        let arr = [];
+        Object.keys(obj).forEach(e => {
+            arr.push(obj[e])
         });
-        return indents;
+        return arr;
     }
+
+    _keyExtractor = (item, index) => item._id;
 
     render() {
         const { articles, message, buttonShow, isModalVisible, _id } = this.state;
+        let articlesArr = this.objectToArray(articles);
         return (
             <Container>
                 <Modal 
@@ -159,7 +183,13 @@ class DrawerView extends React.Component {
                     <ConBox>
                         {Object.keys(articles).length === 0
                             ? (<NoItemText>{message}</NoItemText>)
-                            : this._getArticleItems()
+                            : <FlatList
+                                data={articlesArr}
+                                renderItem={({item}) => <ContentItem {...item} key={item._id} handleUpdate={this._handleUpdate} handleModal={this._handleModal}/>}
+                                onEndReached = {()=>{this._onEndReached()}}
+                                onEndReachedThreshold = {0.5}
+                                keyExtractor={this._keyExtractor}
+                            />
                         }
                         {buttonShow ? <WriteArticleButton
                             title="글 쓰러 가기"
