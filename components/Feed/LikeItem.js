@@ -10,7 +10,7 @@ export default class LikeItem extends Component {
   }
   
   render(){
-    const { title, confirmed, registedDate, alarmType, likePersonName, likeLength } = this.props;
+    const { title, confirmed, registedDate, alarmType, likePersonName, likeLength } = this.props.data;
     const typeMessage = {
       like : likeLength != 1 ? `을 ${likePersonName}님이 외 ${likeLength}명이 좋아합니다.` : `을 ${likePersonName}님이 좋아합니다.`
     }

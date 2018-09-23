@@ -46,7 +46,7 @@ class WriterViewItem extends Component {
             </TextBox>
           </TouchableOpacity>
           <LastRow>
-            <ToggleLike heartSize={15} numSize={15} numYn={false} isLiked={isLiked} _id={_id}/>
+            <ToggleLike heartSize={15} numSize={15} isLiked={isLiked} _id={_id}/>
             <UpdatedDate> · {updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</UpdatedDate>
           </LastRow>
         </Wrapper>  

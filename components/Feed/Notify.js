@@ -1,18 +1,21 @@
-import React, { Component } from 'react'
-import { ScrollView } from 'react-native';
-import { connect } from 'react-redux';
+import React, { Component } from 'react';
+import {FlatList} from 'react-native';
+import { connect, } from 'react-redux';
 import styled from 'styled-components';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
 import { setNotifyIcon } from '../../actions';
 import axiosRequest from '../../lib/axiosRequest';
+import { debounce } from "debounce";
 
 class Notify extends Component {
   constructor(props){
     super(props);
     this.state = {
-      alarms : [],
-      message : '로딩중'
+      listCount : 1,
+      message : '로딩중',
+      dataSource: [],
+      endYn : false
     }
   }
 
@@ -28,30 +31,22 @@ class Notify extends Component {
 
   getAlarmList () {
     //@ Boolean Fn ( path, obj, token ) / promise
-    axiosRequest('/api/alarm/getUserAlarm', {type:'notify'}, this.props.login.token)
+    axiosRequest('/api/alarm/getUserAlarm', {type:'notify', listCount:this.state.listCount}, this.props.login.token)
     .then((res)=>{
       const alarms = res.data.data;
-      let newState = {
-          alarms
-      }
+      const endYn = res.data.endYn;
+      let newState = {...this.state}
       if(Object.keys(alarms).length === 0 ) {
           newState.message = "알려드릴 게 없네요.";
       }else newState.message = "";
+      newState.dataSource = alarms;
+      newState.endYn = endYn;
       this.setState(newState);
     }).catch((err) => {
       if(res.data.status){}
       else
         alert(err);
     });
-  }
-
-  _getAlarmItems () {
-    if(Object.keys(this.state.alarms).length === 0) return '';
-    let indents = [];
-    Object.values(this.state.alarms).forEach((e,i)=>{
-        indents.push(<NotifyItem key={i} {...e} />);
-    });
-    return indents;
   }
 
   componentWillUnmount () {
@@ -66,20 +61,39 @@ class Notify extends Component {
         alert(err);
     });
   }
+
+  _onEndReached(){
+    if(!this.state.endYn)(debounce(()=>{
+      const listCount = ++this.state.listCount;
+      this.setState({
+        ...this.state,
+        listCount
+      },()=>{
+        this.getAlarmList();
+      })
+    },1000))();
+  }
+
+  _keyExtractor = (item, index) => item._id;
   
   render(){
-    const { alarms, message } = this.state;
+    const { dataSource, message } = this.state;
     return(
         <Wrap>
           <Header title="알림" />
-          <ScrollView>
-            <ConBox>
-              {Object.keys(alarms).length === 0
-                ? (<NoItemText>{message}</NoItemText>)
-                : this._getAlarmItems()
-              }
-            </ConBox>
-          </ScrollView>  
+          <ConBox>
+            {Object.keys(dataSource).length === 0
+              ? (<NoItemText>{message}</NoItemText>)
+              : 
+              <FlatList
+                data={dataSource}
+                renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
+                onEndReached = {()=>{this._onEndReached()}}
+                onEndReachedThreshold = {0.5}
+                keyExtractor={this._keyExtractor}
+              />
+            }
+          </ConBox>  
         </Wrap>
       )
   }
@@ -91,7 +105,7 @@ const Wrap = styled.View`
   margin-bottom:-7%;
 `;
 const ConBox = styled.View`
-  flex: 8.8;
+  flex : 1;
 `;
 const NoItemText = styled.Text`
     width : 100%;

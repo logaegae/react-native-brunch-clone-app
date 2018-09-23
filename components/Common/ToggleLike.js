@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { setLikeIcon } from '../../actions'  
+import { setLikeIcon } from '../../actions';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { domain } from '../../config';
@@ -22,6 +22,8 @@ class ToggleLike extends Component {
                 'x-access-token' : this.props.login.token
             }
         }
+        if(!this.props.login.token) return alert('Please Login');
+        
         axios.post(domain + '/api/article/toggleLike', {_id}, header)
         .then((res) => {
             if(res.data.status === 'SUCCESS'){
@@ -37,7 +39,7 @@ class ToggleLike extends Component {
 
     render(){
         const {isLiked} = this.state;
-        const {heartSize, numSize, _id, login, numYn=true} = this.props;
+        const {heartSize, numSize, _id, login} = this.props;
         return (
             <LikeBox>
                 <BtnLike>
@@ -47,7 +49,7 @@ class ToggleLike extends Component {
                     <Ionicons name="md-heart-outline" color="#fff" size={heartSize} onPress={()=>{this.handleLike(_id)}}/>
                     )
                 }
-                {numYn ? <LikeNum size={numSize}>{isLiked.length}</LikeNum> : ''}
+                <LikeNum size={numSize}>{isLiked.length}</LikeNum>
                 </BtnLike>
             </LikeBox>
         );

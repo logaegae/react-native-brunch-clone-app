@@ -10,7 +10,7 @@ export default class NotifyItem extends Component {
   }
   
   render(){
-    const { title, confirmed, registedDate, alarmType, likePersonName, likeLength } = this.props;
+    const { title, confirmed, registedDate, alarmType } = this.props.data;
     const typeMessage = {
       publish : "을 발행하였습니다.",
       unpublish : "이 발행취소되었습니다.",

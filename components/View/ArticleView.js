@@ -104,7 +104,7 @@ class ArticleView extends Component {
           <Ionicons name="ios-arrow-round-back" color={isScrolling ? ("#333") : ("#fff")} size={45}/>
         </BtnIcon>
         <Row>
-          <ToggleLike heartSize={20} numSize={20} numYn={false} isLiked={isLiked} _id={_id}/>
+          <ToggleLike heartSize={20} numSize={20} isLiked={isLiked} _id={_id}/>
           <WrittenDate visual={isScrolling}> · {updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</WrittenDate>   
         </Row> 
       </FixedHeaderBox>

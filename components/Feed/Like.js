@@ -1,18 +1,21 @@
 import React, { Component } from 'react'
-import { ScrollView } from 'react-native';
+import { FlatList } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import LikeItem from './LikeItem';
 import Header from '../Common/ContentHeader';
 import { setLikeIcon } from '../../actions';
 import axiosRequest from '../../lib/axiosRequest';
+import { debounce } from "debounce";
 
 class Like extends Component {
   constructor(props){
     super(props);
     this.state = {
-      alarms : {},
-      message : '로딩중'
+      listCount : 1,
+      message : '로딩중',
+      dataSource: [],
+      endYn : false
     }
   }
 
@@ -28,15 +31,16 @@ class Like extends Component {
 
   getAlarmList () {
     //@ Boolean Fn ( path, obj, token ) / promise
-    axiosRequest('/api/alarm/getUserAlarm', {type:'like'}, this.props.login.token)
+    axiosRequest('/api/alarm/getUserAlarm', {type:'like', listCount : this.state.listCount}, this.props.login.token)
     .then((res)=>{
       const alarms = res.data.data;
-      let newState = {
-          alarms
-      }
+      const endYn = res.data.endYn;
+      let newState = {...this.state}
       if(Object.keys(alarms).length === 0 ) {
           newState.message = "알려드릴 게 없네요.";
       }else newState.message = "";
+      newState.dataSource = alarms;
+      newState.endYn = endYn;
       this.setState(newState);
     }).catch((err) => {
       if(res.data.status){}
@@ -66,20 +70,38 @@ class Like extends Component {
         alert(err);
     });
   }
+
+  _onEndReached(){
+    if(!this.state.endYn)(debounce(()=>{
+      const listCount = ++this.state.listCount;
+      this.setState({
+        ...this.state,
+        listCount
+      },()=>{
+        this.getAlarmList();
+      })
+    },1000))();
+  }
   
+  _keyExtractor = (item, index) => item._id;
+
   render(){
-    const { alarms, message } = this.state;
+    const { alarms, message, dataSource } = this.state;
     return(
         <Wrap>
           <Header title="좋아요"/>
-          <ScrollView>
-            <ConBox>
-              {Object.keys(alarms).length === 0
+          <ConBox>
+              {Object.keys(dataSource).length === 0
                 ? (<NoItemText>{message}</NoItemText>)
-                : this._getAlarmItems()
+                : <FlatList
+                    data={dataSource}
+                    renderItem={({item}) => <LikeItem data={item} key={item._id}/>}
+                    onEndReached = {()=>{this._onEndReached()}}
+                    onEndReachedThreshold = {0.5}
+                    keyExtractor={this._keyExtractor}
+                  />
               }
-            </ConBox>
-          </ScrollView>
+          </ConBox>
         </Wrap>
       )
   }
@@ -91,7 +113,7 @@ const Wrap = styled.View`
   margin-bottom:-7%;
 `;
 const ConBox = styled.View`
-  flex: 8.8;
+  flex: 1;
 `;
 const NoItemText = styled.Text`
     width : 100%;
