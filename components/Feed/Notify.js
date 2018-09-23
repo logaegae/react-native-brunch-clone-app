@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { connect, } from 'react-redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
