@@ -26,13 +26,14 @@ export const getFailure = () => {
         type : AUTH_GETFAIL
     }
 }
-export const loginSuccess = (id, _id, name, token) => {
+export const loginSuccess = (id, _id, name, token, profileImg) => {
     return {
         type : AUTH_LOGIN_SUCCESS,
         id,
         _id,
         name,
-        token
+        token,
+        profileImg
     }
 }
 export const loginRejected = () => {
@@ -87,6 +88,7 @@ export const userLogin = (userInfo) => {
             const id = res.data.id;
             const _id = res.data._id;
             const token = res.data.token;
+            const profileImg = res.data.profileImg;
 
             switch(status){
                 case "LOGIN_FAILED" : 
@@ -103,12 +105,13 @@ export const userLogin = (userInfo) => {
                             id,
                             _id,
                             name,
-                            token
+                            token,
+                            profileImg
                         }));
                     } catch (error) {
                         alert("Storage Error : " + error);
                     } finally {
-                        dispatch(loginSuccess(id, _id, name, token));
+                        dispatch(loginSuccess(id, _id, name, token, profileImg));
                         break;
                     }
             }
@@ -171,7 +174,7 @@ export const getStorage = () => {
             const _storedData = await AsyncStorage.getItem('@BrunchApp:Auth');
             if(_storedData) {
                 _storedData = JSON.parse(_storedData);
-                dispatch(loginSuccess(_storedData.id, _storedData._id, _storedData.name, _storedData.token));
+                dispatch(loginSuccess(_storedData.id, _storedData._id, _storedData.name, _storedData.token, _storedData.profileImg));
             }
         } catch (error) {
             alert("Error retrieving data : " + error);

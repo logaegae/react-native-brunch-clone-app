@@ -59,7 +59,7 @@ class NewView extends React.Component {
                             name : article.weather
                         },
                         bg : {
-                            photo : article.bgStyle.photo,
+                            photo : article.bgStyle.photoUrl,
                             color : {
                             id : null,
                             value : article.bgStyle.backgroundColor

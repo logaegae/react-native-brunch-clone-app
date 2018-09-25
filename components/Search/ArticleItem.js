@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import timeAgo from '../../lib/timeAgo';
+import ToggleLike from '../Common/ToggleLike';
+import { withNavigation } from 'react-navigation';
 
-export default class ArticleItem extends Component {
+class ArticleItem extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -11,9 +13,9 @@ export default class ArticleItem extends Component {
   }
   
   render(){
-    const { title, text, isLiked, __id, startDate, finishDate, writtenDate, updatedDate, weather } = this.props;
+    const { title, text, isLiked, __id, startDate, finishDate, writtenDate, updatedDate, weather, _id } = this.props;
     return (
-      <Wrap>  
+      <Wrap onPressOut={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>  
         <FirstRow>
           <DateBox>
             <DateText>{startDate ? startDate : ''}{finishDate? ' - '+finishDate : ''}</DateText>
@@ -31,15 +33,7 @@ export default class ArticleItem extends Component {
         <LastRow>
           <WriterText>by. {__id.name}</WriterText>
           <RightBox>
-            <BtnLike onPressOut={this.props.likeToggle}>
-              {isLiked && isLiked.indexOf(__id.name) != -1 ? (
-                <Ionicons name="md-heart" color="#EC4568" size={13} />
-                ) : (
-                <Ionicons name="md-heart-outline" color="#666" size={13} />
-                )
-              }
-              <LikeNum>{isLiked.length}</LikeNum>
-            </BtnLike>
+            <ToggleLike heartSize={13} numSize={13} numColor="#666" isLiked={isLiked} _id={_id} likeColor="#EC4568" unlikeColor="#666"/>
             <Dot></Dot>
             <WrittenDateText>{updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</WrittenDateText>
           </RightBox>
@@ -48,6 +42,8 @@ export default class ArticleItem extends Component {
     )
   }
 }
+
+export default withNavigation(ArticleItem);
     
 const Wrap = styled.TouchableOpacity`
   padding: 10% 7%;
@@ -124,14 +120,6 @@ const RightBox = styled.View`
 const BtnLike = styled.View`
   align-items: center;
   flex-direction: row;
-`;
-
-const LikeNum = styled.Text`
-  font-family: NanumGothic;
-  margin-left:3px;
-  color:#666;
-  font-size:13px;
-  font-weight:500;
 `;
 
 const Dot = styled.View` 

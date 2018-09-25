@@ -11,13 +11,13 @@ class WriterItem extends Component {
 
 
   render(){
-    const { name, articleLength } = this.props;
+    const { name, articleLength, _id, profileImg } = this.props;
     
     return (
-      <Wrap onPressOut={() => this.props.navigation.navigate('WriterView',{name})}>  
+      <Wrap onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id:_id})}>  
         <Row>
           <WriterBox>
-            <ProfileImgBox source={require('../../assets/siba.jpg')}/>
+            <ProfileImgBox source={{uri : profileImg}}/>
             <WriterText>{name}</WriterText>
           </WriterBox>
           <ArticleNumText>글수 {articleLength}</ArticleNumText>

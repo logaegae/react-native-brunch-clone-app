@@ -43,9 +43,7 @@ class Notify extends Component {
       newState.endYn = endYn;
       this.setState(newState);
     }).catch((err) => {
-      if(res.data.status){}
-      else
-        alert(err);
+      alert(JSON.stringify(err));
     });
   }
 
@@ -56,13 +54,12 @@ class Notify extends Component {
     .then((res)=>{
       this.props.setNotifyIcon(false);
     }).catch((err) => {
-      if(res.data.status){}
-      else
-        alert(err);
+      alert(JSON.stringify(err.status));
     });
   }
 
   _onEndReached(){
+    // alert(this.state.endYn)
     if(!this.state.endYn)(debounce(()=>{
       const listCount = ++this.state.listCount;
       this.setState({
@@ -70,14 +67,15 @@ class Notify extends Component {
         listCount
       },()=>{
         this.getAlarmList();
+        // alert(this.state.listCount)
       })
-    },1000))();
+    },2000))();
   }
 
   _keyExtractor = (item, index) => item._id;
   
   render(){
-    const { dataSource, message } = this.state;
+    const { dataSource, message, endYn } = this.state;
     return(
         <Wrap>
           <Header title="알림" />
@@ -88,9 +86,14 @@ class Notify extends Component {
               <FlatList
                 data={dataSource}
                 renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
-                onEndReached = {()=>{this._onEndReached()}}
                 onEndReachedThreshold = {0.5}
                 keyExtractor={this._keyExtractor}
+                onMomentumScrollEnd={()=>{
+                  if(!endYn){
+                     //load datas
+                    this._onEndReached();
+                  }
+                }}
               />
             }
           </ConBox>  

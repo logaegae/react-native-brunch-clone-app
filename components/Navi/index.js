@@ -22,7 +22,7 @@ const SignedContent = (props) => {
   return (
     <View>
       <ProfileBox onPressOut={() => {props.navigation.navigate('MyPage')}}>
-        <ProfileImgBox source={require('../../assets/siba.jpg')}/>
+        <ProfileImgBox source={{uri:props.profileImg}}/>
         <UserNickname>{props.name}</UserNickname>
       </ProfileBox>
       <BtnBox>
@@ -83,7 +83,7 @@ class SideMenu extends Component {
             <TitleLine></TitleLine>
           </TitleLineBox>
           <View>
-            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} name={this.props.login.name} notifyIcon={notifyIcon} likeIcon={likeIcon}/> : <UnsignedContent navigation={this.props.navigation} /> }
+            {this.props.login.logged ? <SignedContent navigation={this.props.navigation} profileImg={this.props.login.profileImg} name={this.props.login.name} notifyIcon={notifyIcon} likeIcon={likeIcon}/> : <UnsignedContent navigation={this.props.navigation} /> }
           </View>
         </ScrollView>
       </Container>

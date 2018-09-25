@@ -97,7 +97,6 @@ export default class WriteCon extends Component {
   render(){
     const article = this.props.article;
     const { startDate, finishDate, weather, bg, title, text, isModalVisible } = this.props.article;
-
     return (
       <Wrap>
         <Modal 
@@ -109,7 +108,14 @@ export default class WriteCon extends Component {
           {this._renderModalContent()}
         </Modal>
         
-        <HeaderConBox background={!bg.photo ? bg.color.value : "transparent"}>
+        <HeaderConBox bg={!bg.photo ? 
+          ( "background-color:" + bg.color.value) : null }>
+          {!bg.color.value ? (
+            <BgBox>
+              <BgImage source={{ uri: bg.photo }} />
+              <BgMask></BgMask>
+            </BgBox>
+          ) : null }
           <DateBox>
             <Select onPress={() => this._toggleModal("date")}>
               <CommonText>날짜</CommonText>
@@ -157,11 +163,31 @@ export default class WriteCon extends Component {
 const Wrap = styled.View`
   flex: 1;
 `;
+const BgBox = styled.View`
+  flex: 1;
+  overflow:hidden;
+  position:absolute;
+  top:0;
+  bottom: 0;
+  left:0;
+  right:0;
+`;
 
+const BgImage = styled.Image`
+  width: 100%;
+  height:100%;
+`;
+
+const BgMask = styled.View`
+  position:absolute;
+  width: 100%;
+  height:100%;
+  backgroundColor: rgba(0,0,0,0.5);
+`;
 
 const HeaderConBox = styled.View`
   padding: 7%; 
-  background: ${prop => prop.background};
+  ${prop => prop.bg}
 `;
 
 const Select = styled.TouchableOpacity`

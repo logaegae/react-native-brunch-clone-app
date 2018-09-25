@@ -43,9 +43,7 @@ class Like extends Component {
       newState.endYn = endYn;
       this.setState(newState);
     }).catch((err) => {
-      if(res.data.status){}
-      else
-        alert(err);
+      alert(JSON.stringify(err));
     });
   }
 
@@ -65,9 +63,7 @@ class Like extends Component {
     .then((res)=>{
       this.props.setLikeIcon(false);
     }).catch((err) => {
-      if(res.data.status){}
-      else
-        alert(err);
+      alert(JSON.stringify(err));
     });
   }
 
@@ -80,13 +76,13 @@ class Like extends Component {
       },()=>{
         this.getAlarmList();
       })
-    },1000))();
+    },2000))();
   }
   
   _keyExtractor = (item, index) => item._id;
 
   render(){
-    const { alarms, message, dataSource } = this.state;
+    const { alarms, message, dataSource, endYn } = this.state;
     return(
         <Wrap>
           <Header title="좋아요"/>
@@ -96,9 +92,14 @@ class Like extends Component {
                 : <FlatList
                     data={dataSource}
                     renderItem={({item}) => <LikeItem data={item} key={item._id}/>}
-                    onEndReached = {()=>{this._onEndReached()}}
                     onEndReachedThreshold = {0.5}
                     keyExtractor={this._keyExtractor}
+                    onMomentumScrollEnd={()=>{
+                      if(!endYn){
+                         //load datas
+                        this._onEndReached();
+                      }
+                    }}
                   />
               }
           </ConBox>

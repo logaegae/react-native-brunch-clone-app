@@ -14,7 +14,8 @@ const initialState = {
         name : '',
         id : '',
         _id : '',
-        token : ''
+        token : '',
+        profileImg : ''
     }
 };
 
@@ -97,7 +98,8 @@ export default function auth(state = initialState, action) {
                     name : action.name,
                     id : action.id,
                     _id : action._id,
-                    token : action.token
+                    token : action.token,
+                    profileImg : action.profileImg
                 }
             };
         //로그아웃
@@ -109,7 +111,8 @@ export default function auth(state = initialState, action) {
                     name : '',
                     id : '',
                     _id : '',
-                    token : ''
+                    token : '',
+                    profileImg : ''
                 }
             };
         //이름변경

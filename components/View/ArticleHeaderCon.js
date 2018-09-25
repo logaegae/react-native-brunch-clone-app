@@ -15,7 +15,7 @@ class ArticleHeaderCon extends Component {
   render(){
 
     const { title, startDate, finishDate, __id, weather } = this.props.state;
-
+    alert
     return(
         <Wrap>
           <ConBox>
@@ -32,7 +32,7 @@ class ArticleHeaderCon extends Component {
           </ConBox>
           <Row>
             <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
-              <ProfileImgBox source={require('../../assets/siba.jpg')}/>
+              <ProfileImgBox source={{uri :__id.profileImg}}/>
               <WriterNickname>{__id.name}</WriterNickname>
             </WriterBox>
           </Row>       
