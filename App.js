@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Text } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { AppNavigator } from './navigation';
 import { Font } from 'expo';
 
@@ -55,7 +55,7 @@ export default class Root extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        {this.state.fontLoaded ? <AppWithNavigationState/> : <Load><Text>Loading</Text></Load>}
+        {this.state.fontLoaded ? <AppWithNavigationState/> : <Load><ActivityIndicator animating size="large" /></Load>}
       </Provider>
     );
   }

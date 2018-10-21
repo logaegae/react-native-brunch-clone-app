@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import NotifyItem from './NotifyItem';
 import Header from '../Common/ContentHeader';
 import { setNotifyIcon } from '../../actions';
 import axiosRequest from '../../lib/axiosRequest';
-import { debounce } from "debounce";
 
 class Notify extends Component {
   constructor(props){
     super(props);
     this.state = {
-      listCount : 1,
+      loading: false,
+      data: [],
+      page: 1,
+      seed: 1,
+      endYn : false,
+      error: null,
+      refreshing: false,
       message : '로딩중',
-      dataSource: [],
-      endYn : false
     }
   }
 
@@ -24,27 +27,31 @@ class Notify extends Component {
   componentDidMount(){
     //enhancement > 새로운것만 가져오기
     this.getAlarmList();
-    this.inverterHandler = setInterval(()=>{
-      this.getAlarmList();
-    },10000);
   }
 
   getAlarmList () {
+    const { page, seed, data } = this.state;
+    setTimeout(()=>{
     //@ Boolean Fn ( path, obj, token ) / promise
-    axiosRequest('/api/alarm/getUserAlarm', {type:'notify', listCount:this.state.listCount}, this.props.login.token)
+    axiosRequest('/api/alarm/getUserAlarm', {type:'notify', page, seed}, this.props.login.token)
     .then((res)=>{
-      const alarms = res.data.data;
-      const endYn = res.data.endYn;
-      let newState = {...this.state}
-      if(Object.keys(alarms).length === 0 ) {
+      let newState = {
+        data: page === 1 ? res.data.list : [...data, ...res.data.list],
+        error: res.message || null,
+        loading: false,
+        refreshing: false,
+        endYn : res.data.endYn
+      }
+      if(res.data.length == 0 ) {
           newState.message = "알려드릴 게 없네요.";
       }else newState.message = "";
-      newState.dataSource = alarms;
-      newState.endYn = endYn;
+
       this.setState(newState);
+
     }).catch((err) => {
       alert(JSON.stringify(err));
     });
+  }, 5000)
   }
 
   componentWillUnmount () {
@@ -58,43 +65,59 @@ class Notify extends Component {
     });
   }
 
-  _onEndReached(){
-    // alert(this.state.endYn)
-    if(!this.state.endYn)(debounce(()=>{
-      const listCount = ++this.state.listCount;
-      this.setState({
-        ...this.state,
-        listCount
-      },()=>{
-        this.getAlarmList();
-        // alert(this.state.listCount)
-      })
-    },2000))();
+  handleRefresh = () => {
+    this.setState({
+      page : 1,
+      seed : this.state.seed + 1,
+      refreshing : true
+    },()=>{
+      this.getAlarmList();
+    });
   }
+
+  handleLoadMore = () => {
+    if (!this.state.loading && !this.state.endYn){
+      this.setState({
+        page : this.state.page + 1,
+        loading : true
+      },() => {
+        this.getAlarmList();
+      });
+    }
+  }
+
+  renderFooter = (
+    <View
+      style={{
+        paddingVertical: 20,
+        borderTopWidth: 1,
+        borderColor: "#CED0CE"
+      }}
+    >
+      <ActivityIndicator animating size="large" />
+    </View>
+  );
 
   _keyExtractor = (item, index) => item._id;
   
   render(){
-    const { dataSource, message, endYn } = this.state;
+    const { data, refreshing, loading } = this.state;
     return(
         <Wrap>
           <Header title="알림" />
           <ConBox>
-            {Object.keys(dataSource).length === 0
-              ? (<NoItemText>{message}</NoItemText>)
-              : 
-              <FlatList
-                data={dataSource}
-                renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
-                onEndReachedThreshold = {0.5}
-                keyExtractor={this._keyExtractor}
-                onMomentumScrollEnd={()=>{
-                  if(!endYn){
-                     //load datas
-                    this._onEndReached();
-                  }
-                }}
-              />
+            {data.length === 0
+              ? (<Loading><ActivityIndicator animating size="large" /></Loading>)
+              : <FlatList
+                  data={data}
+                  renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
+                  keyExtractor={this._keyExtractor}
+                  ListFooterComponent={loading ? this.renderFooter : null}
+                  refreshing={refreshing}
+                  onRefresh={this.handleRefresh}
+                  onEndReached={this.handleLoadMore}
+                  onEndReachedThreshold={0}
+                />
             }
           </ConBox>  
         </Wrap>
@@ -111,11 +134,14 @@ const ConBox = styled.View`
   flex : 1;
 `;
 const NoItemText = styled.Text`
-    width : 100%;
-    padding : 7%;
-    font-family : NanumGothic;
-    font-size : 22px;
-    text-align : center;
+  width : 100%;
+  padding : 7%;
+  font-family : NanumGothic;
+  font-size : 22px;
+  text-align : center;
+`;
+const Loading = styled.View`
+  margin-top : 10%;
 `;
 
 const mapStateToProps = (state) => {
