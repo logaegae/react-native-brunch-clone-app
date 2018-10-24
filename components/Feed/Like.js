@@ -1,21 +1,25 @@
 import React, { Component } from 'react'
-import { FlatList } from 'react-native';
+import { FlatList, View, ActivityIndicator } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import LikeItem from './LikeItem';
 import Header from '../Common/ContentHeader';
 import { setLikeIcon } from '../../actions';
 import axiosRequest from '../../lib/axiosRequest';
-import { debounce } from "debounce";
 
 class Like extends Component {
   constructor(props){
     super(props);
     this.state = {
-      listCount : 1,
+      loading: false,
+      data: [],
+      page: 1,
+      seed: 1,
+      endYn : false,
+      error: null,
+      refreshing: false,
       message : '로딩중',
-      dataSource: [],
-      endYn : false
+      init : false
     }
   }
 
@@ -30,18 +34,25 @@ class Like extends Component {
   }
 
   getAlarmList () {
+    const { page, seed, data } = this.state;
     //@ Boolean Fn ( path, obj, token ) / promise
-    axiosRequest('/api/alarm/getUserAlarm', {type:'like', listCount : this.state.listCount}, this.props.login.token)
+    axiosRequest('/api/alarm/getUserAlarm', {type:'like', page, seed}, this.props.login.token)
     .then((res)=>{
-      const alarms = res.data.data;
-      const endYn = res.data.endYn;
-      let newState = {...this.state}
-      if(Object.keys(alarms).length === 0 ) {
+      let newState = {
+        data: page === 1 ? res.data.list : [...data, ...res.data.list],
+        error: res.message || null,
+        loading: false,
+        refreshing: false,
+        endYn : res.data.endYn,
+        init : true
+      }
+      if(res.data.length == 0 ) {
+          newState.init = false;
           newState.message = "알려드릴 게 없네요.";
       }else newState.message = "";
-      newState.dataSource = alarms;
-      newState.endYn = endYn;
+
       this.setState(newState);
+
     }).catch((err) => {
       alert(JSON.stringify(err));
     });
@@ -67,41 +78,61 @@ class Like extends Component {
     });
   }
 
-  _onEndReached(){
-    if(!this.state.endYn)(debounce(()=>{
-      const listCount = ++this.state.listCount;
-      this.setState({
-        ...this.state,
-        listCount
-      },()=>{
-        this.getAlarmList();
-      })
-    },2000))();
+  handleRefresh = () => {
+    this.setState({
+      page : 1,
+      seed : this.state.seed + 1,
+      refreshing : true
+    },()=>{
+      this.getAlarmList();
+    });
   }
+
+  handleLoadMore = () => {
+    if (!this.state.loading && !this.state.endYn){
+      this.setState({
+        page : this.state.page + 1,
+        loading : true
+      },() => {
+        this.getAlarmList();
+      });
+    }
+  }
+
+  renderFooter = (
+    <View
+      style={{
+        paddingVertical: 20,
+        borderTopWidth: 1,
+        borderColor: "#CED0CE"
+      }}
+    >
+      <ActivityIndicator animating size="large" />
+    </View>
+  );
   
   _keyExtractor = (item, index) => item._id;
 
   render(){
-    const { alarms, message, dataSource, endYn } = this.state;
+    const { data, refreshing, loading, message, init } = this.state;
     return(
         <Wrap>
           <Header title="좋아요"/>
           <ConBox>
-              {Object.keys(dataSource).length === 0
-                ? (<NoItemText>{message}</NoItemText>)
+            {data.length === 0
+                ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
                 : <FlatList
-                    data={dataSource}
+                    data={data} 
                     renderItem={({item}) => <LikeItem data={item} key={item._id}/>}
-                    onEndReachedThreshold = {0.5}
                     keyExtractor={this._keyExtractor}
-                    onMomentumScrollEnd={()=>{
-                      if(!endYn){
-                         //load datas
-                        this._onEndReached();
-                      }
-                    }}
+                    ListFooterComponent={loading ? this.renderFooter : null}
+                    refreshing={refreshing}
+                    onRefresh={this.handleRefresh}
+                    onEndReached={this.handleLoadMore}
+                    onEndReachedThreshold={0}
                   />
               }
+              {!init ? <NoItemText>{message}</NoItemText> : null}
           </ConBox>
         </Wrap>
       )
@@ -116,12 +147,16 @@ const Wrap = styled.View`
 const ConBox = styled.View`
   flex: 1;
 `;
+
 const NoItemText = styled.Text`
     width : 100%;
     padding : 7%;
     font-family : NanumGothic;
     font-size : 22px;
     text-align : center;
+`;
+const Loading = styled.View`
+  margin-top : 10%;
 `;
 
 const mapStateToProps = (state) => {

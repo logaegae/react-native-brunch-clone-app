@@ -19,6 +19,7 @@ class Notify extends Component {
       error: null,
       refreshing: false,
       message : '로딩중',
+      init : false
     }
   }
 
@@ -31,7 +32,7 @@ class Notify extends Component {
 
   getAlarmList () {
     const { page, seed, data } = this.state;
-    setTimeout(()=>{
+
     //@ Boolean Fn ( path, obj, token ) / promise
     axiosRequest('/api/alarm/getUserAlarm', {type:'notify', page, seed}, this.props.login.token)
     .then((res)=>{
@@ -40,9 +41,11 @@ class Notify extends Component {
         error: res.message || null,
         loading: false,
         refreshing: false,
-        endYn : res.data.endYn
+        endYn : res.data.endYn,
+        init : true
       }
       if(res.data.length == 0 ) {
+          newState.init = false;
           newState.message = "알려드릴 게 없네요.";
       }else newState.message = "";
 
@@ -51,7 +54,6 @@ class Notify extends Component {
     }).catch((err) => {
       alert(JSON.stringify(err));
     });
-  }, 5000)
   }
 
   componentWillUnmount () {
@@ -101,15 +103,15 @@ class Notify extends Component {
   _keyExtractor = (item, index) => item._id;
   
   render(){
-    const { data, refreshing, loading } = this.state;
+    const { data, refreshing, loading, init, message } = this.state;
     return(
         <Wrap>
           <Header title="알림" />
           <ConBox>
             {data.length === 0
-              ? (<Loading><ActivityIndicator animating size="large" /></Loading>)
+              ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
               : <FlatList
-                  data={data}
+                  data={data} 
                   renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
                   keyExtractor={this._keyExtractor}
                   ListFooterComponent={loading ? this.renderFooter : null}
@@ -119,7 +121,8 @@ class Notify extends Component {
                   onEndReachedThreshold={0}
                 />
             }
-          </ConBox>  
+            {!init ? <NoItemText>{message}</NoItemText> : null}
+          </ConBox>
         </Wrap>
       )
   }

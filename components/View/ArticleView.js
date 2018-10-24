@@ -11,7 +11,7 @@ import axios from 'axios';
 import { domain } from '../../config';
 import ToggleLike from '../Common/ToggleLike';
 
-import ArticleHeaderCon from './ArticleHeaderCon'
+import ArticleHeaderCon from './ArticleHeaderCon';
 
 const { height, width } = Dimensions.get("window");
 

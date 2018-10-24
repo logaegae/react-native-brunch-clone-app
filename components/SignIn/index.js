@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, findNodeHandle, TextInput } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { userLogin, authInit, notifyIconReapeat, likeIconReapeat } from '../../actions';
 import { Ionicons, Feather } from '@expo/vector-icons';
+import { ScrollViewSmart } from 'react-native-scrollview-smart';
 
 const { height, width } = Dimensions.get("window");
 
@@ -13,7 +14,14 @@ class SignIn extends Component {
     this.state = {
       id: "",
       pw: ""
-    }
+    };
+    this.scrollOnFocus = this.scrollOnFocus.bind(this);
+  }
+
+  scrollOnFocus = inputName => () => {
+    this.scroll.inputFocused(
+      findNodeHandle(this[inputName]),
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -33,33 +41,49 @@ class SignIn extends Component {
   }
   
   render() {
+
     const userInfo = this.state;
+    // const auth = this.props.auth;
+    // const authState = JSON.stringify(auth, 0, 2)
+
     return (
+      <ScrollViewSmart
+        ref={e => (this.scroll = e)}
+        style={{flex: 1, backgroundColor: "#9FA3A8"}}
+        keyboardShouldPersistTaps={'never'}
+      >
       <Wrap>
         <CloseBox>
           <BtnClose onPressOut={() => this.props.navigation.navigate('Home')}>
             <Ionicons name="ios-close" color="#fff" size={60} style={{marginLeft:15}}/>
           </BtnClose>
         </CloseBox>
-         <LogoBox>
-          <Logo>Trable</Logo>
+        <LogoBox>
+          <Logo>Travel</Logo>
           <BorderBox></BorderBox>
+          {/* <Text style={{height:210}}>{authState}</Text> */}
         </LogoBox>
         <InputBox>
           <InputWrap>
             <Feather name="user" color="#999" size={20} />
-            <InputText 
+            <TextInput 
+              style={InputTextStyle}
               value={this.state.id}
               onChangeText={(id) => this.setState({id: id.toLowerCase()})}
               placeholder="Email Address"
               placeholderTextColor="#bbb"
-              returnKeyType={"done"}
               autoCorrect={false}
+              autoFocus={true}
+              returnKeyType={'next'}
+              ref={e => (this.input1 = e)}
+              onFocus={this.scrollOnFocus('input1')}
+              onSubmitEditing={() => { this.input2.focus(); }}
             />
           </InputWrap>
           <InputWrap>
              <Feather name="lock" color="#999" size={20} />
-             <InputText 
+             <TextInput 
+              style={InputTextStyle}
               value={this.state.pw}
               onChangeText={(pw) => this.setState({pw: pw})}
               placeholder="Password"
@@ -67,33 +91,63 @@ class SignIn extends Component {
               secureTextEntry
               returnKeyType={"done"}
               autoCorrect={false}
+              returnKeyType={'next'}
+              ref={e => (this.input2 = e)}
+              onFocus={this.scrollOnFocus('input2')}
             />
           </InputWrap>
-          <Button onPressOut={()=>{ this.props.userLogin(userInfo) }} >
+          <Button onPressOut={() => this.props.userLogin(userInfo)} >
             <BtnText>Sign In</BtnText>
           </Button>
           <P>Create Your Travel</P>
-          <Button small onPressOut={() => this.props.navigation.navigate('SignUp')} >
+          <Button small onPressOut={() => this.props.navigation.navigate('SignUp')}>
             <BtnText fs14>Sign Up</BtnText>
           </Button>
         </InputBox>
       </Wrap>
+      </ScrollViewSmart>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    auth: state.redux.auth,
+    login: state.redux.auth.login,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    userLogin: (userInfo) => {
+      return dispatch(userLogin(userInfo));
+    },
+    authInit: () => {
+      return dispatch(authInit());
+    },
+    notifyIconReapeat: (token) => {
+      return dispatch(notifyIconReapeat(token));
+    },
+    likeIconReapeat: (token) => {
+      return dispatch(likeIconReapeat(token));
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);
 
 const Wrap = styled.View`
   flex: 1;
-  background: #9FA3A8;
+  height: ${height};
 `;
 
 const CloseBox = styled.View`
-  flex: 1.5;
-  align-items: flex-end;
+  height: ${height * 0.15};
+  align-items: flex-end; 
   flex-direction: row;
   justify-content: flex-start;
 `;
+
 
 const BtnClose = styled.TouchableOpacity`
 `;
@@ -112,10 +166,16 @@ const Button = styled.TouchableOpacity`
   }}
 `;
 
-const LogoBox = styled.View`
-  flex: 1;
+const LogoBox = styled.View`  
   margin-left:18%;
+  height: ${height * 0.10};
   justify-content: flex-end;
+`;
+
+const Logo = styled.Text`
+  font-family: NanumGothic;
+  font-size: 50px;
+  color:#fff;
 `;
 
 const BorderBox = styled.View`
@@ -125,7 +185,7 @@ const BorderBox = styled.View`
 `;
 
 const InputBox = styled.View`
-  flex: 7.5;
+  height: ${height * 0.75};
   justify-content:center;
   align-items:center;
 `;
@@ -141,51 +201,23 @@ const InputWrap = styled.View`
   background: #fff;
 `;
 
-const InputText = styled.TextInput`
-  margin-left:10px; 
-  padding: 5px;
-  width: 150px;
-  font-size: 15px;
-`;
-
-const Logo = styled.Text`
-  font-size: 50px;
-  color:#fff;
-`;
+const InputTextStyle = {
+  marginLeft: 10, 
+  padding: 5,
+  width: 150,
+  fontFamily: 'NanumGothic',
+  fontSize: 15
+};
 
 const BtnText = styled.Text`
-  font-size: ${props => props.fs14 ? ("14px") : ("16px")}
+  font-family: NanumGothic-bold;
+  font-size: ${props => props.fs14 ? ("14px;") : ("16px;")}
   color:#fff;
 `
 
 const P = styled.Text`
   margin:40px 0 15px;
+  font-family: NanumGothic-bold;
   font-size:14px;
   color:#fff;
 `
-
-const mapStateToProps = (state) => {
-  return {
-    auth: state.redux.auth,
-    login : state.redux.auth.login
-  };
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-      userLogin: (userInfo) => { 
-        return dispatch(userLogin(userInfo)); 
-      },
-      authInit: () => {
-        return dispatch(authInit());
-      },
-      notifyIconReapeat: (token) => {
-        return dispatch(notifyIconReapeat(token));
-      },
-      likeIconReapeat: (token) => {
-        return dispatch(likeIconReapeat(token));
-      },
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

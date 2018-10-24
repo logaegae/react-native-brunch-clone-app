@@ -8,7 +8,8 @@ import {
     AUTH_LOGIN_REJECT,
     AUTH_LOGIN_FAIL,
     AUTH_LOGOUT,
-    CHANGE_NAME_SUCCESSED
+    CHANGE_NAME_SUCCESSED,
+    AUTH_CHANGEPW_SUCCESS
 } from './ActionTypes'
 import axios from 'axios';
 import { AsyncStorage } from "react-native";
@@ -70,6 +71,11 @@ export const changeName = (name) => {
 export const authInit = () => {
     return {
         type : AUTH_INIT
+    }
+}
+export const changePwSuccess = () => {
+    return {
+        type : AUTH_CHANGEPW_SUCCESS
     }
 }
 
@@ -185,24 +191,26 @@ export const getStorage = () => {
 //비밀번호 변경
 export const requestChangePw = (userInfo, token) => {
     return (dispatch) => {
+        // dispatch(getting());
+        
         if(!token) {
             alert("ERROR\nNo Token Info");
             return false;
         }
-        dispatch(getting());
 
         const header = {
             headers : {
                 'x-access-token' : token
             }
         }
-
+        
         // API REQUEST
         return axios.post(domain+'/api/auth/changePw', userInfo, header)
         .then((res) => {
             // SUCCEED
             if(res.data.status === "PWCHANGE_SUCCESSED"){
                 alert("비밀번호가 변경되었습니다.");
+                dispatch(changePwSuccess());
                 //??
             }else if(res.data.status === "PWCHANGE_REJECT"){
                 alert("기존 비밀번호를 다시 확인해주세요.");
@@ -211,7 +219,6 @@ export const requestChangePw = (userInfo, token) => {
                 alert("ERORR");
                 dispatch(authInit());
             }
-
         }).catch((error) => {
             // FAILED
             dispatch(getFailure());

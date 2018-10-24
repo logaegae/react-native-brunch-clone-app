@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dimensions, ScrollView, FlatList } from 'react-native';
+import { Dimensions, View, FlatList, ActivityIndicator } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { setLikeIcon } from '../../actions';
@@ -16,18 +16,19 @@ class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      items: {},
-      loading: true,
-      message: "로딩 중...",
+      loading: false,
+      data: [],
+      page: 1,
+      seed: 1,
       endYn : false,
-      listCount : 1
+      error: null,
+      refreshing: false,
+      message : '로딩중',
+      init : false
     }
   }
 
   componentDidMount(){
-    this.setState({
-      loading: false,
-    })
     this.getList();
   }
 
@@ -44,21 +45,50 @@ class List extends Component {
   }
 
   getList() {
-    const obj = {
-      listCount : this.state.listCount
-    }
-    axios.post(domain + '/api/article/getAllList',obj)
+    const { page, seed } = this.state;
+    axios.post(domain + '/api/article/getAllList', {page, seed})
     .then((res)=>{
-        if(res.data.status === 'SUCCESS'){
-            this.setState({
-                ...this.state,
-                items : res.data.list,
-                endYn : res.data.endYn
-            },()=>{
-            });
-        }
-    })
-    .catch((err)=>{})
+      let newState = {
+        data: page === 1 ? res.data.list : [...data, ...res.data.list],
+        error: res.message || null,
+        loading: false,
+        refreshing: false,
+        endYn : res.data.endYn,
+        init : true
+      }
+      if(res.data.length == 0 ) {
+          newState.init = false;
+          newState.message = "게시물이 없습니다.";
+      }else newState.message = "";
+
+      this.setState(newState);
+
+    }).catch((err) => {
+      alert(JSON.stringify(err));
+    });
+  }
+
+  renderFooter = (
+    <View
+      style={{
+        paddingVertical: 20,
+        borderTopWidth: 1,
+        borderColor: "#CED0CE"
+      }}
+    >
+      <ActivityIndicator animating size="large" />
+    </View>
+  );
+
+  handleLoadMore = () => {
+    if (!this.state.loading && !this.state.endYn){
+      this.setState({
+        page : this.state.page + 1,
+        loading : true
+      },() => {
+        this.getList();
+      });
+    }
   }
 
   handleLike(_id) {
@@ -70,7 +100,7 @@ class List extends Component {
     axios.post(domain + '/api/article/toggleLike', {_id}, header)
     .then((res) => {
         if(res.data.status === 'SUCCESS'){
-            let list = this.state.items;
+            let list = this.state.data;
             for(i=0;i<list.length;i++){
                 if(list[i]._id === _id){ 
                     list[i].isLiked = res.data.like;
@@ -82,32 +112,28 @@ class List extends Component {
             }
             this.setState({
                 ...this.state,
-                items : list
-            })
+                data : list
+            });
         }
     });
   }
 
-  _getItemList () {
-    if(Object.keys(this.state.items).length === 0) return '';
-    var indents = [];
-    Object.values(this.state.items).forEach((e, i) => {
-      indents.push(
-      <ListItem 
-        key={i} {...e} 
-        token={this.props.login.token} 
-        nickname={this.props.login.nickname} 
-        setLikeIcon={this.props.setLikeIcon} 
-        _handleLike={(_id)=>{this.handleLike(_id)}}
-        />);
-    })
-
-    return indents;
+  handleRefresh = () => {
+    this.setState({
+      page : 1,
+      seed : this.state.seed + 1,
+      refreshing : true
+    },()=>{
+      this.getList();
+    });
   }
 
-  render(){
-    const { items, message } = this.state;
+  _keyExtractor = (item, index) => item._id;
 
+  render(){
+    const { message, data, refreshing, loading, init } = this.state;
+    const { token, nickname } = this.props.login;
+    const { setLikeIcon } = this.props;
     return(
         <Wrap>
           <HeaderBox>
@@ -120,14 +146,29 @@ class List extends Component {
               <Logo>Travel</Logo>
             </LogoBox>
           </HeaderBox>
-          <ScrollView>
             <ConBox>
-              {Object.keys(items).length === 0 
-                ? (<NoDataBox><NoDataText>{message}</NoDataText></NoDataBox>)
-                : this._getItemList()
+            {data.length === 0
+                ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
+                : <FlatList
+                    data={data} 
+                    renderItem={({item}) => <ListItem 
+                      {...item}
+                      token={token} 
+                      nickname={nickname} 
+                      setLikeIcon={setLikeIcon} 
+                      _handleLike={(_id)=>{this.handleLike(_id)}}
+                    />}
+                    extraData={this.state}
+                    keyExtractor={this._keyExtractor}
+                    ListFooterComponent={loading ? this.renderFooter : null}
+                    refreshing={refreshing}
+                    onRefresh={this.handleRefresh}
+                    onEndReached={this.handleLoadMore}
+                    onEndReachedThreshold={0}
+                  />
               }
-            </ConBox>
-          </ScrollView>
+              {!init ? <NoItemText>{message}</NoItemText> : null}
+          </ConBox>
         </Wrap>
       )
   }
@@ -194,17 +235,18 @@ const Logo = styled.Text`
 `;
 
 const ConBox = styled.View`
-  flex:10;
+  flex:1;
   padding: 7%;
 `;
 
-const NoDataBox = styled.View`
-  align-items: center;
-  justify-content: center;
+const Loading = styled.View`
+  margin-top : 10%;
 `;
 
-const NoDataText = styled.Text`
-  color:#666;
-  font-size:16px;
-  font-family: NanumGothic;
+const NoItemText = styled.Text`
+    width : 100%;
+    padding : 7%;
+    font-family : NanumGothic;
+    font-size : 22px;
+    text-align : center;
 `;

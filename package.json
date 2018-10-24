@@ -11,6 +11,7 @@
     "react-native-datepicker": "^1.7.2",
     "react-native-modal": "^6.5.0",
     "react-native-parallax-scroll-view": "^0.21.3",
+    "react-native-scrollview-smart": "^0.1.5",
     "react-native-simple-dialogs": "^0.4.0",
     "react-native-snap-carousel": "^3.7.2",
     "react-navigation": "^2.3.1",

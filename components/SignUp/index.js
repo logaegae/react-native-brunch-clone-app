@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, TextInput, findNodeHandle } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { userSignUp, authInit } from '../../actions';
+import { ScrollViewSmart } from 'react-native-scrollview-smart';
 
 const { height, width } = Dimensions.get("window");
 
@@ -18,7 +19,14 @@ class SignUp extends Component {
       pw: "",
       cpw: "",
       nickname: "",
-    }
+    };
+    this.scrollOnFocus = this.scrollOnFocus.bind(this);
+  }
+
+  scrollOnFocus = inputName => () => {
+    this.scroll.inputFocused(
+      findNodeHandle(this[inputName]),
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -68,7 +76,13 @@ class SignUp extends Component {
         this.props.userSignUp(userInfo);
 
     }
+    
     return (
+      <ScrollViewSmart
+        ref={e => (this.scroll = e)}
+        style={{flex: 1, backgroundColor: "#9FA3A8"}}
+        keyboardShouldPersistTaps={'never'}
+      >
       <Wrap>
         <BtnBox>
           <BtnBack onPressOut={() => this.props.navigation.navigate('SignIn')}>
@@ -79,47 +93,60 @@ class SignUp extends Component {
           <Logo>New Travel</Logo>
           <BorderBox></BorderBox>
         </LogoBox>
-        <InputBox>
+        <InputBox>          
           <InputWrap>
-            <InputText 
-              value={this.state.id}
+            <TextInput 
+              style={InputTextStyle}
               onChangeText={(id) => this.setState({id: id.toLowerCase()})}
               placeholder="Email Address"
               placeholderTextColor="#fff"
-              returnKeyType={"done"}
               autoCorrect={false}
+              autoFocus={true}
+              returnKeyType={'next'}
+              onFocus={this.scrollOnFocus('input1')}
+              ref={e => {this.input1 = e}}
+              onSubmitEditing={() => { this.input2.focus(); }}
             />
           </InputWrap>
           <InputWrap>
-             <InputText 
+             <TextInput 
+              style={InputTextStyle}
               value={this.state.pw}
               onChangeText={(pw) => this.setState({pw: pw})}
               placeholder="Password"
               placeholderTextColor="#fff"
               secureTextEntry
-              returnKeyType={"done"}
               autoCorrect={false}
+              returnKeyType={'next'}
+              ref={e => {this.input2 = e}}
+              onFocus={this.scrollOnFocus('input2')}
+              onSubmitEditing={() => { this.input3.focus(); }}
             />
           </InputWrap>
            <InputWrap>
-             <InputText 
-              value={this.state.cpw}
+            <TextInput 
+              style={InputTextStyle}
               onChangeText={(cpw) => this.setState({cpw: cpw})}
               placeholder="Confirm Password"
               placeholderTextColor="#fff"
               secureTextEntry
-              returnKeyType={"done"}
               autoCorrect={false}
+              returnKeyType={'next'}
+              ref={e => (this.input3 = e)}
+              onFocus={this.scrollOnFocus('input3')}
+              onSubmitEditing={() => { this.input4.focus(); }}
             />
           </InputWrap>
            <InputWrap>
-             <InputText 
-              value={this.state.nickname}
+            <TextInput 
+              style={InputTextStyle}
               onChangeText={(nickname) => this.setState({nickname: nickname})}
               placeholder="Nickname"
               placeholderTextColor="#fff"
               returnKeyType={"done"}
               autoCorrect={false}
+              ref={e => (this.input4 = e)}
+              onFocus={this.scrollOnFocus('input4')}
             />
           </InputWrap>
           <P>* 닉네임은 마이페이지에서 변경할 수 있어요.</P>
@@ -127,24 +154,46 @@ class SignUp extends Component {
             <BtnText>Sign Up</BtnText>
           </Button>
         </InputBox>
-      </Wrap>
+      </Wrap> 
+      </ScrollViewSmart>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    status: state.redux.auth.http.status,
+    result: state.redux.auth.http.result,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    userSignUp: (userInfo) => {
+      return dispatch(userSignUp(userInfo));
+    },
+    authInit: () => {
+      return dispatch(authInit());
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+
 const Wrap = styled.View`
   flex: 1;
-  background: #9FA3A8;
+  height: ${height};
 `;
 
 const BtnBox = styled.View`
-  flex: 1.5;
-  align-items: flex-end;
+  height: ${height * 0.15};
+  align-items: flex-end; 
   flex-direction: row;
   justify-content: flex-start;
 `;
 
 const BtnBack = styled.TouchableOpacity`
+  align-items: flex-end; 
 `;
 
 const Button = styled.TouchableOpacity`
@@ -161,9 +210,9 @@ const Button = styled.TouchableOpacity`
   }}
 `;
 
-const LogoBox = styled.View`
-  flex: 1;
+const LogoBox = styled.View`  
   margin-left:18%;
+  height: ${height * 0.10};
   justify-content: flex-end;
 `;
 
@@ -174,7 +223,7 @@ const BorderBox = styled.View`
 `;
 
 const InputBox = styled.View`
-  flex: 7.5;
+  height: ${height * 0.75};
   justify-content:center;
   align-items:center;
 `;
@@ -189,46 +238,30 @@ const InputWrap = styled.View`
   border-bottom-width: 2px;
 `;
 
-const InputText = styled.TextInput`
-  padding: 5px 0;
-  width: ${width * 0.7};
-  font-size: 15px;
-  color:#fff;
-`;
+const InputTextStyle = {
+  paddingVertical: 5,
+  width: width * 0.7,
+  fontFamily: 'NanumGothic',
+  fontSize: 18,
+  color: "#fff"
+};
 
 const Logo = styled.Text`
+  font-family: NanumGothic;
   font-size: 40px;
   color:#fff;
 `;
 
 const BtnText = styled.Text`
-  font-size: ${props => props.fs14 ? ("14px") : ("16px")}
+  font-family: NanumGothic-bold;
+  font-size: ${props => props.fs14 ? ("14px;") : ("16px;")}
   color:#fff;
-`;
+`
 
 const P = styled.Text`
   width: ${width * 0.7};
   margin: 10px 0 40px;
+  font-family: NanumGothic;
   font-size:14px;
   color:#fff;
-`;
-
-const mapStateToProps = (state) => {
-  return {
-    status : state.redux.auth.http.status,
-    result : state.redux.auth.http.result
-  };
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-      userSignUp : (userInfo) => { 
-        return dispatch(userSignUp(userInfo)); 
-      },
-      authInit : () => {
-        return dispatch(authInit());
-      } 
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+`

@@ -124,6 +124,15 @@ export default function auth(state = initialState, action) {
                     name : action.name
                 }
             };
+        case types.AUTH_CHANGEPW_SUCCESS : 
+            return {
+                ...state,
+                http : {
+                    ...state.http,
+                    status : 'SUCCESS',
+                    result : 'SUCCESS'
+                }
+            };
         default:
             return state;
     }
