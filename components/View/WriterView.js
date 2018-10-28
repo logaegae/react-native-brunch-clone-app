@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dimensions, StatusBar, Text } from 'react-native';
+import { Animated, Dimensions, StatusBar, View, ActivityIndicator, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { setLikeIcon } from '../../actions'  
@@ -16,26 +16,71 @@ class WriterView extends Component {
   constructor(props){
     super(props);
     this.state = {
-      items: {},
-      message: "로딩 중...",
-      writer : {}
+      writer : {},
+      loading: false,
+      data: [],
+      page: 1,
+      seed: 1,
+      endYn : false,
+      error: null,
+      refreshing: false,
+      message : '로딩중',
+      init : false,
+      scrollY : new Animated.Value(0)
     }
+    
   }
 
   componentDidMount(){
-    axios.post(domain + '/api/article/getUsersArticle', {_id : this.props.navigation.getParam('writer_id')})
-        .then((res) => {
-            if(res.data.status === 'SUCCESS'){
-                this.setState({
-                    writer : res.data.writer,
-                    items : res.data.list
-                })
-            }else{
-              alert('ERROR');
-            }
-        }).catch(err => {
-          alert('Server Connection Error');
-        });
+    this.getList();
+  }
+
+  getList = () => {
+    const { page, seed, data } = this.state;
+    axios.post(domain + '/api/article/getUsersArticle', {_id : this.props.navigation.getParam('writer_id'), page, seed})
+    .then((res) => {
+        if(res.data.status === 'SUCCESS'){
+          let newState = {
+            data: page === 1 ? res.data.list : [...data, ...res.data.list],
+            error: res.data.message || null,
+            loading: false,
+            refreshing: false,
+            endYn : res.data.endYn,
+            init : true,
+            writer : res.data.writer
+          }
+          if(res.data.length == 0 ) {
+            newState.init = false;
+            newState.message = "게시물이 없습니다.";
+          }else newState.message = "";
+          this.setState(newState);
+        }else{
+          alert('ERROR');
+        }
+    }).catch(err => {
+      alert(JSON.stringify(err));
+    });
+  }
+
+  renderFooter = (
+    <View
+      style={{
+        paddingTop: 20
+      }}
+    >
+      <ActivityIndicator animating size="large" />
+    </View>
+  );
+
+  handleLoadMore = () => {
+    if (!this.state.loading && !this.state.endYn){
+      this.setState({
+        page : this.state.page + 1,
+        loading : true
+      },() => {
+        this.getList();
+      });
+    }
   }
 
   handleLike(_id) {
@@ -47,7 +92,7 @@ class WriterView extends Component {
     axios.post(domain + '/api/article/toggleLike', {_id}, header)
     .then((res) => {
         if(res.data.status === 'SUCCESS'){
-            let list = this.state.items;
+            let list = this.state.data;
             for(i=0;i<list.length;i++){
                 if(list[i]._id === _id){ 
                     list[i].isLiked = res.data.like;
@@ -59,9 +104,20 @@ class WriterView extends Component {
             }
             this.setState({
                 ...this.state,
-                items : list
-            })
+                data : list
+            });
         }
+    });
+  }
+
+  handleRefresh = () => {
+    this.setState({
+      page : 1,
+      seed : this.state.seed + 1,
+      refreshing : true,
+      endYn : false
+    },()=>{
+      this.getList();
     });
   }
 
@@ -83,62 +139,75 @@ class WriterView extends Component {
     )
   }
 
-  renderHeaderContent(){
-    return(
-      <HeaderConBox>
-        <ProfileBox>
-          <ProfileImgBox source={{uri: this.state.writer.profileImg}} />
-          <Nickname>{this.state.writer.name}</Nickname>
-          <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
-        </ProfileBox> 
-      </HeaderConBox>
-    )
-  }
-
-  _getItemList () {
-    if(Object.keys(this.state.items).length === 0) return '';
-    var indents = [];
-    Object.values(this.state.items).forEach((e, i) => {
-      indents.push(
-        <WriterViewItem 
-          key={i} {...e} 
-          token={this.props.login.token} 
-          nickname={this.props.login.name} 
-          setLikeIcon={this.props.setLikeIcon} 
-          _handleLike={(_id) => {this.handleLike(_id)}} 
-          />);
-    })
-
-    return indents;
-  }
- 
+  _keyExtractor = (item, index) => item._id;
 
   render(){  
-    const { items, message } = this.state;
+    const { message, data, refreshing, loading, init, scrollY } = this.state;
+    const { token, nickname } = this.props.login;
+    const { setLikeIcon } = this.props;
+    const scale = scrollY.interpolate({
+      inputRange: [0, 50],
+      outputRange : [1, 0]
+    });
+    const opacity = scrollY.interpolate({
+      inputRange: [0, 50],
+      outputRange : [1, 0]
+    });
+    const _height = scrollY.interpolate({
+      inputRange: [0, 50],
+      outputRange : [100, 0],
+    });
 
     return(
         <Wrap>         
           <StatusBar hidden={false} />
-          <ParallaxScrollView
-            style={{ flex: 1}}
-            backgroundColor="transparent"
-            contentBackgroundColor="#f7f7f7"
-            stickyHeaderHeight={60}
-            parallaxHeaderHeight={220}
-            fadeOutForeground={true}
-            // onChangeHeaderVisibility={() => {this.setState({headerVisibility})}}
-            renderFixedHeader={() => this.renderFixedHeader()}
-            renderStickyHeader={() => this.renderSticky()}
-            renderForeground={() => this.renderHeaderContent()}
-            >
-            <ConBox>
-              {/* <Text>{JSON.stringify(this.state.items)}</Text> */}
-              {Object.keys(items).length === 0 
-              ? (<NoDataBox><NoDataText>{message}</NoDataText></NoDataBox>)
-              : this._getItemList()
-            }
-            </ConBox>
-          </ParallaxScrollView> 
+            <View>
+              <FixedHeaderBox>
+                <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
+                  <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
+                </BtnIcon> 
+              </FixedHeaderBox>
+              <HeaderConBox>
+                <ProfileBox>
+                  <Animated.View style={{opacity, transform : [{scale}], height:_height, flex : opacity}}>
+                    <ProfileImgBox source={{uri: this.state.writer.profileImg}}/>
+                  </Animated.View>
+                  <Nickname>{this.state.writer.name}</Nickname>
+                  <Animated.View style={{opacity, transform : [{scale}]}}>
+                    <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
+                  </Animated.View>
+                </ProfileBox> 
+              </HeaderConBox>
+              </View>
+              <ConBox>
+              {data.length === 0
+                  ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
+                  : <FlatList
+                      style={{padding:'7%'}}
+                      data={data} 
+                      renderItem={({item}) => 
+                        <WriterViewItem
+                          {...item}
+                          token={token}
+                          nickname={nickname}
+                          setLikeIcon={setLikeIcon} 
+                          _handleLike={(_id) => {this.handleLike(_id)}} 
+                        />
+                      }
+                      extraData={this.state}
+                      keyExtractor={this._keyExtractor}
+                      ListFooterComponent={loading ? this.renderFooter : null}
+                      refreshing={refreshing}
+                      onRefresh={this.handleRefresh}
+                      onEndReached={this.handleLoadMore}
+                      onEndReachedThreshold={0}
+                      onScroll={Animated.event([
+                        { nativeEvent: { contentOffset: { y: scrollY } } },
+                      ])}
+                    />
+                }
+                {init ? <NoItemText>{message}</NoItemText> : null}
+              </ConBox>
         </Wrap>
       )
   }
@@ -163,7 +232,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(WriterView);
 const Wrap = styled.View`
   flex: 1;
   margin:8% 0 -8%;
-`;
+  `;
 
 const StickyBox = styled.View`
   position: relative;
@@ -177,10 +246,10 @@ const StickyBox = styled.View`
 `;
 
 const FixedHeaderBox = styled.View`
+  padding: 0 15px;
   position:absolute;
   left: 0;
   z-index:100;
-  padding: 0 15px;
   height:50px;
   flex-direction: row;
   align-items: center;
@@ -192,19 +261,17 @@ const FixedHeaderBox = styled.View`
 const HeaderConBox = styled.View`
   position:relative;
   z-index:5;
-  padding: 30px 0 20px;
-  height:220px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+
 `;
 
 const BtnIcon = styled.TouchableOpacity`  
 `;
 
 const ProfileBox = styled.View`
-  width: ${width};
+  width: 100%;
   align-items: center;
   justify-content: center;
 `;
@@ -234,16 +301,17 @@ const ArticleNum = styled.Text`
 `;
 
 const ConBox = styled.View`
-  padding:7%;
+flex:1;
 `;
 
-const NoDataBox = styled.View`
-  align-items: center;
-  justify-content: center;
+const Loading = styled.View`
+  margin-top : 10%;
 `;
 
-const NoDataText = styled.Text`
-  color:#666;
-  font-size:16px;
-  font-family: NanumGothic;
+const NoItemText = styled.Text`
+    width : 100%;
+    padding : 7%;
+    font-family : NanumGothic;
+    font-size : 22px;
+    text-align : center;
 `;

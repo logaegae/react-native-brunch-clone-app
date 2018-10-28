@@ -6,7 +6,6 @@ import { setLikeIcon } from '../../actions';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { domain } from '../../config';
-import { debounce } from "debounce";
 
 import ListItem from './ListItem';
 
@@ -32,25 +31,13 @@ class List extends Component {
     this.getList();
   }
 
-  _onEndReached(){
-    if(!this.state.endYn)(debounce(()=>{
-      const listCount = ++this.state.listCount;
-      this.setState({
-        ...this.state,
-        listCount
-      },()=>{
-        this.getList();
-      })
-    },1000))();
-  }
-
   getList() {
-    const { page, seed } = this.state;
+    const { page, seed, data } = this.state;
     axios.post(domain + '/api/article/getAllList', {page, seed})
     .then((res)=>{
       let newState = {
         data: page === 1 ? res.data.list : [...data, ...res.data.list],
-        error: res.message || null,
+        error: res.data.message || null,
         loading: false,
         refreshing: false,
         endYn : res.data.endYn,
@@ -71,9 +58,7 @@ class List extends Component {
   renderFooter = (
     <View
       style={{
-        paddingVertical: 20,
-        borderTopWidth: 1,
-        borderColor: "#CED0CE"
+        paddingTop: 20
       }}
     >
       <ActivityIndicator animating size="large" />
@@ -122,7 +107,8 @@ class List extends Component {
     this.setState({
       page : 1,
       seed : this.state.seed + 1,
-      refreshing : true
+      refreshing : true,
+      endYn : false
     },()=>{
       this.getList();
     });
@@ -150,6 +136,7 @@ class List extends Component {
             {data.length === 0
                 ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
                 : <FlatList
+                    style={{padding:'7%'}}
                     data={data} 
                     renderItem={({item}) => <ListItem 
                       {...item}
@@ -167,7 +154,7 @@ class List extends Component {
                     onEndReachedThreshold={0}
                   />
               }
-              {!init ? <NoItemText>{message}</NoItemText> : null}
+              {init ? <NoItemText>{message}</NoItemText> : null}
           </ConBox>
         </Wrap>
       )
@@ -236,7 +223,6 @@ const Logo = styled.Text`
 
 const ConBox = styled.View`
   flex:1;
-  padding: 7%;
 `;
 
 const Loading = styled.View`
@@ -244,9 +230,9 @@ const Loading = styled.View`
 `;
 
 const NoItemText = styled.Text`
-    width : 100%;
-    padding : 7%;
-    font-family : NanumGothic;
-    font-size : 22px;
-    text-align : center;
+  width : 100%;
+  padding : 7%;
+  font-family : NanumGothic;
+  font-size : 22px;
+  text-align : center;
 `;

@@ -33,7 +33,7 @@ class ListItem extends Component {
               <BgMask></BgMask>
             </BgBox>
           ) : null }
-          <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{name : __id.name})}>
+          <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
             <ProfileImgBox source={{ uri: __id.profileImg }} />
             <WriterNickname>{__id.name}</WriterNickname>  
           </WriterBox> 

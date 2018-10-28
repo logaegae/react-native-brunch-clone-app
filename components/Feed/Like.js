@@ -82,7 +82,8 @@ class Like extends Component {
     this.setState({
       page : 1,
       seed : this.state.seed + 1,
-      refreshing : true
+      refreshing : true,
+      endYn : false
     },()=>{
       this.getAlarmList();
     });
