@@ -146,16 +146,16 @@ class WriterView extends Component {
     const { token, nickname } = this.props.login;
     const { setLikeIcon } = this.props;
     const scale = scrollY.interpolate({
-      inputRange: [0, 50],
-      outputRange : [1, 0]
+      inputRange: [-100, 0, 40, 50],
+      outputRange : [1.2, 1, 0.9, 0]
     });
     const opacity = scrollY.interpolate({
-      inputRange: [0, 50],
-      outputRange : [1, 0]
+      inputRange: [0, 40, 50],
+      outputRange : [1, 0.9, 0]
     });
     const _height = scrollY.interpolate({
-      inputRange: [0, 50],
-      outputRange : [100, 0],
+      inputRange: [-100, 0, 40, 50],
+      outputRange : [100, 100, 90, 0]
     });
 
     return(
@@ -169,9 +169,20 @@ class WriterView extends Component {
               </FixedHeaderBox>
               <HeaderConBox>
                 <ProfileBox>
-                  <Animated.View style={{opacity, transform : [{scale}], height:_height, flex : opacity}}>
-                    <ProfileImgBox source={{uri: this.state.writer.profileImg}}/>
-                  </Animated.View>
+                  <Animated.Image style={{
+                    opacity,
+                    transform : [{scale}],
+                    height: _height,
+                    width : _height,
+                    borderRadius : 50,
+                    backgroundColor : "#ccc",
+                    borderWidth: 1,
+                    borderColor: "#e5e5e5"
+                  }} 
+                    source={{uri: this.state.writer.profileImg}}
+                  />
+                    {/* <ProfileImgBox source={{uri: this.state.writer.profileImg}}/> */}
+
                   <Nickname>{this.state.writer.name}</Nickname>
                   <Animated.View style={{opacity, transform : [{scale}]}}>
                     <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
@@ -232,7 +243,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(WriterView);
 const Wrap = styled.View`
   flex: 1;
   margin:8% 0 -8%;
-  `;
+`;
 
 const StickyBox = styled.View`
   position: relative;
@@ -271,6 +282,7 @@ const BtnIcon = styled.TouchableOpacity`
 `;
 
 const ProfileBox = styled.View`
+  margin-top:8%;
   width: 100%;
   align-items: center;
   justify-content: center;
