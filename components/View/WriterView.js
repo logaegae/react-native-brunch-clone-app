@@ -28,7 +28,6 @@ class WriterView extends Component {
       init : false,
       scrollY : new Animated.Value(0)
     }
-    
   }
 
   componentDidMount(){
@@ -149,6 +148,10 @@ class WriterView extends Component {
       inputRange: [-100, 0, 40, 50],
       outputRange : [1.2, 1, 0.9, 0]
     });
+    const scale2 = scrollY.interpolate({
+      inputRange: [-100, 0, 40, 50],
+      outputRange : [1, 1, 0.9, 0]
+    });
     const opacity = scrollY.interpolate({
       inputRange: [0, 40, 50],
       outputRange : [1, 0.9, 0]
@@ -184,7 +187,7 @@ class WriterView extends Component {
                     {/* <ProfileImgBox source={{uri: this.state.writer.profileImg}}/> */}
 
                   <Nickname>{this.state.writer.name}</Nickname>
-                  <Animated.View style={{opacity, transform : [{scale}]}}>
+                  <Animated.View style={{opacity, transform : [{scale:scale2}]}}>
                     <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
                   </Animated.View>
                 </ProfileBox> 
