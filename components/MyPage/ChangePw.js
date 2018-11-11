@@ -131,7 +131,7 @@ class ChangePw extends Component {
                 onFocus={this.scrollOnFocus('input3')}
               />
             </InputWrap>
-            <Button onPressOut={() => { checkValid() }}>
+            <Button onPress={() => { checkValid() }}>
               <BtnText>Submit</BtnText>
             </Button>
           </InputBox>

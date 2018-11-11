@@ -44,10 +44,11 @@ class Notify extends Component {
         endYn : res.data.endYn,
         init : true
       }
-      if(res.data.length == 0 ) {
-          newState.init = false;
+      if(res.data.list.length == 0 ) {
+          newState.init = true;
+          newState.loading = false;
           newState.message = "알려드릴 게 없네요.";
-      }else newState.message = "";
+      }else newState.message = " ";
 
       this.setState(newState);
 
@@ -109,9 +110,8 @@ class Notify extends Component {
         <Wrap>
           <Header title="알림" />
           <ConBox>
-            {data.length === 0
-              ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
-              : <FlatList
+            {data.length !== 0
+              ? <FlatList
                   data={data} 
                   renderItem={({item}) => <NotifyItem data={item} key={item._id}/>}
                   keyExtractor={this._keyExtractor}
@@ -120,9 +120,9 @@ class Notify extends Component {
                   onRefresh={this.handleRefresh}
                   onEndReached={this.handleLoadMore}
                   onEndReachedThreshold={0}
-                />
-            }
-            {!init ? <NoItemText>{message}</NoItemText> : null}
+                /> :
+                init ? <NoItemText>{message}</NoItemText> : null}
+                {!init ? <Loading ><ActivityIndicator animating size="large" /></Loading> : null}
           </ConBox>
         </Wrap>
       )

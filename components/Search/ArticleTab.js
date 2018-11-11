@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, View, FlatList, ActivityIndicator } from 'react-native';
 import styled from 'styled-components';
 
 import ArticleItem  from './ArticleItem';
@@ -13,26 +13,45 @@ export default class ArticleTab extends Component {
     } 
   }
 
+  renderFooter = (
+    <View
+      style={{
+        paddingVertical: 20,
+        // borderTopWidth: 1,
+        // borderColor: "#CED0CE"
+      }}
+    >
+      <ActivityIndicator animating size="large" />
+    </View>
+  );
+
+  _keyExtractor = (item, index) => item._id;
+
   render(){
-    
-    const list = this.props.list;
+    const { result, list, loading, refreshing, count, init } = this.props;
 
     return(
       <Wrap>
-        {list.length === 0 ? (
+        {count === 0 ? (
           <ResultBox>
-            <ResultText>검색 결과가 없습니다.</ResultText>
+            <ResultText>"{result}"에 대한 글 검색 결과가 없습니다.</ResultText>
           </ResultBox>
           ) : (
           <View>
             <ResultBox>
-              <ResultText>글 검색결과 {list.length}건</ResultText>
+              <ResultText>"{result}" 글 검색결과 {count}건</ResultText>
             </ResultBox>
-            {list.map((item) => {
-              return (
-                <ArticleItem {...item} key={item._id}/>
-              )
-            })}
+            <FlatList
+              data={list} 
+              renderItem={({item}) => <ArticleItem {...item} key={item._id}/>}
+              extraData={list}
+              keyExtractor={this._keyExtractor}
+              ListFooterComponent={loading ? this.renderFooter : null}
+              refreshing={refreshing}
+              onRefresh={this.props.handleRefresh}
+              onEndReached={this.props.handleLoadMore}
+              onEndReachedThreshold={0}
+              />
           </View>
           )}       
       </Wrap>
@@ -53,8 +72,12 @@ const ResultBox = styled.View`
   border-bottom-color: #ebebeb;
 `;
 
-const ResultText= styled.Text`
+const ResultText = styled.Text`
   font-size:13px;
-  font-family: NanumGothic;
+  font-family: 'NanumGothic';
   color:#999;
+`;
+
+const Loading = styled.View`
+  margin-top: 8%;
 `;

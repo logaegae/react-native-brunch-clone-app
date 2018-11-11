@@ -40,10 +40,10 @@ class Content extends React.Component {
                     <ContentItem token={this.props.login.token} nickname={this.props.login.name} setLikeIcon={this.props.setLikeIcon}/>
                 </ContentBox>
                 <HomeFooter>
-                    <Button footerBtn onPressOut={() => this.handleGoWrite()}>
+                    <Button footerBtn onPress={() => this.handleGoWrite()}>
                         <SimpleLineIcons name="pencil" color="#fff" size={20} />
                     </Button>
-                    <Button footerBtn onPressOut={() => this.props.navigation.navigate("List")}>
+                    <Button footerBtn onPress={() => this.props.navigation.navigate("List")}>
                         <SimpleLineIcons name="list" color="#fff" size={25} />
                     </Button>
                     <ConfirmDialog

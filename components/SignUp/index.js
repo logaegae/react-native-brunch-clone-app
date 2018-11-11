@@ -85,7 +85,7 @@ class SignUp extends Component {
       >
       <Wrap>
         <BtnBox>
-          <BtnBack onPressOut={() => this.props.navigation.navigate('SignIn')}>
+          <BtnBack onPress={() => this.props.navigation.navigate('SignIn')}>
             <Ionicons name="ios-arrow-round-back" color="#fff" size={60} style={{marginLeft:15}}/>
           </BtnBack>
         </BtnBox>
@@ -150,7 +150,7 @@ class SignUp extends Component {
             />
           </InputWrap>
           <P>* 닉네임은 마이페이지에서 변경할 수 있어요.</P>
-          <Button onPressOut={()=>{checkValid()}} >
+          <Button onPress={()=>{checkValid()}} >
             <BtnText>Sign Up</BtnText>
           </Button>
         </InputBox>

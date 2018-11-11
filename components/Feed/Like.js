@@ -46,10 +46,11 @@ class Like extends Component {
         endYn : res.data.endYn,
         init : true
       }
-      if(res.data.length == 0 ) {
-          newState.init = false;
+      if(res.data.list.length == 0 ) {
+          newState.init = true;
+          newState.loading = false;
           newState.message = "알려드릴 게 없네요.";
-      }else newState.message = "";
+      }else newState.message = " ";
 
       this.setState(newState);
 
@@ -59,7 +60,7 @@ class Like extends Component {
   }
 
   _getAlarmItems () {
-    if(Object.keys(this.state.alarms).length === 0) return '';
+    if(Object.keys(this.state.alarms).length === 0) return null;
     let indents = [];
     Object.values(this.state.alarms).forEach((e,i)=>{
         indents.push(<LikeItem key={i} {...e} />);
@@ -120,9 +121,8 @@ class Like extends Component {
         <Wrap>
           <Header title="좋아요"/>
           <ConBox>
-            {data.length === 0
-                ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
-                : <FlatList
+            {data.length !== 0
+                ? <FlatList
                     data={data} 
                     renderItem={({item}) => <LikeItem data={item} key={item._id}/>}
                     keyExtractor={this._keyExtractor}
@@ -132,8 +132,8 @@ class Like extends Component {
                     onEndReached={this.handleLoadMore}
                     onEndReachedThreshold={0}
                   />
-              }
-              {!init ? <NoItemText>{message}</NoItemText> : null}
+                : init ? <NoItemText>{message}</NoItemText>  : null}
+                {!init ? <Loading ><ActivityIndicator animating size="large" /></Loading> : null}
           </ConBox>
         </Wrap>
       )

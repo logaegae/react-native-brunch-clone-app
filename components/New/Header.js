@@ -93,12 +93,12 @@ class NewHeader extends React.Component {
     }
 }
 
-const Header = styled.View`
-    padding : 10px 0;
+const Header = styled.SafeAreaView`
 `;
 const ButtonBox = styled.View`
+
     width : 100%;
-    padding : 35px 10px 0;
+    padding : 5px 10px 0;
     justify-content:space-between;
     align-items : center;
     flex-direction : row;

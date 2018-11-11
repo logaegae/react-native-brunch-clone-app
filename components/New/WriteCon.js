@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import { Text, View, Button } from 'react-native';
-import styled, { css } from 'styled-components';
+import { View, Button } from 'react-native';
+import styled from 'styled-components';
 import { Entypo } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import ModalDate from './WriteModalDate';
 import ModalWeather from './WriteModalWeather';
 import ModalBg from './WriteModalBg';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 export default class WriteCon extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isModalVisible : false
     }
     this._toggleModal = this._toggleModal.bind(this);
     this._rednerModalType = this._rednerModalType.bind(this);
@@ -62,7 +62,7 @@ export default class WriteCon extends Component {
   _toggleModal = (type) => {
     this.props.handleState({ 
       ...this.props.article,
-      isModalVisible: !this.props.article.isModalVisible, 
+      isModalVisible: !this.props.article.isModalVisible,
       modalType: type 
     });
   };
@@ -88,7 +88,7 @@ export default class WriteCon extends Component {
         {this._rednerModalType(
           <ModalDate parentState={article} handleDate={this._handleDate}/>, 
           <ModalWeather parentState={article.weather} handleWeather={this._handleWeather} />,
-          <ModalBg parentState={article.bg} handleBg={this._handleBg}/>
+          <ModalBg parentState={article.bg} handleBg={this._handleBg} handleModal={this.props.handleModal2}/>
         )} 
       </View>
     );
@@ -99,6 +99,7 @@ export default class WriteCon extends Component {
     const { startDate, finishDate, weather, bg, title, text, isModalVisible } = this.props.article;
     return (
       <Wrap>
+        
         <Modal 
           isVisible={isModalVisible}
           onBackdropPress={()=>{
@@ -138,7 +139,7 @@ export default class WriteCon extends Component {
           <WeatherBox>
             <Select onPress={() => this._toggleModal("weather")}>
               <CommonText>날씨</CommonText>
-              {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : ''}
+              {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : null}
             </Select>
           </WeatherBox>
           <Row flexEnd>

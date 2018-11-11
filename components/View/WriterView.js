@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { setLikeIcon } from '../../actions'  
 import { Ionicons } from '@expo/vector-icons';
-import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import axios from 'axios';
 import { domain } from '../../config';
 
@@ -48,10 +47,11 @@ class WriterView extends Component {
             init : true,
             writer : res.data.writer
           }
-          if(res.data.length == 0 ) {
-            newState.init = false;
+          if(res.data.list.length == 0 ) {
+            newState.init = true;
+            newState.loading = false;
             newState.message = "게시물이 없습니다.";
-          }else newState.message = "";
+          }else newState.message = " ";
           this.setState(newState);
         }else{
           alert('ERROR');
@@ -123,7 +123,7 @@ class WriterView extends Component {
   renderFixedHeader() {
     return(
       <FixedHeaderBox>
-        <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
+        <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
           <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
         </BtnIcon> 
       </FixedHeaderBox>
@@ -166,7 +166,7 @@ class WriterView extends Component {
           <StatusBar hidden={false} />
             <View>
               <FixedHeaderBox>
-                <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
+                <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
                   <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
                 </BtnIcon> 
               </FixedHeaderBox>
@@ -194,9 +194,8 @@ class WriterView extends Component {
               </HeaderConBox>
               </View>
               <ConBox>
-              {data.length === 0
-                  ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
-                  : <FlatList
+              {data.length !== 0
+                  ? <FlatList
                       style={{padding:'7%'}}
                       data={data} 
                       renderItem={({item}) => 
@@ -218,9 +217,9 @@ class WriterView extends Component {
                       onScroll={Animated.event([
                         { nativeEvent: { contentOffset: { y: scrollY } } },
                       ])}
-                    />
-                }
-                {init ? <NoItemText>{message}</NoItemText> : null}
+                    /> 
+                  : init ? <NoItemText>{message}</NoItemText> : null }
+                  { !init ? <Loading ><ActivityIndicator animating size="large" /></Loading> : null}
               </ConBox>
         </Wrap>
       )
@@ -248,37 +247,12 @@ const Wrap = styled.View`
   margin:8% 0 -8%;
 `;
 
-const StickyBox = styled.View`
-  position: relative;
-  height:50px;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  border-bottom-width:1px;
-  border-bottom-color: #dedede;
-  box-shadow: 0px 3px 2px rgba(0,0,0,0.08);
-`;
-
-const FixedHeaderBox = styled.View`
-  padding: 0 15px;
-  position:absolute;
-  left: 0;
-  z-index:100;
-  height:50px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;  
-`;
-
-
 const HeaderConBox = styled.View`
   position:relative;
   z-index:5;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
 `;
 
 const BtnIcon = styled.TouchableOpacity`  
@@ -292,13 +266,16 @@ const ProfileBox = styled.View`
 `;
 
 
-const ProfileImgBox = styled.Image`
-  width : 100px;
-  height : 100px;
-  border-radius : 50px;
-  background-color : #ccc;
-  border-width: 1px;
-  border-color: #e5e5e5;
+const FixedHeaderBox = styled.View`
+  position:absolute;
+  left: 0;
+  z-index:100;
+  padding: 0 15px;
+  height:50px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;  
 `;
 
 const Nickname = styled.Text`

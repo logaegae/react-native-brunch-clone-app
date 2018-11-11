@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { Dimensions} from 'react-native';
 import styled from 'styled-components';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+
 
 const { height, width } = Dimensions.get("window");
 const width20per = (width - width * 0.14) / 5;
@@ -132,7 +133,7 @@ export default class ModalBg extends Component {
         }
       ], 
       selectedItem: '',
-      selectedColor: '', 
+      selectedColor: ''
     }
   }
 
@@ -149,27 +150,26 @@ export default class ModalBg extends Component {
   }
   
   changeActiveRadioButton(index){
-      this.state.radioItems.map(( item ) => { 
-        item.selected = false; 
-      });
+    this.state.radioItems.map(( item ) => { 
+      item.selected = false; 
+    });
 
-      this.state.radioItems[index].selected = true;
+    this.state.radioItems[index].selected = true;
 
-      this.setState({ radioItems: this.state.radioItems }, () => {
-          this.setState({ 
-            selectedItem: this.state.radioItems[index].id, 
-            selectedColor: this.state.radioItems[index].color,
-          });
-      });
-      this.props.handleBg({
-        photo : null,
-        color : {
-          id: this.state.radioItems[index].id, 
-          value: this.state.radioItems[index].color
-        }
-      });
+    this.setState({ radioItems: this.state.radioItems }, () => {
+        this.setState({ 
+          selectedItem: this.state.radioItems[index].id, 
+          selectedColor: this.state.radioItems[index].color,
+        });
+    });
+    this.props.handleBg({
+      photo : null,
+      color : {
+        id: this.state.radioItems[index].id, 
+        value: this.state.radioItems[index].color
+      }
+    });
   }
-
   
   render(){
     const parentState = this.props.parentState;
@@ -177,7 +177,7 @@ export default class ModalBg extends Component {
     return(
       <ModalWrap>
         <ModalRow>
-          <Btn>
+          <Btn onPress={() => this.props.handleModal()}>
             <ModalLabel underline>Photo</ModalLabel>
           </Btn>
         </ModalRow>
@@ -188,7 +188,6 @@ export default class ModalBg extends Component {
               <RadioButton key = { key } button = { item } selectedColor={parentState.color.value} selectedId={parentState.color.id} onClick = { this.changeActiveRadioButton.bind( this, key ) }/>
             ))}
           </RadioBox>
-          <Text style={{height:30}}>id: {this.state.selectedItem}, bgColor: {this.state.selectedColor}</Text>
         </ColorBox>
       </ModalWrap>
     )

@@ -43,10 +43,12 @@ class List extends Component {
         endYn : res.data.endYn,
         init : true
       }
-      if(res.data.length == 0 ) {
-          newState.init = false;
+
+      if(res.data.list.length === 0 ) {
+          newState.init = true;
+          newState.loading = false;
           newState.message = "게시물이 없습니다.";
-      }else newState.message = "";
+      }else newState.message = " ";
 
       this.setState(newState);
 
@@ -124,7 +126,7 @@ class List extends Component {
         <Wrap>
           <HeaderBox>
             <BtnBox>
-              <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
+              <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
                 <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
               </BtnIcon>
             </BtnBox>
@@ -133,28 +135,27 @@ class List extends Component {
             </LogoBox>
           </HeaderBox>
             <ConBox>
-            {data.length === 0
-                ? (<Loading ><ActivityIndicator animating size="large" /></Loading>)
-                : <FlatList
-                    style={{padding:'7%'}}
-                    data={data} 
-                    renderItem={({item}) => <ListItem 
-                      {...item}
-                      token={token} 
-                      nickname={nickname} 
-                      setLikeIcon={setLikeIcon} 
-                      _handleLike={(_id)=>{this.handleLike(_id)}}
-                    />}
-                    extraData={this.state}
-                    keyExtractor={this._keyExtractor}
-                    ListFooterComponent={loading ? this.renderFooter : null}
-                    refreshing={refreshing}
-                    onRefresh={this.handleRefresh}
-                    onEndReached={this.handleLoadMore}
-                    onEndReachedThreshold={0}
-                  />
-              }
-              {init ? <NoItemText>{message}</NoItemText> : null}
+            {data.length !== 0 ?
+            <FlatList
+              style={{padding:'7%'}}
+              data={data} 
+              renderItem={({item}) => <ListItem 
+                {...item}
+                token={token} 
+                nickname={nickname} 
+                setLikeIcon={setLikeIcon} 
+                _handleLike={(_id)=>{this.handleLike(_id)}}
+              />}
+              extraData={this.state}
+              keyExtractor={this._keyExtractor}
+              ListFooterComponent={loading ? this.renderFooter : null}
+              refreshing={refreshing}
+              onRefresh={this.handleRefresh}
+              onEndReached={this.handleLoadMore}
+              onEndReachedThreshold={0}
+            />
+            : init ? (<NoItemText>{message}</NoItemText>) : null}
+            {!init ? (<Loading ><ActivityIndicator animating size="large" /></Loading>) : null}
           </ConBox>
         </Wrap>
       )

@@ -24,7 +24,7 @@ export default class NotifyItem extends Component {
             <Tit>{title}</Tit>
             <Con>{typeMessage[alarmType]}</Con>
             <TimeBox>
-              {!confirmed ? <New></New> : ''}
+              {!confirmed ? <New></New> : null}
               <Time>{timeAgo(registedDate)}</Time>
             </TimeBox>
           </ConBox>

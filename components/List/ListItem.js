@@ -33,7 +33,7 @@ class ListItem extends Component {
               <BgMask></BgMask>
             </BgBox>
           ) : null }
-          <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
+          <WriterBox onPress={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
             <ProfileImgBox source={{ uri: __id.profileImg }} />
             <WriterNickname>{__id.name}</WriterNickname>  
           </WriterBox> 
@@ -45,7 +45,7 @@ class ListItem extends Component {
               <MaterialCommunityIcons name={weather} color="#fff" size={20} style={{marginLeft:3}}/>
             </WeatherBox>
           </FirstRow>
-          <TouchableOpacity onPressOut={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>
             <TitBox>
               <TitText>{title}</TitText>
               <BorderBox></BorderBox>

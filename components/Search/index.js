@@ -3,9 +3,10 @@ import { Dimensions, ScrollView } from 'react-native';
 import styled from 'styled-components';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import axios from 'axios';
+import { domain } from '../../config';
+
 import ArticleTab from './ArticleTab';
 import WriterTab from './WriterTab';
-import { domain } from '../../config';
 
 const { height, width } = Dimensions.get("window");
 
@@ -13,32 +14,38 @@ export default class Search extends Component {
   constructor(props){
     super(props);
     this.state = {
+      loading1: false,
+      loading2: false,
+      list : [],
+      page: 1,
+      seed: 1,
+      endYn : false,
+      error: null,
+      refreshing: false,
+      init: false,
       tab: 1,
       on: true,
       inputValue: this.props.navigation.getParam('text') || null,
-      list1 : [],
-      list2 : [],
-      text : null
+      result: null,
+      count: null,
     } 
+  }
+
+  componentDidMount(){
+    this._handleSearch();
   }
 
   _handleTextChange = inputValue => {
     this.setState({ inputValue });
   };
 
-  _handleTabChange1(tab){
+  _handleTabChange(tab){
     this.setState({
-      tab: 1,
-      on: true,
-    },() => {
-      this._handleSearch();
-    })
-  }
-
-  _handleTabChange2(tab){
-    this.setState({
-      tab: 2,
-      on: false,
+      tab,
+      on: tab === 1 ? true : false,
+      page : 1,
+      seed : 1,
+      list : []
     },() => {
       this._handleSearch();
     })
@@ -46,34 +53,71 @@ export default class Search extends Component {
 
   _handleSearch(){
     const state = this.state;
-    const { inputValue } = this.state;
-      if(inputValue){
-        axios.post(domain+'/api/search/articleAndWiter', {text:inputValue,tab : state.tab})
-        .then((res) => {
-          if(res.data.status === 'SUCCESS'){
-            let obj = {
-              ...state
-            }
-            obj["list"+state.tab] = res.data.list
-            this.setState(obj);
+    const { inputValue, page, seed} = this.state;
+
+    if(inputValue === null || inputValue === "" ){
+      alert("최소 1글자 이상 입력해 주세요.")
+      return false;
+    }
+
+    if(inputValue){
+      axios.post(domain+'/api/search/articleAndWriter', {text: inputValue, tab: state.tab, page, seed})
+      .then((res) => {
+        if(res.data.status === 'SUCCESS'){
+          let obj = {
+            ...state
           }
-        }).catch((error) => {
-          alert("ERROR\n"+error.message);
+          obj["list"] = obj["page"] === 1 ? res.data.list : [...obj["list"], ...res.data.list]
+          obj["endYn"] = res.data.endYn;
+          obj["error"] = res.message || null;
+          obj["loading"] = false;
+          obj["refreshing"] = false;
+          obj["count"] = res.data.count;
+          obj["init"] = true;
+          if(res.data.length == 0 ) {
+            obj["init"] = false;
+          }
+          obj["result"] = inputValue;
+          this.setState(obj);
+        }
+      }).catch((error) => {
+        alert("ERROR\n"+error.message);
+      });
+    }
+
+  }
+
+  handleLoadMore = () => {
+    if (!this.state.loading && !this.state.endYn){
+      this.setState({
+        page : this.state.page + 1,
+        loading : true
+      },() => {
+        this._handleSearch();
       });
     }
   }
 
-  componentDidMount(){
-    this._handleSearch();
+  handleRefresh = (tab) => {
+    this.setState({
+      page : 1,
+      seed : this.state.seed + 1,
+      refreshing : true,
+      endYn: false,
+    },()=>{
+      this._handleSearch();
+    });
   }
 
   render(){
-    const { tab, on, inputValue, list1, list2 } = this.state;
+
+    const { tab, on, inputValue, result, count, list, refreshing, loading, init } = this.state;
+    
     return(
         <Wrap>
           <HeaderBox>
-            <BtnIcon onPressOut={() => this.props.navigation.navigate('Home')}>
-              <Ionicons name="ios-arrow-round-back" color="#333" size={50}/>
+            <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
+              <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
             </BtnIcon>
             <SearchBox>
               <InputSearch
@@ -81,24 +125,44 @@ export default class Search extends Component {
                 onChangeText={this._handleTextChange}
                 placeholder="Search"
               />
-              <BtnIcon onPressOut={() => this._handleSearch()}>
+              <BtnIcon onPress={() => this._handleSearch()}>
                 <Feather name="search" color="#afafaf" size={20}/>
               </BtnIcon>
             </SearchBox>
           </HeaderBox>
           <TabBox>
-            <Tab visual={on} onPressOut={() => this._handleTabChange1(tab)}>
+            <Tab visual={on} onPress={() => this._handleTabChange(1)}>
               <TabText visual={on}>글</TabText>
             </Tab>
-            <Tab visual={!on} onPressOut={() => this._handleTabChange2(tab)}>
+            <Tab visual={!on} onPress={() => this._handleTabChange(2)}>
               <TabText visual={!on}>글쓴이</TabText>
             </Tab>
           </TabBox>
-          <ScrollView>
           <ConBox>
-              {tab === 1 ? <ArticleTab list={list1}/> : <WriterTab list={list2}/>}
+            {tab === 1 ? (
+              <ArticleTab 
+                result={result} 
+                count={count}
+                list={list} 
+                refreshing={refreshing}
+                loading={loading}
+                init={init}
+                handleLoadMore={this.handleLoadMore}
+                handleRefresh={this.handleRefresh}
+              />
+              ) : (
+              <WriterTab 
+                result={result} 
+                count={count}
+                list={list} 
+                refreshing={refreshing}
+                loading={loading}
+                init={init}
+                handleLoadMore={this.handleLoadMore}
+                handleRefresh={this.handleRefresh}
+              />
+            )}
             </ConBox>  
-          </ScrollView>           
         </Wrap>
       )
   }
@@ -106,9 +170,7 @@ export default class Search extends Component {
 
 const Wrap = styled.View`
   flex: 1;
-  margin-top:7%;
-  margin-bottom:-7%;
-  padding : 10px 0;
+  margin:8% 0 -8%;
 `;
 
 const HeaderBox = styled.View`
@@ -136,7 +198,7 @@ const SearchBox = styled.View`
 
 const InputSearch = styled.TextInput`
   width: ${width * 0.65};
-  font-family: NanumGothic-bold;
+  font-family: 'NanumGothic-bold';
   font-size:18px;
   color:#333;
 `;
@@ -164,7 +226,7 @@ const Tab = styled.TouchableOpacity`
 `;
 
 const TabText = styled.Text`
-  font-family: ${props => props.visual ? "NanumGothic-bold" : "NanumGothic"}
+  font-family: ${props => props.visual ? "NanumGothic-bold;" : "NanumGothic;"}
   font-size:15px;
   color: ${props => props.visual ? "#5ED9FF;" : "#333;"}
 `;

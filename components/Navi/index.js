@@ -21,25 +21,25 @@ const UnsignedContent = (props) => {
 const SignedContent = (props) => {
   return (
     <View>
-      <ProfileBox onPressOut={() => {props.navigation.navigate('MyPage')}}>
+      <ProfileBox onPress={() => {props.navigation.navigate('MyPage')}}>
         <ProfileImgBox source={{uri:props.profileImg}}/>
         <UserNickname>{props.name}</UserNickname>
       </ProfileBox>
       <BtnBox>
-        <Button onPressOut={() => props.navigation.navigate('New')}>
+        <Button onPress={() => props.navigation.navigate('New')}>
           <BtnText>글 쓰기</BtnText>
         </Button>
-        <Button onPressOut={() => props.navigation.navigate('Drawer')}>
+        <Button onPress={() => props.navigation.navigate('Drawer')}>
           <BtnText>글 관리</BtnText>
         </Button>
       </BtnBox>
       <IconBox>
-        <IconBtn onPressOut={() => props.navigation.navigate('Notify')}>
-          {props.notifyIcon ? <IconNew yellow></IconNew> : ''}
+        <IconBtn onPress={() => props.navigation.navigate('Notify')}>
+          {props.notifyIcon ? <IconNew yellow></IconNew> : null}
           <MaterialCommunityIcons name="bell-outline" color="#fff" size={30} />
         </IconBtn>
-        <IconBtn onPressOut={() => props.navigation.navigate('Like')}>
-          {props.likeIcon ? <IconNew pink></IconNew> : ''}
+        <IconBtn onPress={() => props.navigation.navigate('Like')}>
+          {props.likeIcon ? <IconNew pink></IconNew> : null}
           <MaterialCommunityIcons name="heart-outline" color="#fff" size={30} style={{marginTop:5}}/>
         </IconBtn>
       </IconBox>
@@ -92,12 +92,13 @@ class SideMenu extends Component {
 }
 
 const Container = styled.View`
-  padding : 40px 10px;
+  padding : 0 10px;
 `;
 const Center = styled.View`
   align-items : center;
 `;
 const CloseBox = styled.View`
+  margin-top : 30px;
   flex-direction : row;
   justify-content : flex-end;
 `;
@@ -139,6 +140,7 @@ const StartButton = styled.Text`
   font-family : NanumGothic;
 `;
 const ProfileBox = styled.TouchableOpacity`
+  padding-top : 30px;
   flex: 3;
   flex-direction: column;
   align-items:center;

@@ -20,7 +20,7 @@ export default class LikeItem extends Component {
             <Tit>{title}</Tit>
             <Con>{typeMessage[alarmType]}</Con>
             <TimeBox>
-              {!confirmed ? <New></New> : ''}
+              {!confirmed ? <New></New> : null}
               <Time>{timeAgo(registedDate)}</Time>
             </TimeBox>
           </ConBox>

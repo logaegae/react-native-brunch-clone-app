@@ -27,16 +27,17 @@ class DrawerHeader extends React.Component {
 }
 
 const Header = styled.View`
-    padding : 10px 0;
     border-bottom-width : 1px;
     border-bottom-color : #333;
 `;
 const ButtonBox = styled.View`
     width : 100%;
-    padding : 35px 10px 0;
-    justify-content:space-between;
+    padding :  0 15px;
+    justify-content : space-between;
     flex-direction : row;
     position : relative;
+    height : 50px;
+    align-items : center;
 `;
 const TitleText = styled.Text`
     font-size : 24px;
@@ -45,7 +46,6 @@ const TitleText = styled.Text`
     width : ${width};
     text-align :center;
     font-weight : bold;
-    top: 50px;
     z-index : -1;
 `;
 

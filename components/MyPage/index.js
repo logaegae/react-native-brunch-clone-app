@@ -98,16 +98,16 @@ class Mypage extends Component {
                    )
                 }
               </NicknameBox>
-              <BtnEdit onPressOut={() => this._handleChangeNickname(isEditing)}>
+              <BtnEdit onPress={() => this._handleChangeNickname(isEditing)}>
                 <Foundation name="pencil" color="#666" size={20} />
               </BtnEdit>
             </ProfileBox>
             <BorderBox></BorderBox>
             <BtnBox>
-              <Button borderType onPressOut={() => this.props.navigation.navigate('ChangePw')}>
+              <Button borderType onPress={() => this.props.navigation.navigate('ChangePw')}>
                 <BtnText borderType>비밀번호 변경</BtnText>
               </Button>
-              <Button onPressOut={this.props.logoutRequest}>
+              <Button onPress={this.props.logoutRequest}>
                 <BtnText>Sign Out</BtnText>
               </Button>
             </BtnBox>

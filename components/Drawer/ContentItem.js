@@ -49,7 +49,7 @@ class EditItem extends Component {
             </BgBox>
           ) : null }
           <ControlBox>
-          <BtnPublishing onPressOut={() => this._handleUpdate({published : !published})} visual={published}>
+          <BtnPublishing onPress={() => this._handleUpdate({published : !published})} visual={published}>
               <TextPublishing visual={published} color={!bgStyle.photoUrl ? bgStyle.backgroundColor : "#444"}>{!published ? ("발행") : ("발행 취소")}</TextPublishing>
             </BtnPublishing>
             <BtnEdit onPress={() => handleModal(_id)}>
@@ -86,9 +86,8 @@ export default withNavigation(EditItem);
 
 
 const Wrap = styled.View`  
-  margin-bottom:7%;
-  border-radius: 10px;
-  
+  margin-bottom: ${width * 0.07};
+  border-radius: 10px;  
 `;
 
 const Wrapper = styled.View`
@@ -139,7 +138,7 @@ const BtnPublishing = styled.TouchableOpacity`
   ${props => { if(!props.visual) return `background-color:#fff;` } }
 `
 const TextPublishing = styled.Text`
-  font-family: NanumGothic;
+  font-family: 'NanumGothic';
   font-size:14px;
   color: ${props => props.visual ? "#fff" : props.color };
 `;
@@ -159,7 +158,7 @@ const DateBox = styled.View`
 `;
 
 const DateText = styled.Text`
-  font-family: NanumGothic;
+  font-family: 'NanumGothic';
   color:#fff;
   font-size:13px;
   font-weight:500;
@@ -175,7 +174,7 @@ const TitBox = styled.View`
 `;
 
 const TitText = styled.Text`
-  font-family: NanumGothic-bold;
+  font-family: 'NanumGothic-bold';
   color:#fff;
   font-size:20px;
   line-height:23px;
@@ -194,11 +193,10 @@ const BorderBox = styled.View`
 
 const TextBox = styled.View`
   margin-top:12%;
-  height:46px;
 `;
 
 const ConText = styled.Text`
-  font-family: NanumGothic;
+  font-family: 'NanumGothic';
   color:#fff;
   font-size:15px;
   line-height:22px;
@@ -207,7 +205,7 @@ const ConText = styled.Text`
 const WrittenDate = styled.Text`
   margin-top:15px;
   text-align:right;
-  font-family: NanumGothic;
+  font-family: 'NanumGothic';
   color:#fff;
   font-size:12px;
 `;

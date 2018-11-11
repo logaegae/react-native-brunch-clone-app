@@ -71,7 +71,7 @@ class ContentItem extends React.Component {
                 </BgBox>
               ) : null }
               <FlexBox flex2>
-                <ViewLinkBox onPressOut={() => this.props.navigation.navigate('ArticleView',{item})}>
+                <ViewLinkBox onPress={() => this.props.navigation.navigate('ArticleView',{item})}>
                   <WeatherBox>
                     <MaterialCommunityIcons name={item.weather} color="#fff" size={24} style={{marginLeft:3, marginRight:3}}/>
                   </WeatherBox>
@@ -90,7 +90,7 @@ class ContentItem extends React.Component {
                 </Row>
               </FlexBox>
               <FlexBox flexEnd>
-                <WriterBox onPressOut={() => this.props.navigation.navigate('WriterView',{writer_id : item.__id._id})}>
+                <WriterBox onPress={() => this.props.navigation.navigate('WriterView',{writer_id : item.__id._id})}>
                   <ProfileImgBox source={{ uri: item.__id.profileImg }} />
                   <WriterNickname>{item.__id.name}</WriterNickname>
                 </WriterBox>
@@ -162,7 +162,7 @@ const ItemBox = styled.View`
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.16);
     ${prop => prop.bg}
-    ${prop => prop.last ? "background: #ccc; align-items: center" : ""}
+    ${prop => prop.last ? "background: #ccc; align-items: center" : null}
 `;
 
 const BgBox = styled.View`

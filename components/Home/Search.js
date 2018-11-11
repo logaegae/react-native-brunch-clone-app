@@ -1,69 +1,109 @@
-import React from 'react';
-import { Text, View, TouchableHighlight, TextInput, Dimensions } from 'react-native';
+import React, { Component } from 'react';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import styled from 'styled-components';
-import { Ionicons } from '@expo/vector-icons';
-import Theme from '../../style/theme';
+import { Feather } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 
 const { height, width } = Dimensions.get("window");
 
-class Search extends React.Component {
-    
-    state = {
-        text : null
+class SearchBox extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      isSearching: false,
+      text: null,
     }
+  }
 
-    handleSearchText(text) {
-        this.setState({
-            text
-        })
+  _handleSearch(){
+    const text = this.state.text;
+
+    if(text === null || text === ""){
+      alert("최소 1글자 이상 입력해 주세요.")
+      return false;
     }
-    render() {
-        const { text } = this.state;
-        return (
-            <SearchContainer>
-                <SearchBox>
-                    <SearchInput
-                        underlineColorAndroid="transparent"
-                        placeholder={"검색..."}
-                        placeholderTextColor={"#999"}
-                        onChangeText={(text) => this.handleSearchText(text)}
-                        value={text}
-                    />
-                    <SearchButton onPressOut={() => this.props.navigation.navigate('Search',{text})}>
-                        <Ionicons name="ios-search" size={40} color={Theme.mainColor}/>
-                    </SearchButton>
-                </SearchBox>
-            </SearchContainer>
-        );
+    this.props.navigation.navigate('Search', {text});
+  }
+   
+ 
+  render() {
+    const { isSearching, text } = this.state;
+    
+    return (
+      <Wrap>
+        <LogoBox>
+        <TouchableOpacity onPress={() => this.setState({ isSearching: true })}>
+          {isSearching ? (
+             <InputSearch
+                value={text}
+                onChangeText={(text) => this.setState({ text })}
+                placeholder="Search"
+                placeholderTextColor="#ccc"
+                autoFocus={true}
+              />
+            ) : (
+             <Logo>Travel</Logo>
+            )
+          }
+        </TouchableOpacity>
+        </LogoBox>
+          {isSearching ? (
+            <BtnBox>
+              <Button onPress={() => this._handleSearch()}>
+                <Feather name="check" color="#666" size={25} />
+              </Button>  
+              <Button onPress={() => this.setState({ isSearching: false, text : null })}>
+                <Feather name="x" color="#bbb" size={25} />
+              </Button>
+            </BtnBox>
+            ) : (
+            <BtnBox>
+              <Button onPress={() => this.setState({ isSearching: true })}>
+                <Feather name="search" color="#999" size={25} />
+              </Button>  
+            </BtnBox>
+            )
+          }
+      </Wrap>  
+    );
   }
 }
 
-const SearchContainer = styled.View`
-    align-items : flex-end;
-    justify-content : center;
-    width:${width}px;
-    margin-top : 20px;
-    margin-bottom : 20px;
-`;
-const SearchBox = styled.View`
-    width : ${width - 100}px;
-    border-bottom-width : 4px;
-    border-bottom-color : ${Theme.mainColor};
-    flex-direction : row;
-    padding-right : 20px;
-`;
-const SearchInput = styled.TextInput`
-    width : ${width - 170}px;
-    padding : 10px;
-    font-size : 30px;
-    text-align : right;
-`;
-const SearchButton = styled.TouchableHighlight`
-    width : 56px;
-    height : 56px;
-    justify-content : center;
-    align-items : center;
+export default withNavigation(SearchBox);
+
+const Wrap = styled.View`
+  width: ${width * 0.82};
+  justify-content: space-between;
+  align-items: baseline;
+  flex-direction: row;
+  border-bottom-width: 8px;
+  border-bottom-color: #efefef;
 `;
 
-export default withNavigation(Search);
+const LogoBox = styled.View`
+  width: 70%;
+`;
+
+const Logo = styled.Text`
+  font-family: 'NanumGothic';
+  font-size: 40px;
+  color:#999;
+`;
+
+const InputSearch = styled.TextInput`
+  width:95%;
+  font-size:18px;
+  font-family: 'NanumGothic';
+  height:46px;
+  padding:5px;
+`;
+
+const BtnBox = styled.View` 
+  width:30%;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+const Button = styled.TouchableOpacity`
+  margin: 0 5px;
+`;
