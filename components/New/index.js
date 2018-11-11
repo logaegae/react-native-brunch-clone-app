@@ -34,7 +34,8 @@ class NewView extends React.Component {
                 },
                 delYn : false,
                 published : false,
-                isLiked : []
+                isLiked : [],
+                selectedImg : null
             },
             goBack : "Home"
         }
@@ -87,6 +88,16 @@ class NewView extends React.Component {
         });
     }
 
+    _handleImage = (selectedImg) => {
+        this.setState({
+            ...this.state,
+            article : {
+                ...this.state.article,
+                selectedImg
+            }
+        });
+    }
+
     _toggleModal = () => {
         this.setState({ 
           ...this.state,
@@ -104,16 +115,8 @@ class NewView extends React.Component {
         const { isModal2Visible } = article;
         return (
             <Container>
-                {isModal2Visible ? 
-                <Container>
-                    <ModalHeader>
-                    <ModalTit>
-                        사진을 선택해주세요
-                    </ModalTit>
-                    <Button value="cancle" title="닫기" onPress={() => this._toggleModal()}/>
-                    </ModalHeader>
-                    <CameraRoll />
-                </Container>
+                {isModal2Visible ?
+                <CameraRoll handleClose={this._toggleModal} handleImage={this._handleImage}/>
                 :
                 <Container>
                     <ViewHeader article={article} handleState={this._handleState} goBack={goBack}/>
