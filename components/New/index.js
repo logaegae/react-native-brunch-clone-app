@@ -14,7 +14,7 @@ class NewView extends React.Component {
             article : {
                 _id : null,
                 isModalVisible: false,
-                isModal2Visible: false,
+                isCameraRollVisible: false,
                 switchOneday : false,
                 modalType: "",
                 startDate: "",
@@ -105,17 +105,17 @@ class NewView extends React.Component {
               ...this.state.article,
               isModalVisible : false,
               modalType : '',
-              isModal2Visible : !this.state.article.isModal2Visible
+              isCameraRollVisible : !this.state.article.isCameraRollVisible
           }
         });
     };
     
     render() {
         const { article, goBack } = this.state;
-        const { isModal2Visible } = article;
+        const { isCameraRollVisible } = article;
         return (
             <Container>
-                {isModal2Visible ?
+                {isCameraRollVisible ?
                 <CameraRoll handleClose={this._toggleModal} handleImage={this._handleImage}/>
                 :
                 <Container>
