@@ -110,7 +110,7 @@ export default class WriteCon extends Component {
           ( "background-color:" + bg.color.value) : null }>
           {selectedImg ? (
             <BgBox>
-              <BgImage source={{uri : selectedImg}} />
+              <BgImage source={{uri : selectedImg[0].uri}} />
               <BgMask></BgMask>
             </BgBox>
           ) : null }

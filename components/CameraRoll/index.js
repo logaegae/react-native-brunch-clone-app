@@ -51,7 +51,8 @@ class CameraRollScreen extends Component {
   }
 
   getSelectedImages = (image) => {
-    if(image.length != 0) this.props.handleImage(image[0].uri);
+    alert(JSON.stringify(image))
+    if(image.length != 0) this.props.handleImage(image);
   }
 
   render() {

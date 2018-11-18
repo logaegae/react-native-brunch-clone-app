@@ -78,7 +78,7 @@ class Edit extends Component {
   }
 
   _handleUpdate(_id, obj, target){
-    const token = this.props.login.token;  
+    const token = this.props.login.token;
     const objToUpdate = {
       ...obj,
       _id,
