@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 import { requestSaveArticle, article_getInit } from '../../actions';
 import { setNotifyIcon } from '../../actions';
+import postPicture from '../../lib/postPicture'
 
 class NewHeader extends React.Component {
 
@@ -53,7 +54,11 @@ class NewHeader extends React.Component {
                         글쓰기
                     </TitleText>
                     <SaveText
-                        onPress={()=>{this.props.requestSaveArticle(article, token)}}
+                        onPress={async ()=>{
+                            let result = await postPicture(article.selectedImg[0], token);
+                            // alert(JSON.stringify(result));
+                            // this.props.requestSaveArticle(article, token);
+                        }}
                     >
                         저장
                     </SaveText>

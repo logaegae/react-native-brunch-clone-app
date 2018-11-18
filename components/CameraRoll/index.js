@@ -3,7 +3,7 @@ import { CameraRoll, StatusBar, ScrollView, Text, Dimensions } from 'react-nativ
 import styled from 'styled-components';
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import CameraRollPicker from 'react-native-camera-roll-picker';
-import Camera from './Camera';
+import Camera from './Camera2';
 
 const { height, width } = Dimensions.get("window");
 const width30per = width / 3;
@@ -51,7 +51,7 @@ class CameraRollScreen extends Component {
   }
 
   getSelectedImages = (image) => {
-    alert(JSON.stringify(image))
+    // alert(JSON.stringify(image2))
     if(image.length != 0) this.props.handleImage(image);
   }
 
