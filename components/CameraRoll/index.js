@@ -12,7 +12,6 @@ class CameraRollScreen extends Component {
   constructor(props){
     super(props);
     this.state = {
-      photos: null,
       cameraVisible : false
     }
     this._toggleCamera = this._toggleCamera.bind(this);
@@ -23,13 +22,16 @@ class CameraRollScreen extends Component {
       console.error(error);
     });
   }
+  componentWillUnmount(){
+
+  }
 
   _toggleCamera = () => {
     this.setState({ 
       ...this.state,
       cameraVisible : !this.state.cameraVisible
     });
-};
+  }
 
   async _getPhotosAsync() {
     let photos = await CameraRoll.getPhotos({ first: 30 });
@@ -46,6 +48,10 @@ class CameraRollScreen extends Component {
       );
     }
     return images;
+  }
+
+  getSelectedImages = (image) => {
+    if(image.length != 0) this.props.handleImage(image[0].uri);
   }
 
   render() {
@@ -69,10 +75,12 @@ class CameraRollScreen extends Component {
           <ConBox>
             <CameraRollPicker
               // callback={this.getSelectedImages} 
-              // callback={alert("선택함!")} 
-              maximum={1}
+              callback={this.getSelectedImages} 
+              selectSingleItem={true}
               imageMargin={2}
               containerWidth={width + 4}
+              removeClippedSubViews={true}
+              selected={[]}
               />
           </ConBox>
         </Wrap>}

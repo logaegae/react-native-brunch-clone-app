@@ -148,6 +148,25 @@ export default class ModalBg extends Component {
       }
     });
   }
+
+  componentDidUpdate(prevProps){
+    if(this.props.article.selectedImg != null && (this.state.selectedItem != null || this.state.selectedColor != null))
+    this.setState({
+      ...this.state,
+      selectedItem : null,
+      selectedColor : null
+    },()=>{
+      this.props.handleBg({
+        bg : {
+          photo : null,
+          color : {
+            id: null, 
+            value: null
+          }
+        }
+      });
+    });
+  }
   
   changeActiveRadioButton(index){
     this.state.radioItems.map(( item ) => { 
@@ -163,16 +182,19 @@ export default class ModalBg extends Component {
         });
     });
     this.props.handleBg({
-      photo : null,
-      color : {
-        id: this.state.radioItems[index].id, 
-        value: this.state.radioItems[index].color
-      }
+      bg : {
+        photo : null,
+        color : {
+          id: this.state.radioItems[index].id, 
+          value: this.state.radioItems[index].color
+        }
+      },
+      selectedImg : null
     });
   }
   
   render(){
-    const parentState = this.props.parentState;
+    const parentState = this.props.article.bg;
     
     return(
       <ModalWrap>

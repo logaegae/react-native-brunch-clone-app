@@ -53,7 +53,9 @@ class NewView extends React.Component {
             }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
                 const article = res.data.data;
                 this.setState({
+                    ...this.state,
                     article : {
+                        ...this.state.article,
                         _id : article._id,
                         startDate: article.startDate,
                         finishDate: article.finishDate,
@@ -93,7 +95,8 @@ class NewView extends React.Component {
             ...this.state,
             article : {
                 ...this.state.article,
-                selectedImg
+                selectedImg,
+                isCameraRollVisible : selectedImg ? false : true
             }
         });
     }

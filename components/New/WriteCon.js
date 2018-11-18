@@ -52,10 +52,7 @@ export default class WriteCon extends Component {
   _handleBg = (value) => {
     const obj = {
       ...this.props.article,
-      bg : {
-        ...this.props.article.bg,
-        ...value
-      }
+      ...value
     }
     this.props.handleState(obj);
   }
@@ -88,7 +85,7 @@ export default class WriteCon extends Component {
         {this._rednerModalType(
           <ModalDate parentState={article} handleDate={this._handleDate}/>, 
           <ModalWeather parentState={article.weather} handleWeather={this._handleWeather} />,
-          <ModalBg parentState={article.bg} handleBg={this._handleBg} handleModal={this.props.handleModal2}/>
+          <ModalBg article={article} handleBg={this._handleBg} handleModal={this.props.handleModal2}/>
         )} 
       </View>
     );
@@ -96,7 +93,7 @@ export default class WriteCon extends Component {
   
   render(){
     const article = this.props.article;
-    const { startDate, finishDate, weather, bg, title, text, isModalVisible } = this.props.article;
+    const { startDate, finishDate, weather, bg, title, text, isModalVisible, selectedImg } = this.props.article;
     return (
       <Wrap>
         
@@ -109,11 +106,11 @@ export default class WriteCon extends Component {
           {this._renderModalContent()}
         </Modal>
         
-        <HeaderConBox bg={!bg.photo ? 
+        <HeaderConBox bg={!selectedImg ? 
           ( "background-color:" + bg.color.value) : null }>
-          {!bg.color.value ? (
+          {selectedImg ? (
             <BgBox>
-              <BgImage source={{ uri: bg.photo }} />
+              <BgImage source={{uri : selectedImg}} />
               <BgMask></BgMask>
             </BgBox>
           ) : null }
