@@ -42,7 +42,7 @@ class EditItem extends Component {
       <Wrap>
         <Wrapper bg={!bgStyle.photoUrl ? 
           ( "background-color:" + bgStyle.backgroundColor) : null }>
-          {!bgStyle.backgroundColor ? (
+          {bgStyle.photoUrl ? (
             <BgBox>
               <BgImage source={{ uri: bgStyle.photoUrl }} />
               <BgMask></BgMask>

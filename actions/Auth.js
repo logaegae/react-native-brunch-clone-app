@@ -94,7 +94,7 @@ export const userLogin = (userInfo) => {
             const id = res.data.id;
             const _id = res.data._id;
             const token = res.data.token;
-            const profileImg = res.data.profileImg;
+            const profileImg = res.data.profileImg || "http://t1.daumcdn.net/friends/prod/editor/fe1fbe7c-4c82-446e-bc5c-f571d90b0ba9.jpg";
 
             switch(status){
                 case "LOGIN_FAILED" : 

@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { CameraRoll, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Feather, Foundation } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { logoutRequest, authInit, changeNameRequest } from '../../actions';
 import Header from '../Common/ContentHeader';
+import CameraRoll from '../CameraRoll';
 
 const { height, width } = Dimensions.get("window");
 
@@ -13,7 +14,9 @@ class Mypage extends Component {
     super(props);
     this.state = {
       isEditing : false,
-      nickname : this.props.login.name
+      nickname : this.props.login.name,
+      isCameraRollVisible : false,
+      selectedImg : null
     }
   }
 
@@ -34,18 +37,20 @@ class Mypage extends Component {
     }
   }
 
-  _handleCameraRoll = () => {
-   CameraRoll.getPhotos({
-       first: 20,
-       assetType: 'Photos',
-     })
-     .then(r => {
-       this.setState({ photos: r.edges });
-     })
-     .catch((err) => {
-        //Error Loading Images
-     });
-   };
+  _toggleModal = () => {
+    this.setState({ 
+      ...this.state,
+      isCameraRollVisible : !this.state.isCameraRollVisible
+    });
+  };
+
+  _handleImage = (selectedImg) => {
+    this.setState({
+        ...this.state,
+        selectedImg,
+        isCameraRollVisible : selectedImg ? false : true
+    });
+}
 
    _handleChangeNickname(isEditing){
     
@@ -67,17 +72,21 @@ class Mypage extends Component {
 
   render(){
 
-    const { isEditing } = this.state;
+    const { isEditing, isCameraRollVisible } = this.state;
     const token = this.props.login.token;
-    
+
     return(
+      <Container>
+        {isCameraRollVisible ?
+        <CameraRoll handleClose={this._toggleModal} handleImage={this._handleImage}/>
+        :
         <Wrap>
           <Header title="MY PAGE"/>
           <Contents>
             <ProfileBox>
               <ImgBox>
                 <ProfileImgBox source={require('../../assets/siba.jpg')}/>
-                <PhotoEditBtn onPress={this._handleCameraRoll}>
+                <PhotoEditBtn onPress={this._toggleModal}>
                   <Feather name="camera" color="#fff" size={20}/>
                 </PhotoEditBtn>
               </ImgBox>
@@ -113,7 +122,9 @@ class Mypage extends Component {
             </BtnBox>
           </Contents>
         </Wrap>
-      )
+      }
+      </Container>
+    )
   }
 }
 
@@ -139,6 +150,10 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Mypage);
+
+const Container = styled.View`
+    flex : 1;
+`;
 
 const Wrap = styled.View`
   flex: 1;

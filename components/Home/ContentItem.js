@@ -58,8 +58,8 @@ class ContentItem extends React.Component {
             </ItemBox>
           )
         }else{
-          item.bgStyle.photoUrl = "http://holotrip.co.kr/wp-content/uploads/2017/05/%EC%97%90%ED%8E%A01.jpg";
-          item.__id.profileImg = "http://t1.daumcdn.net/friends/prod/editor/fe1fbe7c-4c82-446e-bc5c-f571d90b0ba9.jpg";
+          // item.bgStyle.photoUrl = "http://holotrip.co.kr/wp-content/uploads/2017/05/%EC%97%90%ED%8E%A01.jpg";
+          // item.__id.profileImg = "http://t1.daumcdn.net/friends/prod/editor/fe1fbe7c-4c82-446e-bc5c-f571d90b0ba9.jpg";
           return (
             <ItemBox bg={!item.bgStyle.photoUrl ? 
               ( "background-color:" + item.bgStyle.backgroundColor) : null

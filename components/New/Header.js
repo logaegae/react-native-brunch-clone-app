@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 import { requestSaveArticle, article_getInit } from '../../actions';
 import { setNotifyIcon } from '../../actions';
-import postPicture from '../../lib/postPicture'
+import { newBgPhoto } from '../../lib/postPicture'
 
 class NewHeader extends React.Component {
 
@@ -55,9 +55,20 @@ class NewHeader extends React.Component {
                     </TitleText>
                     <SaveText
                         onPress={async ()=>{
-                            let result = await postPicture(article.selectedImg[0], token);
-                            // alert(JSON.stringify(result));
-                            // this.props.requestSaveArticle(article, token);
+                            if(article.selectedImg && article.selectedImg[0]){
+                                const post = newBgPhoto(article.selectedImg[0], token);
+                                post.then(res => res.json())
+                                .then(data => {
+                                    if(data.result !== 'SUCCESS'){
+                                        alert("File upload Error");
+                                        return false;
+                                    }
+                                    const toUploadObj = { ...article, bg : {...article.bg, photo : data.url} };
+                                    this.props.requestSaveArticle(toUploadObj, token);
+                                });
+                            }else{
+                                this.props.requestSaveArticle(article, token);
+                            }
                         }}
                     >
                         저장

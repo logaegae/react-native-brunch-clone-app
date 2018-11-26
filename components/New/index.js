@@ -52,7 +52,7 @@ class NewView extends React.Component {
                 alert("ERROR\n"+res.data.message);
             }else if(res.data.status === "ARTICLE_GET_SUCCESSED"){
                 const article = res.data.data;
-                this.setState({
+                let obj = {
                     ...this.state,
                     article : {
                         ...this.state.article,
@@ -76,7 +76,9 @@ class NewView extends React.Component {
                         published : article.published
                     },
                     goBack : "Drawer"
-                })
+                }
+                if(article.bgStyle.photoUrl) obj.article.selectedImg = [{uri : article.bgStyle.photoUrl}];
+                this.setState(obj);
             }
         }).catch((error) => {
             alert("ERROR\n"+error.message);
