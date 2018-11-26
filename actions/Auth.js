@@ -9,7 +9,8 @@ import {
     AUTH_LOGIN_FAIL,
     AUTH_LOGOUT,
     CHANGE_NAME_SUCCESSED,
-    AUTH_CHANGEPW_SUCCESS
+    AUTH_CHANGEPW_SUCCESS,
+    CHANGE_PROFILEIMG_SUCCESSED
 } from './ActionTypes'
 import axios from 'axios';
 import { AsyncStorage } from "react-native";
@@ -76,6 +77,12 @@ export const authInit = () => {
 export const changePwSuccess = () => {
     return {
         type : AUTH_CHANGEPW_SUCCESS
+    }
+}
+export const changeProfileImg = (profileImg) => {
+    return {
+        type : CHANGE_PROFILEIMG_SUCCESSED,
+        profileImg
     }
 }
 
@@ -254,13 +261,59 @@ export const changeNameRequest = (userInfo, token) => {
                         id : userInfo.id,
                         _id : userInfo._id,
                         name : userInfo.name,
-                        token
+                        token,
+                        profileImg : userInfo.profileImg
                     }));
                 } catch (error) {
                     alert("Storage Error : " + error);
                 } finally {
                     alert("변경되었습니다.");
                     dispatch(changeName(userInfo.name));
+                }
+            }else{
+                alert("ERORR");
+            }
+            dispatch(authInit());
+        }).catch((error) => {
+            // FAILED
+            dispatch(getFailure());
+        });
+    }
+}
+//Profile 사진 변경
+export const changeProfilePictureRequest = (userInfo, token) => {
+    return (dispatch) => {
+        if(!token) {
+            alert("ERROR\nNo Token Info");
+            return false;
+        }
+        dispatch(getting());
+
+        const header = {
+            headers : {
+                'x-access-token' : token
+            }
+        }
+
+        // API REQUEST
+        return axios.post(domain+'/api/auth/changeProfilePicture', userInfo, header)
+        .then((res) => {
+            if(res.data.status === "FAIL"){
+                alert("ERORR");
+            }else if(res.data.status === "SUCCESS"){
+                try {
+                    AsyncStorage.setItem('@BrunchApp:Auth', JSON.stringify({
+                        id : userInfo.id,
+                        _id : userInfo._id,
+                        name : userInfo.name,
+                        token,
+                        profileImg : userInfo.profileImg
+                    }));
+                } catch (error) {
+                    alert("Storage Error : " + error);
+                } finally {
+                    alert("변경되었습니다.");
+                    dispatch(changeProfileImg(userInfo.profileImg));
                 }
             }else{
                 alert("ERORR");

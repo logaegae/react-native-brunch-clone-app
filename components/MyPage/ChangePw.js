@@ -17,6 +17,7 @@ class ChangePw extends Component {
       currentPw: "",
       newPw: "",
       confirmPw: "",
+      profileImg : this.props.login.profileImg
     };
     this.scrollOnFocus = this.scrollOnFocus.bind(this);
   }

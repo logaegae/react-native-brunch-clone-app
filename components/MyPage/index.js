@@ -3,9 +3,10 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { Feather, Foundation } from '@expo/vector-icons';
 import { connect } from 'react-redux';
-import { logoutRequest, authInit, changeNameRequest } from '../../actions';
+import { logoutRequest, authInit, changeNameRequest, changeProfilePictureRequest } from '../../actions';
 import Header from '../Common/ContentHeader';
 import CameraRoll from '../CameraRoll';
+import { newBgPhoto } from '../../lib/postPicture'
 
 const { height, width } = Dimensions.get("window");
 
@@ -16,8 +17,10 @@ class Mypage extends Component {
       isEditing : false,
       nickname : this.props.login.name,
       isCameraRollVisible : false,
-      selectedImg : null
+      selectedImg : null,
+      profileImg : this.props.login.profileImg
     }
+    this._handleImage = this._handleImage.bind(this);
   }
 
   componentDidMount() {
@@ -45,13 +48,33 @@ class Mypage extends Component {
   };
 
   _handleImage = (selectedImg) => {
+    const { token, name } = this.props.login;
     this.setState({
         ...this.state,
-        selectedImg,
-        isCameraRollVisible : selectedImg ? false : true
+        selectedImg
+    },()=>{
+      if(selectedImg && selectedImg[0]){
+        const post = newBgPhoto(selectedImg[0], token);
+        post.then(res => res.json())
+        .then(data => {
+          if(data.result !== 'SUCCESS'){
+            alert("File upload Error");
+            return false;
+          }
+          const toUploadObj = { 
+            name : name,
+            profileImg : selectedImg[0].uri
+          };
+          this.props.changeProfilePictureRequest(toUploadObj, token);
+          this.setState({
+            ...this.state,
+            isCameraRollVisible : false
+          })
+        });
+      }
     });
-}
-
+  }
+    
    _handleChangeNickname(isEditing){
     
     const data = {
@@ -73,7 +96,7 @@ class Mypage extends Component {
   render(){
 
     const { isEditing, isCameraRollVisible } = this.state;
-    const token = this.props.login.token;
+    const { token, profileImg } = this.props.login;
 
     return(
       <Container>
@@ -85,7 +108,7 @@ class Mypage extends Component {
           <Contents>
             <ProfileBox>
               <ImgBox>
-                <ProfileImgBox source={require('../../assets/siba.jpg')}/>
+                <ProfileImgBox source={{uri : profileImg}}/>
                 <PhotoEditBtn onPress={this._toggleModal}>
                   <Feather name="camera" color="#fff" size={20}/>
                 </PhotoEditBtn>
@@ -142,6 +165,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeNameRequest : (userInfo, token) => {
       return dispatch(changeNameRequest(userInfo, token));
+    },
+    changeProfilePictureRequest : (userInfo, token) => {
+      return dispatch(changeProfilePictureRequest(userInfo, token));
     },
     authInit : () => {
       return dispatch(authInit());

@@ -124,6 +124,7 @@ export default function auth(state = initialState, action) {
                     name : action.name
                 }
             };
+        //비밀번호변경
         case types.AUTH_CHANGEPW_SUCCESS : 
             return {
                 ...state,
@@ -133,6 +134,15 @@ export default function auth(state = initialState, action) {
                     result : 'SUCCESS'
                 }
             };
+        //사진변경
+        case types.CHANGE_PROFILEIMG_SUCCESSED : 
+            return{
+                ...state,
+                login : {
+                    ...state.login,
+                    profileImg : action.profileImg
+                }
+            }
         default:
             return state;
     }
