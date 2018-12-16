@@ -6,6 +6,7 @@ import ViewHeader from './Header';
 import WriteCon from './WriteCon';
 import { domain } from '../../config';
 import CameraRoll from '../CameraRoll';
+import { connect } from 'react-redux';
 
 class NewView extends React.Component {
     constructor(props){
@@ -41,8 +42,10 @@ class NewView extends React.Component {
         }
         this._toggleModal = this._toggleModal.bind(this);
     }
-
     componentDidMount() {
+
+        if(!this.props.login.logged) this.props.navigation.navigate("Home");
+
         const _id = this.props.navigation.getParam("_id");
         if(!_id) return false;
 
@@ -135,7 +138,18 @@ class NewView extends React.Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+      login: state.redux.auth.login,
+      http : state.redux.auth.http
+    }
+  }
+  
+export default connect(mapStateToProps)(NewView);
+  
+
 const Container = styled.View`
+    background-color : #FFF;
     flex : 1;
 `;
 const ConBox = styled.View`
@@ -155,5 +169,3 @@ const ModalTit = styled.Text`
   font-family: 'NanumGothic';
   font-size:15px;
 `;
-
-export default NewView;

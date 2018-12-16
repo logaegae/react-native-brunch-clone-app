@@ -93,6 +93,7 @@ class SideMenu extends Component {
 
 const Container = styled.View`
   padding : 0 10px;
+  background-color : #FFF;
 `;
 const Center = styled.View`
   align-items : center;

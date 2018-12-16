@@ -36,6 +36,7 @@ class Edit extends Component {
   }
 
   componentDidMount(){
+    if(!this.props.login.logged) this.props.navigation.navigate("Home");
     this.getEditList();
   }
 
@@ -133,10 +134,14 @@ class Edit extends Component {
   _renderModalContent = (_id) => (
     <ModalWrap>    
       <ModalSelect>
-        <ModalOption first onPress={() => {this.props.navigation.navigate("New", {_id})}}>
+        <ModalOption first onPress={() => {
+          this.setState({ isModalVisible: false });
+          this.props.navigation.navigate("New", {_id})}
+        }>
           <ModalBtnText>수정</ModalBtnText>
         </ModalOption>
         <ModalOption onPress={() => {
+          this.setState({ isModalVisible: false });
           this._handleUpdate(_id, {delYn : true}, "delYn");
           this.setState({ isModalVisible: false });
          }}>
@@ -274,6 +279,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Edit);
 const Wrap = styled.View`
   flex: 1;
   margin:8% 0 -8%;
+  background-color : #FFF;
 `;
 
 const HeaderBox = styled.View`

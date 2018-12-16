@@ -145,6 +145,7 @@ class ChangePw extends Component {
 const mapStateToProps = (state) => {
   return {
     auth: state.redux.auth,
+    login: state.redux.auth.login
   }
 }
 

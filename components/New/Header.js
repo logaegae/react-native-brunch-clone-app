@@ -81,11 +81,14 @@ class NewHeader extends React.Component {
                     onTouchOutside={() => this.setState({showDialog: false})}
                     positiveButton={{
                         title: "YES",
-                        onPress: () => this.props.navigation.navigate("Drawer")
+                        onPress: () => {
+                            this.setState({showDialog: false});
+                            this.props.navigation.navigate("Drawer");
+                        }
                     }}
                     negativeButton={{
                         title: "NO",
-                        onPress: () => this.setState({showDialog: false})
+                        onPress: () => {this.setState({showDialog: false})}
                     }}
                 >
                 </ConfirmDialog>
@@ -96,7 +99,10 @@ class NewHeader extends React.Component {
                     onTouchOutside={() => this.setState({showDialog2: false})}
                     positiveButton={{
                         title: "YES",
-                        onPress: () => this.props.navigation.navigate(goBack)
+                        onPress: () => {
+                            this.setState({showDialog2: false});
+                            this.props.navigation.navigate(goBack);
+                        }
                     }}
                     negativeButton={{
                         title: "NO",

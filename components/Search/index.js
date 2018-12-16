@@ -171,6 +171,7 @@ export default class Search extends Component {
 const Wrap = styled.View`
   flex: 1;
   margin:8% 0 -8%;
+  background-color : #FFF;
 `;
 
 const HeaderBox = styled.View`

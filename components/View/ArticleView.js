@@ -100,11 +100,18 @@ class ArticleView extends Component {
           ) : (
             isScrolling ? ('#fff') : ('transparent')
           )}>
-        <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
+        <BtnIcon onPress={() => this.props.navigation.goBack()}>
           <Ionicons name="ios-arrow-round-back" color={isScrolling ? ("#333") : ("#fff")} size={45}/>
         </BtnIcon>
-        <Row>
-          <ToggleLike heartSize={20} numSize={20} isLiked={isLiked} _id={_id}/>
+        <Row>    
+          <ToggleLike 
+            iconSize={15} 
+            iconColor={isScrolling ? "#333" : "#fff"}
+            numSize={15} 
+            textColor={isScrolling ? "#333" : "#fff"} 
+            isLiked={isLiked} 
+            _id={_id} 
+            visual={isScrolling} />
           <WrittenDate visual={isScrolling}> · {updatedDate ? timeAgo(updatedDate, true) : timeAgo(writtenDate, true)}</WrittenDate>   
         </Row> 
       </FixedHeaderBox>
@@ -124,28 +131,28 @@ class ArticleView extends Component {
     const { text } = this.state;
 
     return(
-        <Wrap>
-          <StatusBar hidden={true} />
+      <Wrap>
+        <StatusBar hidden={true} />
 
-          <ParallaxScrollView
-            style={{ flex: 1}}
-            // backgroundColor={bgStyle.backgroundColor}
-            renderBackground={() => this.renderBg()}
-            contentBackgroundColor="#fff"
-            parallaxHeaderHeight={320}
-            stickyHeaderHeight={90}
-            fadeOutForeground={true}
-            onChangeHeaderVisibility={(bool)=> this.handleScrolling(bool)}
-            renderFixedHeader={() => this.renderFixedHeader()}
-            renderForeground={() => this.renderHeaderContent()}
-            >
-            <ConText>
-              {/* {JSON.stringify(this.state.isLiked)} */}
-              {text}
-            </ConText>
-          </ParallaxScrollView>                
-        </Wrap>
-      )
+        <ParallaxScrollView
+          style={{ flex: 1}}
+          // backgroundColor={bgStyle.backgroundColor}
+          renderBackground={() => this.renderBg()}
+          contentBackgroundColor="#fff"
+          parallaxHeaderHeight={320}
+          stickyHeaderHeight={90}
+          fadeOutForeground={true}
+          onChangeHeaderVisibility={(bool)=> this.handleScrolling(bool)}
+          renderFixedHeader={() => this.renderFixedHeader()}
+          renderForeground={() => this.renderHeaderContent()}
+          >
+          <ConText>
+            {/* {JSON.stringify(this.state.isLiked)} */}
+            {text}
+          </ConText>
+        </ParallaxScrollView>                
+      </Wrap>
+    )
   }
 }
 
@@ -198,19 +205,6 @@ const Row = styled.View`
   flex-direction: row;
   align-items: center;
   margin-top:10px;
-`;
-
-const BtnLike = styled.TouchableOpacity`
-  align-items: center;
-  flex-direction: row;
-`;
-
-const LikeNum = styled.Text`
-  font-family: NanumGothic;
-  margin-left:3px;
-  font-size:15px;
-  color: ${props => props.visual ? ('#333;') : ('#fff;')}
-  font-weight:500;
 `;
 
 const WrittenDate = styled.Text`

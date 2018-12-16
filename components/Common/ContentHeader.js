@@ -15,7 +15,7 @@ class DrawerHeader extends React.Component {
                     name="ios-arrow-round-back" 
                     size={50} 
                     color="#333"
-                    onPress={()=>{this.props.navigation.navigate('Home')}}
+                    onPress={()=>{this.props.navigation.goBack()}}
                 />
                 <TitleText>
                     {this.props.title}
@@ -29,6 +29,7 @@ class DrawerHeader extends React.Component {
 const Header = styled.View`
     border-bottom-width : 1px;
     border-bottom-color : #333;
+    background-color : #FFF;
 `;
 const ButtonBox = styled.View`
     width : 100%;

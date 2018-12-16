@@ -48,7 +48,7 @@ class Mypage extends Component {
   };
 
   _handleImage = (selectedImg) => {
-    const { token, name } = this.props.login;
+    const { token, name, id, _id } = this.props.login;
     this.setState({
         ...this.state,
         selectedImg
@@ -61,9 +61,10 @@ class Mypage extends Component {
             alert("File upload Error");
             return false;
           }
-          const toUploadObj = { 
+          const toUploadObj = {
+            ...this.props.login,
             name : name,
-            profileImg : selectedImg[0].uri
+            profileImg : data.url
           };
           this.props.changeProfilePictureRequest(toUploadObj, token);
           this.setState({
@@ -78,8 +79,7 @@ class Mypage extends Component {
    _handleChangeNickname(isEditing){
     
     const data = {
-      id : this.props.login.id,
-      _id : this.props.login._id,
+      ...this.props.login,
       name : this.state.nickname
     }
     const token = this.props.login.token;
@@ -113,27 +113,29 @@ class Mypage extends Component {
                   <Feather name="camera" color="#fff" size={20}/>
                 </PhotoEditBtn>
               </ImgBox>
-              <NicknameBox>
-               {!isEditing ? (
-                   <UserNickname ref={ref => {
-                    this.nameInput = ref;
-                  }}>{this.props.login.name}</UserNickname>
-                   ) : (
-                    <Input 
-                      inputRef="NicknameInput"
-                      value={this.props.login.name}
-                      placeholder={this.props.login.name}
-                      placeholderTextColor="#999"
-                      autoFocus = {true}
-                      onChangeText={(nickname) => this.setState({nickname: nickname})}
-                    />
-                   )
-                }
-              </NicknameBox>
-              <BtnEdit onPress={() => this._handleChangeNickname(isEditing)}>
-                <Foundation name="pencil" color="#666" size={20} />
-              </BtnEdit>
-            </ProfileBox>
+                <NicknameBox>
+                {!isEditing ? (
+                    <UserNickname>{this.props.login.name}</UserNickname>
+                    ) : (
+                      <Input 
+                        inputRef="NicknameInput"
+                        value={this.props.login.name}
+                        placeholder={this.props.login.name}
+                        placeholderTextColor="#999"
+                        autoFocus = {true}
+                        onChangeText={(nickname) => this.setState({nickname: nickname})}
+                      />
+                    )
+                  }
+                </NicknameBox>
+                <BtnEdit onPress={() => this._handleChangeNickname(isEditing)}>
+                  {!isEditing ? (
+                    <Foundation name="pencil" color="#666" size={20} />
+                  ) : (
+                    <Feather name="check" color="#666" size={23} />
+                  )}
+                </BtnEdit>
+              </ProfileBox>
             <BorderBox></BorderBox>
             <BtnBox>
               <Button borderType onPress={() => this.props.navigation.navigate('ChangePw')}>
@@ -178,7 +180,8 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(Mypage);
 
 const Container = styled.View`
-    flex : 1;
+  background-color : #FFF;
+  flex : 1;
 `;
 
 const Wrap = styled.View`

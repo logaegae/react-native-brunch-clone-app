@@ -1,4 +1,4 @@
-import { createDrawerNavigator, createSwitchNavigator } from 'react-navigation'
+import { createDrawerNavigator, createStackNavigator } from 'react-navigation'
 
 import Home from '../components/Home';
 import ArticleView from '../components/View/ArticleView';
@@ -25,7 +25,7 @@ const DrawerNavigator = createDrawerNavigator({
     initialRouteName: 'Home'
 });
 
-export const AppNavigator = createSwitchNavigator(
+export const AppNavigator = createStackNavigator(
     {
         Home : {
             screen : DrawerNavigator
@@ -37,7 +37,10 @@ export const AppNavigator = createSwitchNavigator(
             screen : WriterView
         },
         New : {
-            screen : New
+            screen : New,
+            navigationOptions : () => ({
+                gesturesEnabled : false
+            })
         },
         List : {
             screen : List
@@ -68,6 +71,13 @@ export const AppNavigator = createSwitchNavigator(
         }
     },
     {
-      initialRouteName: 'Home',
+        initialRouteName: 'Home',
+        headerMode: 'none',
+        navigationOptions: {
+            headerVisible: false,
+        },
+        cardStyle: {
+            backgroundColor: 'white'
+        }
     }
 );

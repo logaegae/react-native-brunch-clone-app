@@ -91,6 +91,7 @@ class CameraRollScreen extends Component {
 }
 const Container = styled.View`
   flex : 1;
+  background-color : #FFF;
 `;
 const Wrap = styled.View`
   flex: 1;

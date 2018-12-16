@@ -133,6 +133,7 @@ const Wrap = styled.View`
   flex: 1;
   margin-top:7%;
   margin-bottom:-7%;
+  background-color : #FFF;
 `;
 const ConBox = styled.View`
   flex : 1;
