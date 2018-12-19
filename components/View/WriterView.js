@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Dimensions, StatusBar, View, ActivityIndicator, FlatList } from 'react-native';
+import { Animated, Dimensions, StatusBar, View, Image, ActivityIndicator, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { setLikeIcon } from '../../actions'  
@@ -10,6 +10,13 @@ import { domain } from '../../config';
 import WriterViewItem from './WriterViewItem';
 
 const { height, width } = Dimensions.get("window");
+
+HEADER_MAX_HEIGHT = 200;
+HEADER_MIN_HEIGHT = 50;
+PROFILE_IMG_MAX_SIZE = 100;
+PROFILE_IMG_MIN_SIZE = 0;
+MARGIN_MAX_SIZE = 20;
+MARGIN_MIN_SIZE = 0;
 
 class WriterView extends Component {
   constructor(props){
@@ -22,10 +29,10 @@ class WriterView extends Component {
       seed: 1,
       endYn : false,
       error: null,
+      message : '로딩 중...',
       refreshing: false,
-      message : '로딩중',
       init : false,
-      scrollY : new Animated.Value(0)
+      scrollY : new Animated.Value(0),
     }
   }
 
@@ -82,33 +89,6 @@ class WriterView extends Component {
     }
   }
 
-  handleLike(_id) {
-    const header = {
-        headers : {
-            'x-access-token' : this.props.login.token
-        }
-    }
-    axios.post(domain + '/api/article/toggleLike', {_id}, header)
-    .then((res) => {
-        if(res.data.status === 'SUCCESS'){
-            let list = this.state.data;
-            for(i=0;i<list.length;i++){
-                if(list[i]._id === _id){ 
-                    list[i].isLiked = res.data.like;
-                    break;
-                }
-            }
-            if(res.data.addAction){
-                this.props.setLikeIcon(true);
-            }
-            this.setState({
-                ...this.state,
-                data : list
-            });
-        }
-    });
-  }
-
   handleRefresh = () => {
     this.setState({
       page : 1,
@@ -120,35 +100,28 @@ class WriterView extends Component {
     });
   }
 
-  renderFixedHeader() {
-    return(
-      <FixedHeaderBox>
-        <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
-          <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
-        </BtnIcon> 
-      </FixedHeaderBox>
-    )
-  }
-
-  renderSticky(){
-    return(
-      <StickyBox>
-        <Nickname style={{marginTop: 5}}>{this.state.writer.name}</Nickname>
-      </StickyBox>
-    )
-  }
-
   _keyExtractor = (item, index) => item._id;
 
   render(){  
     const { message, data, refreshing, loading, init, scrollY } = this.state;
-    const { token, nickname } = this.props.login;
-    const { setLikeIcon } = this.props;
-    const scale = scrollY.interpolate({
-      inputRange: [-100, 0, 40, 50],
-      outputRange : [1.2, 1, 0.9, 0]
+    const { token, name } = this.props.login;
+
+    const headerHeight = scrollY.interpolate({
+      inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+      extrapolate: "clamp",       
     });
-    const scale2 = scrollY.interpolate({
+    const propfileImgSize = scrollY.interpolate({
+      inputRange: [0, PROFILE_IMG_MAX_SIZE - PROFILE_IMG_MIN_SIZE],
+      outputRange: [PROFILE_IMG_MAX_SIZE, PROFILE_IMG_MIN_SIZE],
+      extrapolate: "clamp",       
+    });
+    const marginVertical = scrollY.interpolate({
+      inputRange: [0, MARGIN_MAX_SIZE - MARGIN_MIN_SIZE],
+      outputRange: [MARGIN_MAX_SIZE, MARGIN_MIN_SIZE],
+      extrapolate: "clamp",       
+    });
+    const scale = scrollY.interpolate({
       inputRange: [-100, 0, 40, 50],
       outputRange : [1, 1, 0.9, 0]
     });
@@ -156,71 +129,88 @@ class WriterView extends Component {
       inputRange: [0, 40, 50],
       outputRange : [1, 0.9, 0]
     });
-    const _height = scrollY.interpolate({
-      inputRange: [-100, 0, 40, 50],
-      outputRange : [100, 100, 90, 0]
-    });
 
     return(
         <Wrap>         
           <StatusBar hidden={false} />
-            <View>
-              <FixedHeaderBox>
-                <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
-                  <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
-                </BtnIcon> 
-              </FixedHeaderBox>
-              <HeaderConBox>
-                <ProfileBox>
-                  <Animated.Image style={{
-                    opacity,
-                    transform : [{scale}],
-                    height: _height,
-                    width : _height,
-                    borderRadius : 50,
-                    backgroundColor : "#ccc",
-                    borderWidth: 1,
-                    borderColor: "#e5e5e5"
-                  }} 
-                    source={{uri: this.state.writer.profileImg}}
-                  />
-                    {/* <ProfileImgBox source={{uri: this.state.writer.profileImg}}/> */}
-
-                  <Nickname>{this.state.writer.name}</Nickname>
-                  <Animated.View style={{opacity, transform : [{scale:scale2}]}}>
-                    <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
-                  </Animated.View>
-                </ProfileBox> 
-              </HeaderConBox>
-              </View>
-              <ConBox>
-              {data.length !== 0
-                  ? <FlatList
-                      style={{padding:'7%'}}
-                      data={data} 
-                      renderItem={({item}) => 
-                        <WriterViewItem
-                          {...item}
-                          token={token}
-                          nickname={nickname}
-                          setLikeIcon={setLikeIcon} 
-                          _handleLike={(_id) => {this.handleLike(_id)}} 
-                        />
-                      }
-                      extraData={this.state}
-                      keyExtractor={this._keyExtractor}
-                      ListFooterComponent={loading ? this.renderFooter : null}
-                      refreshing={refreshing}
-                      onRefresh={this.handleRefresh}
-                      onEndReached={this.handleLoadMore}
-                      onEndReachedThreshold={0}
-                      onScroll={Animated.event([
-                        { nativeEvent: { contentOffset: { y: scrollY } } },
-                      ])}
-                    /> 
-                  : init ? <NoItemText>{message}</NoItemText> : null }
-                  { !init ? <Loading ><ActivityIndicator animating size="large" /></Loading> : null}
-              </ConBox>
+          <FixedHeaderBox>
+            <BtnIcon onPress={() => this.props.navigation.goBack(null)}>
+              <Ionicons name="ios-arrow-round-back" color="#333" size={45} />
+            </BtnIcon> 
+          </FixedHeaderBox>          
+          <ProfileBox>
+            <Animated.View style={{
+              opacity,
+              overflow: "hidden",
+              marginTop: marginVertical,
+              height: propfileImgSize,
+              width : propfileImgSize,
+              borderRadius : PROFILE_IMG_MAX_SIZE / 2,             
+            }}>
+              <Image style={{
+                flex: 1, width: null, height: null,
+                backgroundColor : "#ccc",
+                borderWidth: 1,
+                borderColor: "#e5e5e5",
+              }} 
+                source={{uri: this.state.writer.profileImg}}
+              />
+            </Animated.View>
+            <NicknameBox>
+              <Nickname>{this.state.writer.name}</Nickname>
+            </NicknameBox>
+            <Animated.View style={{
+              opacity, 
+              transform : [{scale:scale}],
+              marginBottom: marginVertical,
+            }}>
+              <ArticleNum>글수 {this.state.writer.articleLength}</ArticleNum>
+            </Animated.View>
+          </ProfileBox> 
+          <Contents>
+            <Animated.View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              height: headerHeight,
+            }}>           
+            </Animated.View> 
+            <ConBox>
+            {data.length !== 0
+                ? (
+                  <FlatList
+                    style={{flex:1, padding:'7%'}}
+                    data={data} 
+                    renderItem={({item}) => 
+                      <WriterViewItem
+                        {...item}
+                        token={token}
+                        name={name}
+                      />
+                    }
+                    extraData={this.state}
+                    keyExtractor={this._keyExtractor}
+                    ListFooterComponent={loading ? this.renderFooter : null}
+                    refreshing={refreshing}
+                    onRefresh={this.handleRefresh}
+                    onEndReached={this.handleLoadMore}
+                    onEndReachedThreshold={0}
+                    scrollEventThrottle={16}
+                    onScroll={Animated.event([
+                      { nativeEvent: { contentOffset: { y: scrollY } } },
+                    ])}
+                  />                  
+                ) : init ? (
+                  <NoDataBox><NoDataText>{message}</NoDataText></NoDataBox> 
+                ) : null }   
+                {!init ? 
+                  <NoDataBox>
+                    <Loading><ActivityIndicator animating size="large" /></Loading>
+                    <NoDataText>{message}</NoDataText>
+                  </NoDataBox>
+                : null} 
+            </ConBox>
+          </Contents>  
         </Wrap>
       )
   }
@@ -245,27 +235,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(WriterView);
 const Wrap = styled.View`
   flex: 1;
   margin:8% 0 -8%;
-  background-color : #FFF;
 `;
-
-const HeaderConBox = styled.View`
-  position:relative;
-  z-index:5;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const BtnIcon = styled.TouchableOpacity`  
-`;
-
-const ProfileBox = styled.View`
-  margin-top:8%;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-`;
-
 
 const FixedHeaderBox = styled.View`
   position:absolute;
@@ -279,32 +249,70 @@ const FixedHeaderBox = styled.View`
   background-color: transparent;  
 `;
 
+
+// const HeaderConBox = styled.View`
+//   position:relative;
+//   z-index:5;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: space-between;
+// `;
+
+const BtnIcon = styled.TouchableOpacity`  
+`;
+
+const ProfileBox = styled.View`
+  z-index: 50;
+  position: absolute;
+  top:0; 
+  left:0;
+  right:0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+const NicknameBox = styled.View`
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Nickname = styled.Text`
-  margin-top:15px;
   font-family: NanumGothic-bold;
   font-size:20px;
   color:#333;
 `;
 
 const ArticleNum = styled.Text`
-  margin-top:5px;  
   font-family: NanumGothic;
   font-size:13px;
   color:#999;
 `;
 
+const Contents = styled.View`
+  flex: 1;
+  background: #fff;
+`;
+
 const ConBox = styled.View`
-flex:1;
+  flex: 1;
+  padding-bottom: 6%;
+  background: #f7f7f7;  
 `;
 
 const Loading = styled.View`
-  margin-top : 10%;
+  margin-top: 7%;
 `;
 
-const NoItemText = styled.Text`
-    width : 100%;
-    padding : 7%;
-    font-family : NanumGothic;
-    font-size : 22px;
-    text-align : center;
+const NoDataBox = styled.View`  
+  align-items: center;
+  justify-content: center;
+`;
+
+const NoDataText = styled.Text`
+  margin-top : 5%;
+  color:#666;
+  font-size:16px;
+  font-family: NanumGothic;
 `;

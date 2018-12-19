@@ -126,7 +126,7 @@ class List extends Component {
         <Wrap>
           <HeaderBox>
             <BtnBox>
-              <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
+              <BtnIcon onPress={() => this.props.navigation.goBack()}>
                 <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
               </BtnIcon>
             </BtnBox>

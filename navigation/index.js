@@ -14,6 +14,7 @@ import Like from '../components/Feed/Like';
 import MyPage from '../components/MyPage';
 import ChangePw from '../components/MyPage/ChangePw';
 import Search from '../components/Search';
+import Editor from '../components/Editor';
 
 const DrawerNavigator = createDrawerNavigator({
     Home: {
@@ -68,6 +69,9 @@ export const AppNavigator = createStackNavigator(
         },
         Search : {
             screen : Search
+        },
+        Editor : {
+            screen : Editor
         }
     },
     {

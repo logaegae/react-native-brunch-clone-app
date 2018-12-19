@@ -36,7 +36,7 @@ class WriterViewItem extends Component {
               <MaterialCommunityIcons name={weather} color="#fff" size={20} style={{marginLeft:3}}/>
             </WeatherBox>
           </FirstRow>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('ArticleView',{item : this.props})}>
+          <TouchableOpacity onPress={() => this.props.navigation.push('ArticleView',{item : this.props})}>
             <TitBox>
               <TitText>{title}</TitText>
               <BorderBox></BorderBox>

@@ -3,6 +3,7 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
+
 const { height, width } = Dimensions.get("window");
 
 class ArticleHeaderCon extends Component {
@@ -12,10 +13,14 @@ class ArticleHeaderCon extends Component {
     }
   }
 
+  componentDidMount(){
+    // alert(JSON.stringify(this.props.state.__id))
+  }
+
   render(){
 
-    const { title, startDate, finishDate, __id, weather } = this.props.state;
-    alert
+    const { weather, startDate, finishDate, title, __id } = this.props.state;
+
     return(
         <Wrap>
           <ConBox>
@@ -23,7 +28,7 @@ class ArticleHeaderCon extends Component {
               <MaterialCommunityIcons name={weather} color="#fff" size={22} style={{marginLeft:3, marginRight:3}}/>
             </WeatherBox>
             <DateBox>
-              <DateText>{startDate ? startDate : ''}{finishDate? ' - '+finishDate : ''}</DateText>
+            <DateText>{startDate ? startDate : null} {finishDate ? '- ' + finishDate : null}</DateText>
             </DateBox>
             <TitBox>
               <TitText>{title}</TitText>
@@ -31,15 +36,17 @@ class ArticleHeaderCon extends Component {
             </TitBox>
           </ConBox>
           <Row>
-            <WriterBox onPress={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
-              <ProfileImgBox source={{uri :__id.profileImg}}/>
-              <WriterNickname>{__id.name}</WriterNickname>
-            </WriterBox>
+          <WriterBox onPress={() => this.props.navigation.navigate('WriterView',{writer_id : __id._id})}>
+              <ProfileImgBox source={{ uri: __id.profileImg }} />
+              <WriterNickname>{__id.name}</WriterNickname> 
+            </WriterBox>              
           </Row>       
         </Wrap>
       )
   }
 }
+
+export default withNavigation(ArticleHeaderCon);
 
 const Wrap = styled.View`
   flex: 1;
@@ -119,5 +126,3 @@ const WrittenDate = styled.Text`
   color:#fff;
   font-size:12px;
 `;
-
-export default withNavigation(ArticleHeaderCon);

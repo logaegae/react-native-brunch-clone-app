@@ -54,7 +54,7 @@ class SignIn extends Component {
       >
       <Wrap>
         <CloseBox>
-          <BtnClose onPress={() => this.props.navigation.navigate('Home')}>
+          <BtnClose onPress={() => this.props.navigation.goBack()}>
             <Ionicons name="ios-close" color="#fff" size={60} style={{marginLeft:15}}/>
           </BtnClose>
         </CloseBox>

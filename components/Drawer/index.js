@@ -212,7 +212,7 @@ class Edit extends Component {
         </Modal>
 
         <HeaderBox>
-          <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
+          <BtnIcon onPress={() => this.props.navigation.goBack()}>
             <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
           </BtnIcon>
           <H1>글 관리</H1>

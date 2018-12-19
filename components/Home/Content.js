@@ -2,7 +2,6 @@ import React from 'react';
 import { Dimensions, Text } from 'react-native';
 import styled from 'styled-components';
 import { SimpleLineIcons } from '@expo/vector-icons';
-import Theme from '../../style/theme';
 import ContentItem from './ContentItem';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -24,7 +23,8 @@ class Content extends React.Component {
         const login = this.props.login;
     
         if(login.logged){
-          this.props.navigation.navigate("New")
+        //   this.props.navigation.navigate("New");
+          this.props.navigation.navigate("Editor");
         } else {
           this.setState({ confirmVisible: true })
         }

@@ -116,7 +116,7 @@ export default class Search extends Component {
     return(
         <Wrap>
           <HeaderBox>
-            <BtnIcon onPress={() => this.props.navigation.navigate('Home')}>
+            <BtnIcon onPress={() => this.props.navigation.goBack()}>
               <Ionicons name="ios-arrow-round-back" color="#333" size={45}/>
             </BtnIcon>
             <SearchBox>
