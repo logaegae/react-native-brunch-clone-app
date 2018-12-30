@@ -6,7 +6,7 @@ export default class MyWeb extends Component {
     return (
       <WebView
         source={require("./WebView.html")}
-        style={{width : '100%', flex : 1}}
+        style={{width : '100%'}}
         onMessage={(event)=>{
           const x= event.nativeEvent.data;
           console.log("x: ",x);

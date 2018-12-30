@@ -6,6 +6,7 @@ import Modal from "react-native-modal";
 import ModalDate from './WriteModalDate';
 import ModalWeather from './WriteModalWeather';
 import ModalBg from './WriteModalBg';
+import Editor from "../Editor";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
@@ -145,14 +146,15 @@ export default class WriteCon extends Component {
             </Btn>
           </Row>
         </HeaderConBox>
-        <TextareaBox>
+        {/* <TextareaBox>
           <Textarea
             multiline={true}
             onChangeText={(text) => this.props.handleState({...article,text})}
             placeholder="당신의 여행은 어땠나요?"
             placeholderStyle={{color:"#999", fontSize:15}}
             value={text}/>
-        </TextareaBox>
+        </TextareaBox> */}
+        <Editor></Editor>
       </Wrap>
     )
   }

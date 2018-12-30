@@ -24,7 +24,7 @@ class Content extends React.Component {
     
         if(login.logged){
         //   this.props.navigation.navigate("New");
-          this.props.navigation.navigate("Editor");
+          this.props.navigation.navigate("New");
         } else {
           this.setState({ confirmVisible: true })
         }
