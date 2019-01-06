@@ -1,15 +1,21 @@
 body {
     width : 100%;
-    /* height : 100vh; */
+    height: 100vh;
     padding:0;
     margin:0;
 }
+#editor{
+    height : auto;
+}
+#editor .ql-editor{
+    height : auto;
+}
 #toolbar{
-    position : fixed;
-    bottom : 0;
-    width:100%;
+    /* display:none; */
+    position : absolute;
+    top : 200px;
 }
 #toolbar .ql-picker-options{
-    bottom : 100%;
-    top : auto;
+    /* bottom : 100%; */
+    /* top : auto; */
 }

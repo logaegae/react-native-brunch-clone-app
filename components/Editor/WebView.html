@@ -1,11 +1,13 @@
 <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no">
     <link href="custom.css" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.2.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.2.6/quill.min.js"></script>
-
+    
 </head>
 <body>
+    <div id="test">test</div>
     <div id="editor">
         <p>Hello World!</p>
         <p>Some initial <strong>bold</strong> text</p>
@@ -27,6 +29,44 @@
         <button class="ql-blockquote"></button>
         <button class="ql-list" value="bullet"></button>
         <button class="ql-list" value="ordered"></button>
+        <select class="ql-color">
+            <option selected="selected"></option>
+            <option value="#e60000"></option>
+            <option value="#ff9900"></option>
+            <option value="#ffff00"></option>
+            <option value="#008a00"></option>
+            <option value="#0066cc"></option>
+            <option value="#9933ff"></option>
+            <option value="#ffffff"></option>
+            <option value="#facccc"></option>
+            <option value="#ffebcc"></option>
+            <option value="#ffffcc"></option>
+            <option value="#cce8cc"></option>
+            <option value="#cce0f5"></option>
+            <option value="#ebd6ff"></option>
+            <option value="#bbbbbb"></option>
+            <option value="#f06666"></option>
+            <option value="#ffc266"></option>
+            <option value="#ffff66"></option>
+            <option value="#66b966"></option>
+            <option value="#66a3e0"></option>
+            <option value="#c285ff"></option>
+            <option value="#888888"></option>
+            <option value="#a10000"></option>
+            <option value="#b26b00"></option>
+            <option value="#b2b200"></option>
+            <option value="#006100"></option>
+            <option value="#0047b2"></option>
+            <option value="#6b24b2"></option>
+            <option value="#444444"></option>
+            <option value="#5c0000"></option>
+            <option value="#663d00"></option>
+            <option value="#666600"></option>
+            <option value="#003700"></option>
+            <option value="#002966"></option>
+            <option value="#3d1466"></option>
+        </select>
+        
         <select class="ql-align">
             <option selected></option>
             <option value="center"></option>
@@ -35,8 +75,6 @@
         </select>
         <button class="ql-link"></button>
         <button class="ql-image"></button>
-        
-    
     </div>
     <script>
         var quill = new Quill('#editor', {
@@ -45,10 +83,81 @@
                 toolbar: '#toolbar'
             }
         });
-        window.onload = function () {
-            var height = document.getElementById('toolbar').offsetHeight;
-            document.getElementById('editor').style.paddingBottom = height+'px';
-            console.log(height)
-        };
+        //보내기
+        quill.on('text-change', function(delta, oldDelta, source) {
+            var height = document.getElementById('editor').offsetHeight;
+            var message = {height};
+            window.postMessage(JSON.stringify(message));
+        });
+        //받기
+        document.addEventListener("message", function(req) {
+            document.getElementById('test').innerHTML = req.data;
+            var data = JSON.parse(req.data);
+            switch(data.type){
+                case 'size' : 
+                    switch(data.value){
+                        case 'small' : 
+                            document.querySelectorAll('.ql-size .ql-picker-item')[0].click();
+                            break;
+                        case 'normal' : 
+                            document.querySelectorAll('.ql-size .ql-picker-item')[1].click();
+                            break;
+                        case 'large' : 
+                            document.querySelectorAll('.ql-size .ql-picker-item')[2].click();
+                            break;
+                        case 'huge' : 
+                            document.querySelectorAll('.ql-size .ql-picker-item')[3].click();
+                            break;
+                    }
+                    break;
+                case 'bold' : 
+                    document.querySelector('.ql-bold').click();
+                    break;
+                case 'italic' : 
+                    document.querySelector('.ql-italic').click();
+                    break;
+                case 'underline' : 
+                    document.querySelector('.ql-underline').click();
+                    break;
+                case 'strike' : 
+                    document.querySelector('.ql-strike').click();
+                    break;
+                case 'blockquote' : 
+                    document.querySelector('.ql-blockquote').click();
+                    break;
+                case 'bullet' : 
+                    document.querySelector('.ql-list[value=bullet]').click();
+                    break;
+                case 'ordered' : 
+                    document.querySelector('.ql-list[value=ordered]').click();
+                    break;
+                case 'color' : 
+                    document.querySelector('.ql-picker-item[data-value="'+data.value+'"]').click();
+                    break;
+                case 'align' : 
+                    switch(data.value){
+                        case 'left' : 
+                            document.querySelectorAll('.ql-align .ql-picker-item')[0].click();
+                            break;
+                        case 'center' : 
+                            document.querySelectorAll('.ql-align .ql-picker-item')[1].click();
+                            break;
+                        case 'right' : 
+                            document.querySelectorAll('.ql-align .ql-picker-item')[2].click();
+                            break;
+                        case 'justify' : 
+                            document.querySelectorAll('.ql-align .ql-picker-item')[3].click();
+                            break;
+                    }
+                    break;
+                case 'link' : 
+                    document.querySelector('.ql-link').click();
+                    break;
+                case 'image' : 
+                    document.querySelector('.ql-image').click();
+                    break;
+            }
+        });
+        
     </script>
 </body>

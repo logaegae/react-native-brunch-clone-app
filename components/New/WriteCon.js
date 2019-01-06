@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Button } from 'react-native';
+import { View, Button, ScrollView } from 'react-native';
 import styled from 'styled-components';
 import { Entypo } from '@expo/vector-icons';
 import Modal from "react-native-modal";
@@ -91,70 +91,70 @@ export default class WriteCon extends Component {
       </View>
     );
   }
-  
   render(){
     const article = this.props.article;
     const { startDate, finishDate, weather, bg, title, text, isModalVisible, selectedImg } = this.props.article;
     return (
       <Wrap>
-        
-        <Modal 
-          isVisible={isModalVisible}
-          onBackdropPress={()=>{
-            this._toggleModal('');
-          }}
-          style={{ justifyContent: 'flex-end', margin:0 }}>
-          {this._renderModalContent()}
-        </Modal>
-        
-        <HeaderConBox bg={!selectedImg ? 
-          ( "background-color:" + bg.color.value) : null }>
-          {selectedImg ? (
-            <BgBox>
-              <BgImage source={{uri : selectedImg[0].uri}} />
-              <BgMask></BgMask>
-            </BgBox>
-          ) : null }
-          <DateBox>
-            <Select onPress={() => this._toggleModal("date")}>
-              <CommonText>날짜</CommonText>
-              <CommonText>{startDate ? startDate.split('T')[0] : ''}{finishDate ? ' - ' + finishDate.split('T')[0] : ''}</CommonText>
-            </Select>
-          </DateBox>
-          <TitBox>
-            <Title> 
-              <CommonText>제목</CommonText>
-              <TitleInput
-                color="white"
-                underlineColorAndroid="transparent"
-                placeholder={"45자 이내로 입력해주세요."}
-                maxLength={45}
-                value={title}
-                onChangeText={(text) => this.props.handleState({...article, title: text})}
-              />
-             </Title> 
-          </TitBox>
-          <WeatherBox>
-            <Select onPress={() => this._toggleModal("weather")}>
-              <CommonText>날씨</CommonText>
-              {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : null}
-            </Select>
-          </WeatherBox>
-          <Row flexEnd>
-            <Btn onPress={() => this._toggleModal("bg")}>
-              <Entypo name="dots-three-vertical" color="#fff" size={25} /> 
-            </Btn>
-          </Row>
-        </HeaderConBox>
-        {/* <TextareaBox>
-          <Textarea
-            multiline={true}
-            onChangeText={(text) => this.props.handleState({...article,text})}
-            placeholder="당신의 여행은 어땠나요?"
-            placeholderStyle={{color:"#999", fontSize:15}}
-            value={text}/>
-        </TextareaBox> */}
-        <Editor></Editor>
+        <ScrollView>
+          <Modal 
+            isVisible={isModalVisible}
+            onBackdropPress={()=>{
+              this._toggleModal('');
+            }}
+            style={{ justifyContent: 'flex-end', margin:0 }}>
+            {this._renderModalContent()}
+          </Modal>
+          
+          <HeaderConBox bg={!selectedImg ? 
+            ( "background-color:" + bg.color.value) : null }>
+            {selectedImg ? (
+              <BgBox>
+                <BgImage source={{uri : selectedImg[0].uri}} />
+                <BgMask></BgMask>
+              </BgBox>
+            ) : null }
+            <DateBox>
+              <Select onPress={() => this._toggleModal("date")}>
+                <CommonText>날짜</CommonText>
+                <CommonText>{startDate ? startDate.split('T')[0] : ''}{finishDate ? ' - ' + finishDate.split('T')[0] : ''}</CommonText>
+              </Select>
+            </DateBox>
+            <TitBox>
+              <Title> 
+                <CommonText>제목</CommonText>
+                <TitleInput
+                  color="white"
+                  underlineColorAndroid="transparent"
+                  placeholder={"45자 이내로 입력해주세요."}
+                  maxLength={45}
+                  value={title}
+                  onChangeText={(text) => this.props.handleState({...article, title: text})}
+                />
+              </Title> 
+            </TitBox>
+            <WeatherBox>
+              <Select onPress={() => this._toggleModal("weather")}>
+                <CommonText>날씨</CommonText>
+                {weather.name ? <MaterialCommunityIcons name={weather.name} size={25} color={"white"} /> : null}
+              </Select>
+            </WeatherBox>
+            <Row flexEnd>
+              <Btn onPress={() => this._toggleModal("bg")}>
+                <Entypo name="dots-three-vertical" color="#fff" size={25} /> 
+              </Btn>
+            </Row>
+          </HeaderConBox>
+          {/* <TextareaBox>
+            <Textarea
+              multiline={true}
+              onChangeText={(text) => this.props.handleState({...article,text})}
+              placeholder="당신의 여행은 어땠나요?"
+              placeholderStyle={{color:"#999", fontSize:15}}
+              value={text}/>
+          </TextareaBox> */}
+          <Editor style={{height : 500}}></Editor>
+        </ScrollView>
       </Wrap>
     )
   }
