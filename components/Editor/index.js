@@ -1,72 +1,76 @@
 import React, { Component } from 'react';
-import { WebView, TouchableOpacity, View, Text } from 'react-native';
+import styled from 'styled-components';
+import { WebView, Dimensions } from 'react-native';
+
+const { height, width } = Dimensions.get("window");
 
 export default class MyWeb extends Component {
-
-  constructor( props ) {
-    super( props );
+  constructor(props){
+    super(props);
+    this.state = {
+      req: null,
+    }
     this.onMessage = this.onMessage.bind(this);
   }
-  /*
-  params
-  size , one in [small, normal, large, huge]
-  bold
-  italic
-  underline
-  strike
-  blockquote
-  bullet
-  ordered
-  color, one in [#ffffff, ]
-  align, one in [left, center, right, justify]
-  link
-  image
-  */
-  sendPostMessage(type, value) {
-    var req = JSON.stringify({type, value});
-    this.webView.postMessage(req);
+  componentDidUpdate(){
+    if(this.props._editorReq != this.state.req) {
+      this.setState({ 
+        req: this.props._editorReq
+      }, () => {
+        console.log(this.state.req)
+        this.webView.postMessage(this.state.req);
+      })
+    }    
   }
+
   onMessage( event ) {
     let data = event.nativeEvent.data;
     data = JSON.parse(data)
+    if(data.type == 'format'){
+      this.props._handleFormat(data.value);
+    }
   }
+
 
   render() {
     return (
-      <View 
-        style={{width : '100%', height: '100%'}}
-        >
-        <TouchableOpacity
-          onPress={() => this.sendPostMessage('link','left')}
-          title="Learn More"
-          color="#841584"><Text>1</Text></TouchableOpacity>
-        <TouchableOpacity
-          
-          onPress={() => this.sendPostMessage('image','center')}
-          title="Learn More"
-          color="#841584"><Text>2</Text></TouchableOpacity>
-        <TouchableOpacity
-          
-          onPress={() => this.sendPostMessage('align','right')}
-          title="Learn More"
-          color="#841584"><Text>3</Text></TouchableOpacity>
-        <TouchableOpacity
-          
-          onPress={() => this.sendPostMessage('align','justify')}
-          title="Learn More"
-          color="#841584"><Text>4</Text></TouchableOpacity>
-        <TouchableOpacity
-          
-          onPress={() => this.sendPostMessage('color','#66b966')}
-          title="Learn More"
-          color="#841584"><Text>5</Text></TouchableOpacity>
+      <Wrap>
         <WebView
           source={require("./WebView.html")}
           style={{width : '100%'}}
           onMessage={this.onMessage}
           ref={( webView ) => this.webView = webView}
         />
-      </View>
+      </Wrap>
     );
   }
 }
+
+const Wrap = styled.View`
+  flex: 1;
+`
+
+const EditorOptions = styled.SafeAreaView`
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+`;
+
+const OptRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding: 0 5px;
+  width: ${width - 60};
+  background: #fff;
+  border-left-width: 1px;
+  border-left-color: #dfdfdf;
+`
+
+const BtnOpt = styled.TouchableOpacity`
+  width:50px; 
+  height:50px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;

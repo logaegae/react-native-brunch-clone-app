@@ -7,7 +7,6 @@
     
 </head>
 <body>
-    <div id="test">test</div>
     <div id="editor">
         <p>Hello World!</p>
         <p>Some initial <strong>bold</strong> text</p>
@@ -31,40 +30,15 @@
         <button class="ql-list" value="ordered"></button>
         <select class="ql-color">
             <option selected="selected"></option>
-            <option value="#e60000"></option>
-            <option value="#ff9900"></option>
-            <option value="#ffff00"></option>
-            <option value="#008a00"></option>
-            <option value="#0066cc"></option>
-            <option value="#9933ff"></option>
-            <option value="#ffffff"></option>
-            <option value="#facccc"></option>
-            <option value="#ffebcc"></option>
-            <option value="#ffffcc"></option>
-            <option value="#cce8cc"></option>
-            <option value="#cce0f5"></option>
-            <option value="#ebd6ff"></option>
-            <option value="#bbbbbb"></option>
-            <option value="#f06666"></option>
-            <option value="#ffc266"></option>
-            <option value="#ffff66"></option>
-            <option value="#66b966"></option>
-            <option value="#66a3e0"></option>
-            <option value="#c285ff"></option>
-            <option value="#888888"></option>
-            <option value="#a10000"></option>
-            <option value="#b26b00"></option>
-            <option value="#b2b200"></option>
-            <option value="#006100"></option>
-            <option value="#0047b2"></option>
-            <option value="#6b24b2"></option>
-            <option value="#444444"></option>
-            <option value="#5c0000"></option>
-            <option value="#663d00"></option>
-            <option value="#666600"></option>
-            <option value="#003700"></option>
-            <option value="#002966"></option>
-            <option value="#3d1466"></option>
+            <option value="#333"></option>
+            <option value="#999"></option>
+            <option value="#ec4c6a"></option>
+            <option value="#f6665b"></option>
+            <option value="#f4c216"></option>
+            <option value="#15b06c"></option>
+            <option value="#00c4bd"></option>
+            <option value="#2e84b6"></option>
+            <option value="#5b5bb2"></option>
         </select>
         
         <select class="ql-align">
@@ -83,15 +57,22 @@
                 toolbar: '#toolbar'
             }
         });
-        //보내기
-        quill.on('text-change', function(delta, oldDelta, source) {
-            var height = document.getElementById('editor').offsetHeight;
-            var message = {height};
-            window.postMessage(JSON.stringify(message));
+        quill.on('editor-change', function(eventName, ...args) {
+            try{
+                var value = quill.getFormat();
+                var message = {type : 'format', value};
+                console.log(value)
+                window.postMessage(JSON.stringify(message));
+            }catch(e){}
         });
+        //보내기
+        // quill.on('text-change', function(delta, oldDelta, source) {
+        //     var height = document.getElementById('editor').offsetHeight;
+        //     var message = {height};
+        //     window.postMessage(JSON.stringify(message));
+        // });
         //받기
         document.addEventListener("message", function(req) {
-            document.getElementById('test').innerHTML = req.data;
             var data = JSON.parse(req.data);
             switch(data.type){
                 case 'size' : 
@@ -132,6 +113,7 @@
                     document.querySelector('.ql-list[value=ordered]').click();
                     break;
                 case 'color' : 
+
                     document.querySelector('.ql-picker-item[data-value="'+data.value+'"]').click();
                     break;
                 case 'align' : 

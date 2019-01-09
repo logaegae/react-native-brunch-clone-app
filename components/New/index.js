@@ -126,12 +126,12 @@ class NewView extends React.Component {
                 {isCameraRollVisible ?
                 <CameraRoll handleClose={this._toggleModal} handleImage={this._handleImage}/>
                 :
-                <Container>
+                <Wrap>
                     <ViewHeader article={article} handleState={this._handleState} goBack={goBack}/>
                     <ConBox>
                         <WriteCon handleState={this._handleState} article={article} handleModal2={this._toggleModal}/>
                     </ConBox>
-                </Container>
+                </Wrap>
                 }
             </Container>
         );
@@ -155,17 +155,6 @@ const Container = styled.View`
 const ConBox = styled.View`
   flex:10;
 `;
-const ModalHeader = styled.View`
-  padding: 10px 7%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom-color: #eee;
-  border-bottom-width: 1px;
-  background: #fff;
-`
-const ModalTit = styled.Text`
-  color:#999;
-  font-family: 'NanumGothic';
-  font-size:15px;
+const Wrap = styled.View`
+  flex: 1;
 `;
