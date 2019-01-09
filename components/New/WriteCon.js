@@ -239,7 +239,7 @@ export default class WriteCon extends Component {
               </DateBox>
               <TitBox>
                 <Row>
-                  <CommonText>제목{JSON.stringify(format)}</CommonText>
+                  <CommonText>제목</CommonText>
                   <TitInput
                     color="white"
                     underlineColorAndroid="transparent"

@@ -11,7 +11,7 @@ body {
     height : auto;
 }
 #toolbar{
-    /* display:none; */
+    display:none;
     position : absolute;
     top : 200px;
 }
