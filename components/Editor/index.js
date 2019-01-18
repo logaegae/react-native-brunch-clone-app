@@ -17,15 +17,14 @@ export default class MyWeb extends Component {
       this.setState({ 
         req: this.props._editorReq
       }, () => {
-        console.log(this.state.req)
-        this.webView.postMessage(this.state.req);
-      })
+        this.webView.postMessage(this.state.req.replace("*",""));
+      });
     }    
   }
 
   onMessage( event ) {
     let data = event.nativeEvent.data;
-    data = JSON.parse(data)
+    data = JSON.parse(data);
     if(data.type == 'format'){
       this.props._handleFormat(data.value);
     }

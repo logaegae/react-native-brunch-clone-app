@@ -1,8 +1,9 @@
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="custom.css" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.2.6/quill.snow.css" rel="stylesheet">
+    <script src="./jquery.js"></script>
     <script src="https://cdn.quilljs.com/1.2.6/quill.min.js"></script>
     
 </head>
@@ -51,17 +52,59 @@
         <button class="ql-image"></button>
     </div>
     <script>
+        function imageHandler () {
+            let fileInput = this.container.querySelector('input.ql-image[type=file]');
+            if (fileInput == null) {
+                fileInput = document.createElement('input');
+                fileInput.setAttribute('type', 'file');
+                fileInput.setAttribute('accept', 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon');
+                fileInput.classList.add('ql-image');
+                fileInput.addEventListener('change', () => {
+                if (fileInput.files != null && fileInput.files[0] != null) {
+                    var formData = new FormData();
+                    formData.append("photo", fileInput.files[0]);
+                    $.ajax({
+                        method : 'post',
+                        url : 'http://localhost:9001/api/upload/editorImg',
+                        crossDomain: true,
+                        data : formData,
+                        processData: false,
+                        contentType: false
+                    })
+                    .then(res => {
+                        if(res.result == 'SUCCESS'){
+                            const url = res.url;
+                            alert(url)
+                            let range = quill.getSelection(true);
+                            quill.insertEmbed(range.index, 'image', url);
+                        }else{
+                            alert('Image upload error')
+                        }
+                    })
+                    .catch(e => {
+                        alert(JSON.stringify(e))
+                    });
+                }
+                });
+                this.container.appendChild(fileInput);
+            }
+            fileInput.click();
+        }
         var quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
-                toolbar: '#toolbar'
+                toolbar: {
+                    container : '#toolbar',
+                    handlers: {
+                        'image': imageHandler
+                    }
+                }
             }
         });
         quill.on('editor-change', function(eventName, ...args) {
             try{
                 var value = quill.getFormat();
                 var message = {type : 'format', value};
-                console.log(value)
                 window.postMessage(JSON.stringify(message));
             }catch(e){}
         });

@@ -129,7 +129,7 @@ class NewView extends React.Component {
                 <Wrap>
                     <ViewHeader article={article} handleState={this._handleState} goBack={goBack}/>
                     <ConBox>
-                        <WriteCon handleState={this._handleState} article={article} handleModal2={this._toggleModal}/>
+                        <WriteCon handleState={this._handleState} article={article} handleModal2={this._toggleModal} token={this.props.login.token}/>
                     </ConBox>
                 </Wrap>
                 }

@@ -58,7 +58,12 @@ export default class WriteCon extends Component {
     this.setState({...this.state, format})
   }
   sendToEditor(type, value) {
-    var req = JSON.stringify({type, value});
+    const token = this.props.token;
+    // alert(token);
+    let req;
+    if(type === 'image') req = JSON.stringify({type, value, token});
+    else req = JSON.stringify({type, value});
+    if(this.state.editorReq == req) req = req + "*";
     this.setState({ editorReq: req })
 
     if(type === 'color'){
